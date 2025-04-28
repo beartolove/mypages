@@ -1,0 +1,238 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>OpenAI豪擲30億美金收購Windsurf</title>
+  <script src="https://cdn.jsdelivr.net/npm/mermaid/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --primary-color: #1d3557;
+      --secondary-color: #f1faee;
+      --accent-color: #457b9d;
+      --light-bg: #ffffff;
+      --dark-bg: #121212;
+      --card-bg-light: #f8f9fa;
+      --card-bg-dark: #1f1f1f;
+      --text-color-light: #333333;
+      --text-color-dark: #dddddd;
+    }
+    body {
+      margin: 0;
+      font-family: 'Helvetica Neue', Arial, sans-serif;
+      background: var(--light-bg);
+      color: var(--text-color-light);
+      transition: background 0.3s, color 0.3s;
+    }
+    nav {
+      position: fixed;
+      top: 0; left: 0; right: 0;
+      background: var(--primary-color);
+      color: white;
+      display: flex;
+      justify-content: center;
+      gap: 20px;
+      padding: 10px;
+      z-index: 1000;
+      font-size: 14px;
+    }
+    nav a, nav button {
+      color: white;
+      text-decoration: none;
+      background: none;
+      border: none;
+      cursor: pointer;
+      font-size: 14px;
+    }
+    .container {
+      padding: 80px 20px 40px;
+      max-width: 900px;
+      margin: auto;
+      text-align: left;
+    }
+    .card {
+      background: var(--card-bg-light);
+      padding: 20px;
+      margin-bottom: 20px;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+      transition: background 0.3s;
+    }
+    .highlight {
+      color: var(--accent-color);
+      font-weight: bold;
+    }
+    .dark-mode {
+      background: var(--dark-bg);
+      color: var(--text-color-dark);
+    }
+    .dark-mode .card {
+      background: var(--card-bg-dark);
+    }
+    h1, h2 { color: var(--primary-color); }
+    .section-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    button.small {
+      padding: 5px 10px;
+      background: var(--accent-color);
+      color: white;
+      border: none;
+      border-radius: 6px;
+      font-size: 12px;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+<nav>
+  <a href="#summary">摘要</a>
+  <a href="#background">背景</a>
+  <a href="#mindmap">心智圖</a>
+  <a href="#highlights">重點整理</a>
+  <button onclick="toggleMode()">切換模式</button>
+</nav>
+
+<div class="container">
+  <section id="summary" class="card">
+    <h1>OpenAI豪擲30億美金收購的AI編碼新創Windsurf到底是什麼？</h1>
+    <h2>🔖 OpenAI重金佈局AI編碼未來。</h2>
+  </section>
+
+  <section id="background" class="card">
+    <h2>影片背景</h2>
+    <p><strong>來源：</strong> <a href="https://www.youtube.com/watch?v=5vuBpQJknDM" target="_blank">YouTube連結</a></p>
+    <p><strong>作者：</strong> 最佳拍檔</p>
+    <p><strong>標籤：</strong> #OpenAI #Windsurf #AI編碼 #企業轉型 #技術創新</p>
+  </section>
+
+  <section id="mindmap" class="card">
+    <div class="section-header">
+      <h2>心智圖摘要</h2>
+      <button class="small" onclick="switchDiagram()">切換心智圖模式</button>
+    </div>
+    <div id="diagram">
+      <div class="mermaid">
+        mindmap
+          root((Windsurf發展歷程))
+            OpenAI收購
+              30億美金
+            創業背景
+              GPU虛擬化
+              深度學習應用管理
+            轉型契機
+              生程式AI崛起
+              創建Coderm
+            技術創新
+              專屬AI IDE
+              支援大型代碼庫理解
+            企業應用
+              高安全性
+              混合部署模式
+            成功因素
+              專注核心
+              持續顛覆創新
+      </div>
+    </div>
+  </section>
+
+  <section id="highlights" class="card">
+    <h2>重點整理</h2>
+    <h3>創業背景與轉型</h3>
+    <ul>
+      <li>初期主打GPU虛擬化與深度學習應用管理。</li>
+      <li>因應生成式AI崛起轉向AI編碼領域，開發Coderm。</li>
+    </ul>
+
+    <h3>技術細節</h3>
+    <ol>
+      <li>建構專屬AI IDE平台
+        <ul>
+          <li>支援大型代碼庫理解與修改。</li>
+          <li>快速代碼審查與定制化支援。</li>
+        </ul>
+      </li>
+      <li>企業應用導向
+        <ul>
+          <li>取得政府認證，推動混合部署保護數據安全。</li>
+          <li>專為大型企業需求設計產品。</li>
+        </ul>
+      </li>
+    </ol>
+  </section>
+</div>
+
+<script>
+  mermaid.initialize({ startOnLoad: true });
+
+  function toggleMode() {
+    document.body.classList.toggle('dark-mode');
+  }
+
+let currentDiagram = 'mindmap';
+
+function switchDiagram() {
+  const diag = document.getElementById('diagram');
+  let diagramCode = '';
+  let diagramId = 'diagram-' + Date.now(); // 避免ID衝突
+
+  if (currentDiagram === 'mindmap') {
+    diagramCode = `
+      graph TD
+        A[Windsurf發展歷程] --> B[OpenAI收購 30億美金]
+        A --> C[創業背景 GPU虛擬化 深度學習應用管理]
+        A --> D[轉型契機 生程式AI崛起 創建Coderm]
+        A --> E[技術創新 專屬AI IDE 支援代碼庫理解]
+        A --> F[企業應用 高安全性 混合部署模式]
+        A --> G[成功因素 專注核心 持續創新]
+    `;
+    currentDiagram = 'graphTD';
+  } else if (currentDiagram === 'graphTD') {
+    diagramCode = `
+      graph LR
+        A[Windsurf發展歷程] --> B[OpenAI收購]
+        A --> C[創業背景]
+        A --> D[轉型契機]
+        A --> E[技術創新]
+        A --> F[企業應用]
+        A --> G[成功因素]
+    `;
+    currentDiagram = 'graphLR';
+  } else {
+    diagramCode = `
+      mindmap
+        root((Windsurf發展歷程))
+          OpenAI收購
+            30億美金
+          創業背景
+            GPU虛擬化
+            深度學習應用管理
+          轉型契機
+            生程式AI崛起
+            創建Coderm
+          技術創新
+            專屬AI IDE
+            支援大型代碼庫理解
+          企業應用
+            高安全性
+            混合部署模式
+          成功因素
+            專注核心
+            持續顛覆創新
+    `;
+    currentDiagram = 'mindmap';
+  }
+
+  // 每次都清除舊的，重新產生新 mermaid div
+  diag.innerHTML = `<div class="mermaid" id="${diagramId}">${diagramCode.trim()}</div>`;
+
+  // 重新渲染新的圖
+  mermaid.init(undefined, `#${diagramId}`);
+}
+
+</script>
+
+</body>
+</html>
