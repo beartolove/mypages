@@ -1,0 +1,153 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Paper2Code 筆記</title>
+<link href="https://cdn.jsdelivr.net/npm/normalize.css@8.0.1/normalize.css" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/mermaid@10.6.1/dist/mermaid.min.js"></script>
+<style>
+  body { font-family: "Noto Sans TC", sans-serif; margin: 0; background: var(--bg); color: var(--text); transition: background 0.3s, color 0.3s; }
+  header { background: #1e3a8a; color: white; padding: 10px 20px; position: sticky; top: 0; z-index: 1000; display: flex; justify-content: space-between; align-items: center; box-shadow: 0 2px 6px rgba(0,0,0,0.3); }
+  nav { display: flex; align-items: center; }
+  nav a { color: white; margin: 0 10px; text-decoration: none; font-weight: bold; }
+  nav a:hover { color: #93c5fd; }
+  .menu-toggle { display: none; flex-direction: column; cursor: pointer; }
+  .menu-toggle div { width: 25px; height: 3px; background: white; margin: 4px 0; }
+  .menu { display: flex; }
+  .container { max-width: 960px; margin: 20px auto; padding: 0 20px; }
+  section { margin-bottom: 40px; }
+  h1, h2, h3 { color: #1e3a8a; }
+  .card { background: var(--card); border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.1); padding: 20px; margin-bottom: 20px; }
+  :root { --bg: #f9fafb; --text: #1e293b; --card: white; }
+  .dark { --bg: #0f172a; --text: #e2e8f0; --card: #1e293b; }
+  .toggle-btn { background: #3b82f6; border: none; color: white; padding: 5px 10px; border-radius: 5px; cursor: pointer; }
+  iframe { width: 100%; height: 500px; border: none; }
+  @media (max-width: 768px) {
+    .menu { display: none; flex-direction: column; width: 100%; background: #1e3a8a; }
+    .menu.active { display: flex; }
+    nav { flex-direction: column; align-items: flex-start; }
+    .menu-toggle { display: flex; }
+  }
+</style>
+</head>
+<body>
+<header>
+  <div class="menu-toggle" onclick="toggleMenu()">
+    <div></div>
+    <div></div>
+    <div></div>
+  </div>
+  <nav class="menu">
+    <a href="#background">背景</a>
+    <a href="#mindmap">心智圖</a>
+    <a href="#problem">問題定義</a>
+    <a href="#method">方法架構</a>
+  </nav>
+  <button class="toggle-btn" onclick="document.body.classList.toggle('dark')">切換模式</button>
+</header>
+
+<div class="container">
+  <section>
+    <h1>Paper2Code: Automating Code Generation from Scientific Papers in Machine Learning</h1>
+    <p style="font-size:1.2em; color: #475569;">🔖自動從機器學習論文生成程式碼的多代理框架</p>
+  </section>
+
+  <section id="background">
+    <div class="card">
+      <h2>背景</h2>
+      <p><strong>來源：</strong><a href="https://arxiv.org/abs/2504.17192" target="_blank" style="color:#3b82f6;">https://arxiv.org/abs/2504.17192</a></p>
+      <p><strong>作者：</strong>Minju Seo, Jinheon Baek, Seongyun Lee, Sung Ju Hwang</p>
+      <p><strong>標籤：</strong>#PaperCoder #LLM應用 #自動化科研 #機器學習 #論文再現</p>
+    </div>
+  </section>
+
+  <section id="mindmap">
+    <div class="card">
+      <h2>心智圖摘要</h2>
+      <div id="diagram-container">
+        <div class="mermaid" id="diagram-content">
+        mindmap
+          root((Paper2Code))
+            問題
+              再現性困難
+              缺少開源程式碼
+            解決方案
+              PaperCoder框架
+                規劃階段
+                分析階段
+                生成階段
+            方法
+              多代理協作
+              高階規劃→細部分析→程式碼撰寫
+            評估
+              Paper2Code基準測試
+              PaperBench測試
+            成效
+              優於MetaGPT、ChatDev
+              77%作者認可
+        </div>
+      </div>
+      <div style="margin-top: 10px;">
+        <button onclick="switchDiagram('mindmap')">mindmap</button>
+        <button onclick="switchDiagram('graphTD')">graph TD</button>
+        <button onclick="switchDiagram('graphLR')">graph LR</button>
+      </div>
+    </div>
+  </section>
+
+  <section id="problem">
+    <div class="card">
+      <h2>問題定義</h2>
+      <ul>
+        <li>機器學習論文常缺乏完整公開的程式碼，導致再現研究困難。</li>
+        <li>Paper2Code的目標是直接從論文自動生成完整的可執行程式碼庫。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section id="method">
+    <div class="card">
+      <h2>方法架構</h2>
+      <h3>技術細節</h3>
+      <ul>
+        <li><strong>三大階段</strong>：規劃 → 分析 → 程式碼生成</li>
+        <li><strong>多代理協作</strong>：每個階段由專門Agent負責</li>
+        <li><strong>模型選擇</strong>：使用o3-mini-high模型</li>
+      </ul>
+      <h3>操作步驟</h3>
+      <ol>
+        <li>輸入論文至PaperCoder</li>
+        <li>進行高階規劃（抽取關鍵模組與架構）</li>
+        <li>解析各檔案具體需求與流程</li>
+        <li>順序生成各個程式碼檔案</li>
+        <li>輸出完整可執行的程式碼庫</li>
+      </ol>
+    </div>
+  </section>
+</div>
+
+<script>
+mermaid.initialize({ startOnLoad: true });
+
+function switchDiagram(mode) {
+  let diagramText = '';
+  if (mode === 'mindmap') {
+    diagramText = `mindmap\n  root((Paper2Code))\n    問題\n      再現性困難\n      缺少開源程式碼\n    解決方案\n      PaperCoder框架\n        規劃階段\n        分析階段\n        生成階段\n    方法\n      多代理協作\n      高階規劃→細部分析→程式碼撰寫\n    評估\n      Paper2Code基準測試\n      PaperBench測試\n    成效\n      優於MetaGPT、ChatDev\n      77%作者認可`;
+  } else if (mode === 'graphTD') {
+    diagramText = `graph TD\n  A[Paper2Code] --> B[問題]\n  B --> B1[再現性困難]\n  B --> B2[缺少開源程式碼]\n  A --> C[解決方案]\n  C --> C1[PaperCoder框架]\n  C1 --> C11[規劃階段]\n  C1 --> C12[分析階段]\n  C1 --> C13[生成階段]\n  A --> D[方法]\n  D --> D1[多代理協作]\n  D --> D2[高階規劃→細部分析→程式碼撰寫]\n  A --> E[評估]\n  E --> E1[Paper2Code基準測試]\n  E --> E2[PaperBench測試]\n  A --> F[成效]\n  F --> F1[優於MetaGPT、ChatDev]\n  F --> F2[77%作者認可]`;
+  } else if (mode === 'graphLR') {
+    diagramText = `graph LR\n  A[Paper2Code] --> B[問題]\n  B --> B1[再現性困難]\n  B --> B2[缺少開源程式碼]\n  A --> C[解決方案]\n  C --> C1[PaperCoder框架]\n  C1 --> C11[規劃階段]\n  C1 --> C12[分析階段]\n  C1 --> C13[生成階段]\n  A --> D[方法]\n  D --> D1[多代理協作]\n  D --> D2[高階規劃→細部分析→程式碼撰寫]\n  A --> E[評估]\n  E --> E1[Paper2Code基準測試]\n  E --> E2[PaperBench測試]\n  A --> F[成效]\n  F --> F1[優於MetaGPT、ChatDev]\n  F --> F2[77%作者認可]`;
+  }
+  document.getElementById('diagram-container').innerHTML = `<div class='mermaid' id='diagram-content'>${diagramText}</div>`;
+  mermaid.init(undefined, document.querySelectorAll('.mermaid'));
+}
+
+function toggleMenu() {
+  const menu = document.querySelector('.menu');
+  menu.classList.toggle('active');
+}
+</script>
+
+</body>
+</html>
