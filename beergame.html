@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>啤酒遊戲：減少風險策略指導</title>
+  <style>
+    body {
+      font-family: "Noto Sans TC", sans-serif;
+      line-height: 1.6;
+      margin: 0;
+      padding: 0 1rem;
+      background: #f8f9fa;
+      color: #212529;
+    }
+    header {
+      background-color: #343a40;
+      color: white;
+      padding: 1rem;
+      text-align: center;
+    }
+    section {
+      margin: 2rem auto;
+      max-width: 960px;
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+    }
+    h2 {
+      border-bottom: 2px solid #dee2e6;
+      padding-bottom: 0.25rem;
+    }
+    .role {
+      border-left: 6px solid;
+      padding-left: 1rem;
+      margin-bottom: 1.5rem;
+    }
+    .retailer { border-color: #198754; }
+    .wholesaler { border-color: #0d6efd; }
+    .distributor { border-color: #fd7e14; }
+    .factory { border-color: #6f42c1; }
+    ul {
+      padding-left: 1.5rem;
+    }
+    .summary {
+      background: #e9ecef;
+      padding: 1rem;
+      border-left: 4px solid #0d6efd;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <h1>啤酒遊戲：減少風險策略指導</h1>
+  </header>
+  <section>
+    <h2>🎯 策略核心原則</h2>
+    <ul>
+      <li>建立穩定供貨模式，保有基本緩衝庫存</li>
+      <li>避免過度下單以減少庫存積壓</li>
+      <li>事前建立默契，降低資訊落差</li>
+      <li>整組皆應採穩定、有節奏的訂單節奏</li>
+    </ul>
+
+    <h2>👥 各角色分別指導建議</h2>
+
+    <div class="role retailer">
+      <h3>🛍️ 零售商（Retailer）</h3>
+      <ul>
+        <li>掌握唯一的實際消費需求，反應需穩定，勿暴衝下單</li>
+        <li>建議保有「平均需求 + 1 單位」緩衝庫存</li>
+        <li>下單公式：當期需求 + 安全庫存 – 當前庫存</li>
+      </ul>
+    </div>
+
+    <div class="role wholesaler">
+      <h3>🏪 批發商（Wholesaler）</h3>
+      <ul>
+        <li>資訊來自零售商，需抗波動、穩出貨</li>
+        <li>建議使用 3 回合平均作為參考</li>
+        <li>設定合理上下限（如 4～6 單位）避免極端變動</li>
+      </ul>
+    </div>
+
+    <div class="role distributor">
+      <h3>🏭 代理商（Distributor）</h3>
+      <ul>
+        <li>扮演緩衝器角色，吸收上下游的訂單波動</li>
+        <li>可採「平均需求 + 緩衝量」策略訂貨</li>
+        <li>維持約 5 單位緩衝庫存，以備需求變化</li>
+      </ul>
+    </div>
+
+    <div class="role factory">
+      <h3>🏢 製造商（Factory）</h3>
+      <ul>
+        <li>因生產有滯後時間，建議採固定產能策略（如固定生產 6 單位）</li>
+        <li>避免因短期訂單激增就快速擴產</li>
+        <li>保留基本庫存下限，如 10 單位</li>
+      </ul>
+    </div>
+
+    <h2>🧩 事前共識建議</h2>
+    <ul>
+      <li>前 3 回合所有角色固定下單（如 4～6 單位），以降低早期波動</li>
+      <li>使用簡單訂單決策模型，例如「上期出貨 + 緩衝」</li>
+      <li>明確約定安全庫存量與穩定節奏原則</li>
+    </ul>
+
+    <div class="summary">
+      <strong>✅ 總結：</strong>
+      小波動穩運行 > 大波動快反應。每位角色皆應少猜、多穩、漸進調整，風險自然降低。
+    </div>
+  </section>
+</body>
+</html>
