@@ -1,0 +1,576 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025資訊麻瓜的AI應用課-1. AI在職場的普遍應用</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Microsoft JhengHei', Arial, sans-serif;
+            line-height: 1.6;
+            color: #333;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 20px;
+            min-height: 100vh;
+        }
+
+        /* 懸浮選單按鈕 */
+        .floating-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 10000;
+        }
+
+        .menu-toggle {
+            background: rgba(255, 255, 255, 0.95);
+            border: none;
+            font-size: 1.5em;
+            color: #4a5568;
+            cursor: pointer;
+            padding: 12px;
+            border-radius: 50%;
+            transition: all 0.3s ease;
+            box-shadow: 0 5px 20px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(10px);
+            width: 50px;
+            height: 50px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .menu-toggle:hover {
+            background: rgba(102, 126, 234, 0.9);
+            color: white;
+            transform: scale(1.1);
+            box-shadow: 0 8px 25px rgba(102, 126, 234, 0.3);
+        }
+
+        /* 下拉選單 */
+        .dropdown-menu {
+            position: absolute;
+            top: 60px;
+            left: 0;
+            background: rgba(255, 255, 255, 0.98);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+            backdrop-filter: blur(15px);
+            min-width: 280px;
+            padding: 15px 0;
+            opacity: 1;
+            visibility: visible;
+            transform: translateY(0);
+            transition: all 0.3s ease;
+            z-index: 9999;
+        }
+
+        .dropdown-menu.hidden {
+            opacity: 0;
+            visibility: hidden;
+            transform: translateY(-10px);
+        }
+
+        .dropdown-item {
+            display: block;
+            padding: 12px 20px;
+            color: #4a5568;
+            text-decoration: none;
+            font-size: 1em;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            border-left: 3px solid transparent;
+        }
+
+        .dropdown-item:hover {
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
+            color: #667eea;
+            border-left-color: #667eea;
+            transform: translateX(5px);
+        }
+
+        .dropdown-divider {
+            height: 1px;
+            background: #e2e8f0;
+            margin: 8px 20px;
+        }
+
+        /* 主要內容區 */
+        .main-content {
+            background: rgba(255, 255, 255, 0.95);
+            border-radius: 15px;
+            padding: 30px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.1);
+            backdrop-filter: blur(10px);
+        }
+
+        .course-title {
+            text-align: center;
+            color: #2d3748;
+            margin-bottom: 30px;
+            font-size: 2.5em;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+
+        /* 影片區塊 */
+        .video-section {
+            margin-bottom: 40px;
+            text-align: center;
+        }
+
+        .video-container {
+            position: relative;
+            width: 100%;
+            height: 0;
+            padding-bottom: 56.25%; /* 16:9 比例 */
+            margin: 20px 0;
+            border-radius: 15px;
+            overflow: hidden;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+        }
+
+        .video-container iframe {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            border: none;
+        }
+
+        /* 圖片區塊 */
+        .image-container {
+            margin: 25px 0;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .featured-image {
+            max-width: 100%;
+            height: auto;
+            max-height: 400px;
+            border-radius: 12px;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.15);
+            transition: all 0.3s ease;
+            cursor: pointer;
+        }
+
+        .featured-image:hover {
+            transform: scale(1.02);
+            box-shadow: 0 12px 35px rgba(0, 0, 0, 0.2);
+        }
+
+        /* 課程章節 */
+        .section {
+            margin-bottom: 40px;
+            scroll-margin-top: 100px;
+        }
+
+        .section-title {
+            color: #2d3748;
+            font-size: 1.8em;
+            margin-bottom: 20px;
+            padding: 15px 0;
+            border-left: 5px solid #667eea;
+            padding-left: 20px;
+            background: linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent);
+        }
+
+        /* 文字區塊 */
+        .text-block {
+            background: #f7fafc;
+            border: 1px solid #e2e8f0;
+            border-radius: 10px;
+            padding: 25px;
+            margin: 20px 0;
+            position: relative;
+            transition: all 0.3s ease;
+        }
+
+        .text-block:hover {
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.1);
+            transform: translateY(-2px);
+        }
+
+        .copy-btn {
+            position: absolute;
+            top: 15px;
+            right: 15px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-size: 0.9em;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+
+        .copy-btn:hover {
+            transform: scale(1.05);
+            box-shadow: 0 3px 10px rgba(102, 126, 234, 0.3);
+        }
+
+        .copy-btn.copied {
+            background: #48bb78;
+        }
+
+        .copy-success {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #48bb78;
+            color: white;
+            padding: 15px 20px;
+            border-radius: 8px;
+            font-weight: 500;
+            opacity: 0;
+            transform: translateY(-20px);
+            transition: all 0.3s ease;
+            z-index: 1000;
+        }
+
+        .copy-success.show {
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .container {
+                padding: 15px;
+            }
+
+            .floating-menu {
+                top: 15px;
+                left: 15px;
+            }
+
+            .menu-toggle {
+                width: 45px;
+                height: 45px;
+                padding: 10px;
+                font-size: 1.3em;
+            }
+
+            .dropdown-menu {
+                min-width: 250px;
+                top: 55px;
+            }
+
+            .main-content {
+                padding: 20px;
+                margin-top: 20px;
+            }
+
+            .course-title {
+                font-size: 2em;
+            }
+
+            .section-title {
+                font-size: 1.5em;
+            }
+
+            .featured-image {
+                max-height: 300px;
+            }
+        }
+
+        /* 程式碼區塊 */
+        .code-block {
+            background: #2d3748;
+            color: #e2e8f0;
+            padding: 20px;
+            border-radius: 8px;
+            margin: 15px 0;
+            font-family: 'Courier New', monospace;
+            overflow-x: auto;
+            position: relative;
+        }
+
+        .highlight {
+            background: linear-gradient(120deg, rgba(255, 255, 0, 0.3), rgba(255, 255, 0, 0.1));
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- 懸浮選單 -->
+        <div class="floating-menu">
+            <button class="menu-toggle" onclick="toggleMenu()">
+                ☰
+            </button>
+            <nav class="dropdown-menu" id="dropdownMenu">
+                <a href="https://www.twport.com.tw/" target="_blank" class="dropdown-item">🏠 2025麻瓜AI應用課程</a>
+                <a href="https://www.youtube.com/" target="_blank" class="dropdown-item">📺 YouTube頻道</a>
+                <div class="dropdown-divider"></div>
+                <a href="#video" class="dropdown-item" onclick="closeMenu()">🎥 教學影片</a>
+                <a href="#section1" class="dropdown-item" onclick="closeMenu()">📖 步驟一</a>
+                <a href="#section2" class="dropdown-item" onclick="closeMenu()">⚙️ 步驟二</a>
+                <a href="#section3" class="dropdown-item" onclick="closeMenu()">💡 步驟三</a>
+            </nav>
+        </div>
+
+        <!-- 主要內容區 -->
+        <main class="main-content">
+            <h1 class="course-title">📚 如何取得ChatGPT API Key</h1>
+
+            <!-- 影片區塊 -->
+            <section id="video" class="video-section section">
+                <h2 class="section-title">🎥 教學影片</h2>
+                <div class="video-container">
+                    <iframe 
+                        src="https://www.youtube.com/embed/8x6qi6XHzRY" 
+                        title="教學影片" 
+                        allowfullscreen>
+                    </iframe>
+                </div>
+                
+                <!-- 圖片區塊 -->
+                <div class="image-container">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFTKKe_MtwdYziW0s8ofNgQ5XGvyup_atEEOsmBkoB8j8a0vPD9hzIGr8bX-i-jiP6PHy6r2B3CStD531fdeeKI6JKXh3XI8SPb1gNxI1FF5JIrI1Jz5FlZn1r5Y3jMUhlLTRZ5689rZrC/s400/%E5%A6%82%E4%BE%86%E7%A5%9E%E6%8E%8C.jpg" 
+                         alt="如來神掌" 
+                         class="featured-image">
+                </div>
+            </section>
+
+            <!-- 步驟一 -->
+            <section id="section1" class="section">
+                <h2 class="section-title">📖 步驟一：註冊OpenAI帳號</h2>
+                
+                <!-- 步驟一圖片 -->
+                <div class="image-container">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFTKKe_MtwdYziW0s8ofNgQ5XGvyup_atEEOsmBkoB8j8a0vPD9hzIGr8bX-i-jiP6PHy6r2B3CStD531fdeeKI6JKXh3XI8SPb1gNxI1FF5JIrI1Jz5FlZn1r5Y3jMUhlLTRZ5689rZrC/s400/%E5%A6%82%E4%BE%86%E7%A5%9E%E6%8E%8C.jpg" 
+                         alt="步驟一示意圖" 
+                         class="featured-image">
+                </div>
+                
+                <div class="text-block">
+                    <button class="copy-btn" onclick="copyText(this)">
+                        📋 複製
+                    </button>
+                    <p>首先，您需要前往 OpenAI 官方網站註冊一個帳號。這是取得 API Key 的第一步驟。</p>
+                    <p><span class="highlight">重要提醒</span>：註冊時請使用有效的電子郵件地址，因為需要進行電子郵件驗證。</p>
+                </div>
+
+                <div class="text-block">
+                    <button class="copy-btn" onclick="copyText(this)">
+                        📋 複製
+                    </button>
+                    <h3>註冊步驟：</h3>
+                    <p>1. 前往 https://platform.openai.com</p>
+                    <p>2. 點擊「Sign up」建立新帳號</p>
+                    <p>3. 輸入電子郵件地址和密碼</p>
+                    <p>4. 驗證電子郵件</p>
+                </div>
+            </section>
+
+            <!-- 步驟二 -->
+            <section id="section2" class="section">
+                <h2 class="section-title">⚙️ 步驟二：設定付款方式</h2>
+                
+                <!-- 步驟二圖片 -->
+                <div class="image-container">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFTKKe_MtwdYziW0s8ofNgQ5XGvyup_atEEOsmBkoB8j8a0vPD9hzIGr8bX-i-jiP6PHy6r2B3CStD531fdeeKI6JKXh3XI8SPb1gNxI1FF5JIrI1Jz5FlZn1r5Y3jMUhlLTRZ5689rZrC/s400/%E5%A6%82%E4%BE%86%E7%A5%9E%E6%8E%8C.jpg" 
+                         alt="步驟二示意圖" 
+                         class="featured-image">
+                </div>
+                
+                <div class="text-block">
+                    <button class="copy-btn" onclick="copyText(this)">
+                        📋 複製
+                    </button>
+                    <h3>設定信用卡資訊：</h3>
+                    <p>要使用 OpenAI API，您需要設定付款方式。OpenAI 採用用量計費的方式，只有實際使用時才會收費。</p>
+                </div>
+
+                <div class="text-block">
+                    <button class="copy-btn" onclick="copyText(this)">
+                        📋 複製
+                    </button>
+                    <h3>付款設定步驟：</h3>
+                    <p>1. 登入 OpenAI 平台後，前往「Billing」頁面</p>
+                    <p>2. 點擊「Add payment method」</p>
+                    <p>3. 輸入信用卡資訊</p>
+                    <p>4. 設定使用額度限制（建議先設定較低額度）</p>
+                </div>
+            </section>
+
+            <!-- 步驟三 -->
+            <section id="section3" class="section">
+                <h2 class="section-title">💡 步驟三：產生API Key</h2>
+                
+                <!-- 步驟三圖片 -->
+                <div class="image-container">
+                    <img src="https://blogger.googleusercontent.com/img/b/R29vZ2xl/AVvXsEiFTKKe_MtwdYziW0s8ofNgQ5XGvyup_atEEOsmBkoB8j8a0vPD9hzIGr8bX-i-jiP6PHy6r2B3CStD531fdeeKI6JKXh3XI8SPb1gNxI1FF5JIrI1Jz5FlZn1r5Y3jMUhlLTRZ5689rZrC/s400/%E5%A6%82%E4%BE%86%E7%A5%9E%E6%8E%8C.jpg" 
+                         alt="步驟三示意圖" 
+                         class="featured-image">
+                </div>
+                
+                <div class="text-block">
+                    <button class="copy-btn" onclick="copyText(this)">
+                        📋 複製
+                    </button>
+                    <h3>產生您的 API Key：</h3>
+                    <p>完成付款設定後，您就可以產生 API Key 了。這個 Key 就像是您應用程式的身分證，用來識別和授權 API 請求。</p>
+                    <p><span class="highlight">安全提醒</span>：API Key 非常重要，請妥善保管，不要分享給他人！</p>
+                </div>
+
+                <div class="text-block">
+                    <button class="copy-btn" onclick="copyText(this)">
+                        📋 複製
+                    </button>
+                    <h3>產生 API Key 步驟：</h3>
+                    <p>1. 前往「API Keys」頁面</p>
+                    <p>2. 點擊「Create new secret key」</p>
+                    <p>3. 為 Key 命名（例如：我的應用程式）</p>
+                    <p>4. 複製產生的 API Key 並安全保存</p>
+                    <p>5. 在您的應用程式中使用這個 Key</p>
+                </div>
+            </section>
+        </main>
+    </div>
+
+    <!-- 複製成功提示 -->
+    <div id="copySuccess" class="copy-success">
+        ✅ 文字已複製到剪貼簿！
+    </div>
+
+    <script>
+        // 選單控制功能
+        function toggleMenu() {
+            const menu = document.getElementById('dropdownMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        function closeMenu() {
+            const menu = document.getElementById('dropdownMenu');
+            menu.classList.add('hidden');
+        }
+
+        // 點擊外部關閉選單
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('dropdownMenu');
+            const toggle = document.querySelector('.menu-toggle');
+            const floatingMenu = document.querySelector('.floating-menu');
+            
+            if (!floatingMenu.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+
+        // 複製文字功能
+        function copyText(button) {
+            const textBlock = button.parentElement;
+            const textToCopy = textBlock.innerText.replace('📋 複製', '').trim();
+            
+            navigator.clipboard.writeText(textToCopy).then(() => {
+                // 顯示複製成功動畫
+                button.innerHTML = '✅ 已複製';
+                button.classList.add('copied');
+                
+                // 顯示成功提示
+                const successMsg = document.getElementById('copySuccess');
+                successMsg.classList.add('show');
+                
+                // 重置按鈕狀態
+                setTimeout(() => {
+                    button.innerHTML = '📋 複製';
+                    button.classList.remove('copied');
+                    successMsg.classList.remove('show');
+                }, 2000);
+            }).catch(err => {
+                console.error('複製失敗:', err);
+                button.innerHTML = '❌ 複製失敗';
+                setTimeout(() => {
+                    button.innerHTML = '📋 複製';
+                }, 2000);
+            });
+        }
+
+        // 平滑捲動到指定區塊
+        document.addEventListener('DOMContentLoaded', function() {
+            const links = document.querySelectorAll('a[href^="#"]');
+            links.forEach(link => {
+                link.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    const targetId = this.getAttribute('href');
+                    const targetElement = document.querySelector(targetId);
+                    
+                    if (targetElement) {
+                        targetElement.scrollIntoView({
+                            behavior: 'smooth',
+                            block: 'start'
+                        });
+                    }
+                });
+            });
+        });All('.nav-link').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetElement = document.querySelector(targetId);
+                
+                if (targetElement) {
+                    targetElement.scrollIntoView({
+                        behavior: 'smooth',
+                        block: 'start'
+                    });
+                }
+            });
+        });
+
+        // 螢幕捲動時高亮當前章節
+        window.addEventListener('scroll', function() {
+            const sections = document.querySelectorAll('.section');
+            const navLinks = document.querySelectorAll('.dropdown-item[href^="#"]');
+            
+            let currentSection = '';
+            
+            sections.forEach(section => {
+                const sectionTop = section.offsetTop - 150;
+                const sectionHeight = section.offsetHeight;
+                
+                if (window.scrollY >= sectionTop && window.scrollY < sectionTop + sectionHeight) {
+                    currentSection = '#' + section.id;
+                }
+            });
+            
+            navLinks.forEach(link => {
+                link.style.background = '';
+                link.style.color = '';
+                link.style.transform = '';
+                link.style.boxShadow = '';
+                
+                if (link.getAttribute('href') === currentSection) {
+                    link.style.background = 'linear-gradient(90deg, rgba(102, 126, 234, 0.1), transparent)';
+                    link.style.color = '#667eea';
+                    link.style.borderLeftColor = '#667eea';
+                    link.style.transform = 'translateX(5px)';
+                }
+            });
+        });
+    </script>
+</body>
+</html>
