@@ -1,0 +1,794 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Markdown轉HTML互動式表單</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+
+        .header {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+
+        .content {
+            display: flex;
+            min-height: 600px;
+        }
+
+        .input-section {
+            flex: 1;
+            padding: 30px;
+            border-right: 1px solid #e0e0e0;
+        }
+
+        .output-section {
+            flex: 1;
+            padding: 30px;
+            background: #f8f9fa;
+        }
+
+        .section-title {
+            font-size: 1.5rem;
+            color: #333;
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .section-title::before {
+            content: '';
+            width: 4px;
+            height: 30px;
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            border-radius: 2px;
+        }
+
+        textarea {
+            width: 100%;
+            height: 400px;
+            padding: 20px;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            font-family: 'Courier New', monospace;
+            font-size: 14px;
+            line-height: 1.6;
+            resize: vertical;
+            transition: border-color 0.3s ease;
+        }
+
+        textarea:focus {
+            outline: none;
+            border-color: #4facfe;
+            box-shadow: 0 0 0 3px rgba(79, 172, 254, 0.1);
+        }
+
+        .button-group {
+            margin-top: 20px;
+            display: flex;
+            gap: 15px;
+        }
+
+        .btn {
+            padding: 12px 25px;
+            border: none;
+            border-radius: 8px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+            color: white;
+        }
+
+        .btn-primary:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(79, 172, 254, 0.3);
+        }
+
+        .btn-secondary {
+            background: #6c757d;
+            color: white;
+        }
+
+        .btn-secondary:hover {
+            background: #5a6268;
+            transform: translateY(-2px);
+        }
+
+        .output-container {
+            background: white;
+            border: 2px solid #e0e0e0;
+            border-radius: 10px;
+            height: 400px;
+            overflow-y: auto;
+            padding: 20px;
+        }
+
+        .html-output h1 {
+            color: #2c3e50;
+            font-size: 2.2rem;
+            margin-bottom: 30px;
+            text-align: center;
+            padding-bottom: 15px;
+            border-bottom: 3px solid #3498db;
+        }
+
+        .html-output h2 {
+            color: #34495e;
+            font-size: 1.5rem;
+            margin: 25px 0 15px 0;
+            padding: 10px 0;
+            border-bottom: 2px solid #ecf0f1;
+        }
+
+        .html-output h3 {
+            color: #7f8c8d;
+            font-size: 1.2rem;
+            margin: 20px 0 10px 0;
+        }
+
+        .html-output ul, .html-output ol {
+            margin: 15px 0;
+            padding-left: 30px;
+        }
+
+        .html-output li {
+            margin: 8px 0;
+            position: relative;
+        }
+
+        .copy-btn {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 4px 8px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            margin-left: 10px;
+            opacity: 0.7;
+            transition: opacity 0.3s ease;
+        }
+
+        .copy-btn:hover {
+            opacity: 1;
+        }
+
+        .navigation {
+            position: sticky;
+            top: 0;
+            background: #2c5aa0;
+            padding: 15px 0;
+            margin-bottom: 20px;
+            border-bottom: 1px solid #1e3d6f;
+            z-index: 100;
+        }
+
+        .nav-menu {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 15px;
+            justify-content: center;
+        }
+
+        .nav-link {
+            color: white;
+            text-decoration: none;
+            padding: 8px 16px;
+            border-radius: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            transition: background-color 0.3s ease;
+            font-size: 14px;
+        }
+
+        .nav-link:hover {
+            background: rgba(255, 255, 255, 0.2);
+            color: white;
+        }
+
+        .highlight {
+            background-color: #ffeb3b;
+            padding: 2px 4px;
+            border-radius: 3px;
+            font-weight: bold;
+        }
+
+        .html-output strong {
+            color: #007bff;
+            text-decoration: underline;
+            font-weight: bold;
+        }
+
+        .html-output a {
+            color: #007bff;
+            text-decoration: none;
+            border-bottom: 1px solid #007bff;
+            transition: all 0.3s ease;
+        }
+
+        .html-output a:hover {
+            background-color: #007bff;
+            color: white;
+            padding: 2px 4px;
+            border-radius: 3px;
+        }
+
+        .youtube-embed {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .youtube-embed iframe {
+            max-width: 100%;
+            height: auto;
+            aspect-ratio: 16/9;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .image-embed {
+            margin: 20px 0;
+            text-align: center;
+        }
+
+        .image-embed img {
+            max-width: 100%;
+            height: auto;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .code-block {
+            margin: 20px 0;
+            border-radius: 8px;
+            background: #f8f9fa;
+            border: 1px solid #e9ecef;
+            overflow: hidden;
+        }
+
+        .code-header {
+            background: #e9ecef;
+            padding: 10px 15px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid #dee2e6;
+        }
+
+        .language-label {
+            font-size: 12px;
+            color: #6c757d;
+            font-weight: 600;
+            text-transform: uppercase;
+        }
+
+        .code-copy-btn {
+            background: #007bff;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 4px;
+            font-size: 12px;
+            cursor: pointer;
+            transition: background-color 0.3s ease;
+        }
+
+        .code-copy-btn:hover {
+            background: #0056b3;
+        }
+
+        .code-block pre {
+            margin: 0;
+            padding: 15px;
+            background: white;
+            overflow-x: auto;
+        }
+
+        .code-block code {
+            font-family: 'Courier New', Consolas, monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            color: #333;
+            white-space: pre-wrap;
+        }
+
+        .copy-notification {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            background: #28a745;
+            color: white;
+            padding: 12px 20px;
+            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+            transform: translateX(100%);
+            transition: transform 0.3s ease;
+            z-index: 1000;
+        }
+
+        .copy-notification.show {
+            transform: translateX(0);
+        }
+
+        @media (max-width: 768px) {
+            .content {
+                flex-direction: column;
+            }
+            
+            .input-section {
+                border-right: none;
+                border-bottom: 1px solid #e0e0e0;
+            }
+            
+            .header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>📝 Markdown轉HTML工具</h1>
+            <p>將您的Markdown內容轉換為互動式HTML頁面</p>
+        </div>
+        
+        <div class="content">
+            <div class="input-section">
+                <h2 class="section-title">輸入Markdown內容</h2>
+                <textarea id="markdownInput" placeholder="請輸入您的Markdown內容...
+
+範例格式：
+# 我的頁面標題
+
+## 第一章節
+這是第一章節的內容，支援**粗體**和==螢光筆效果==。
+
+### 子標題
+一些詳細說明。
+
+## 第二章節
+這是第二章節的內容。
+
+### 功能清單
+- 功能一：支援標題導航
+- 功能二：一鍵複製內容
+- 功能三：響應式設計
+- 功能四：**粗體文字**顯示為藍色底線粗體
+- 功能五：==黃底螢光筆==效果
+
+### 多媒體與程式內容
+- YouTube影片：![影片說明](https://www.youtube.com/watch?v=FohdoJkiufg)
+- 圖片範例：![周星馳](https://frankchiu.io/wp-content/uploads/2025/01/20240219064426_0.png)
+- 外部連結：[文章標題](https://frankchiu.io/ai-chatgpt-intro/)
+- 程式區塊範例：
+
+```code
+你是一個職場專家，專門作為新進同仁的導師
+當使用者跟你詢問問題時
+你會用任務分析與拆解、工作流程最佳化等角度回答
+```
+
+### 步驟說明
+1. 輸入Markdown內容
+2. 點擊轉換按鈕
+3. 檢視生成的HTML"></textarea>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="convertMarkdown()">
+                        🔄 轉換為HTML
+                    </button>
+                    <button class="btn btn-secondary" onclick="clearAll()">
+                        🗑️ 清除內容
+                    </button>
+                </div>
+            </div>
+            
+            <div class="output-section">
+                <h2 class="section-title">HTML預覽</h2>
+                <div class="output-container">
+                    <div id="htmlOutput" class="html-output">
+                        <p style="color: #666; text-align: center; margin-top: 50px;">
+                            在左側輸入Markdown內容，然後點擊「轉換為HTML」按鈕來預覽結果。
+                        </p>
+                    </div>
+                </div>
+                
+                <div class="button-group">
+                    <button class="btn btn-primary" onclick="copyHTML()">
+                        📋 複製HTML代碼
+                    </button>
+                    <button class="btn btn-secondary" onclick="downloadHTML()">
+                        💾 下載HTML檔案
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="copyNotification" class="copy-notification">
+        內容已複製到剪貼板！
+    </div>
+
+    <script>
+        let generatedHTML = '';
+        let h2Sections = [];
+
+        function convertMarkdown() {
+            const markdown = document.getElementById('markdownInput').value;
+            if (!markdown.trim()) {
+                alert('請先輸入Markdown內容！');
+                return;
+            }
+
+            const html = markdownToHTML(markdown);
+            generatedHTML = html;
+            document.getElementById('htmlOutput').innerHTML = html;
+        }
+
+        function markdownToHTML(markdown) {
+            let html = markdown;
+            h2Sections = [];
+            let codeBlocks = [];
+            let codeBlockIndex = 0;
+
+            // 第一步：先提取並暫存所有程式區塊，避免被其他轉換影響
+            html = html.replace(/```(\w*)\n([\s\S]*?)\n```/g, function(match, language, code) {
+                const cleanCode = code.trim();
+                const languageLabel = language || 'code';
+                const placeholder = '___CODE_BLOCK_' + codeBlockIndex + '___';
+                
+                // 保存原始程式碼到陣列
+                codeBlocks[codeBlockIndex] = {
+                    originalCode: cleanCode,
+                    language: languageLabel
+                };
+                
+                codeBlockIndex++;
+                return placeholder;
+            });
+
+            // 轉換YouTube內嵌影片
+            html = html.replace(/!\[(.*?)\]\(https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)\)/g, function(match, altText, videoId) {
+                return '<div class="youtube-embed">' +
+                       '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + videoId + '" ' +
+                       'title="' + altText + '" frameborder="0" allowfullscreen></iframe>' +
+                       '</div>';
+            });
+
+            // 轉換一般圖片
+            html = html.replace(/!\[(.*?)\]\((https?:\/\/[^\)]+\.(png|jpg|jpeg|gif|webp|svg))\)/gi, function(match, altText, imageUrl) {
+                return '<div class="image-embed">' +
+                       '<img src="' + imageUrl + '" alt="' + altText + '" />' +
+                       '</div>';
+            });
+
+            // 轉換超連結
+            html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, function(match, text, url) {
+                return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + text + '</a>';
+            });
+
+            // 轉換黃底螢光筆效果
+            html = html.replace(/==([^=]+)==/g, '<span class="highlight">$1</span>');
+
+            // 轉換粗體
+            html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
+
+            // 提取H2標題用於導航
+            html = html.replace(/^## (.+)$/gm, function(match, title) {
+                const id = title.replace(/\s+/g, '-').toLowerCase();
+                h2Sections.push({ title: title, id: id });
+                return '<h2 id="' + id + '">' + title + '</h2>';
+            });
+
+            // 轉換H1
+            html = html.replace(/^# (.+)$/gm, '<h1>$1</h1>');
+            
+            // 轉換H3
+            html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
+
+            // 轉換有序清單
+            html = html.replace(/^\d+\.\s(.+)$/gm, function(match, item) {
+                // 所有清單項目都不添加複製按鈕
+                return '<li>' + item + '</li>';
+            });
+            
+            // 轉換無序清單
+            html = html.replace(/^[-*]\s(.+)$/gm, function(match, item) {
+                // 所有清單項目都不添加複製按鈕
+                return '<li>' + item + '</li>';
+            });
+
+            // 包裝清單項目
+            html = html.replace(/(<li>.*?<\/li>\s*)+/g, function(match) {
+                if (match.includes('1.')) {
+                    return '<ol>' + match + '</ol>';
+                } else {
+                    return '<ul>' + match + '</ul>';
+                }
+            });
+
+            // 轉換段落
+            const lines = html.split('\n');
+            let result = [];
+            let inList = false;
+            
+            for (let i = 0; i < lines.length; i++) {
+                const line = lines[i].trim();
+                
+                if (line === '') {
+                    if (!inList) {
+                        result.push('');
+                    }
+                } else if (line.startsWith('<h') || line.startsWith('<ul>') || line.startsWith('<ol>') || line.includes('___CODE_BLOCK_')) {
+                    inList = line.startsWith('<ul>') || line.startsWith('<ol>');
+                    result.push(line);
+                } else if (line.startsWith('</ul>') || line.startsWith('</ol>')) {
+                    inList = false;
+                    result.push(line);
+                } else if (!line.startsWith('<') && !inList && !line.includes('___CODE_BLOCK_')) {
+                    result.push('<p>' + line + '</p>');
+                } else {
+                    result.push(line);
+                }
+            }
+
+            html = result.join('\n');
+
+            // 最後一步：還原程式區塊
+            for (let i = 0; i < codeBlocks.length; i++) {
+                const placeholder = '___CODE_BLOCK_' + i + '___';
+                const block = codeBlocks[i];
+                const codeBlockHtml = '<div class="code-block">' +
+                       '<div class="code-header">' +
+                       '<span class="language-label">' + block.language + '</span>' +
+                       '<button class="code-copy-btn" data-code="' + block.originalCode.replace(/"/g, '&quot;').replace(/'/g, '&#x27;') + '" onclick="copyCodeBlock(this)">複製代碼</button>' +
+                       '</div>' +
+                       '<pre><code>' + block.originalCode.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code></pre>' +
+                       '</div>';
+                
+                html = html.replace(placeholder, codeBlockHtml);
+            }
+
+            // 添加導航
+            if (h2Sections.length > 0) {
+                const navLinks = h2Sections.map(function(section) {
+                    return '<a href="#' + section.id + '" class="nav-link">' + section.title + '</a>';
+                }).join('');
+                
+                const navigation = '<div class="navigation"><div class="nav-menu">' + navLinks + '</div></div>';
+                html = navigation + html;
+            }
+
+            return html;
+        }
+
+        function copyCodeBlock(button) {
+            const code = button.getAttribute('data-code');
+            // 解碼HTML實體，保持原始格式
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = code;
+            const decodedCode = textarea.value;
+            
+            navigator.clipboard.writeText(decodedCode).then(function() {
+                showCopyNotification();
+            }).catch(function(err) {
+                // 備用方案：使用傳統的複製方法
+                const textArea = document.createElement('textarea');
+                textArea.value = decodedCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopyNotification();
+            });
+        }
+
+        function copyText(text) {
+            // 解碼HTML實體
+            const textarea = document.createElement('textarea');
+            textarea.innerHTML = text;
+            const decodedText = textarea.value;
+            
+            navigator.clipboard.writeText(decodedText).then(function() {
+                showCopyNotification();
+            }).catch(function(err) {
+                // 備用方案：使用傳統的複製方法
+                const textArea = document.createElement('textarea');
+                textArea.value = decodedText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand('copy');
+                document.body.removeChild(textArea);
+                showCopyNotification();
+            });
+        }
+
+        function copyHTML() {
+            if (!generatedHTML) {
+                alert('請先轉換Markdown內容！');
+                return;
+            }
+
+            const fullHTML = generateFullHTML();
+            navigator.clipboard.writeText(fullHTML).then(function() {
+                showCopyNotification();
+            });
+        }
+
+        function downloadHTML() {
+            if (!generatedHTML) {
+                alert('請先轉換Markdown內容！');
+                return;
+            }
+
+            const fullHTML = generateFullHTML();
+            const blob = new Blob([fullHTML], { type: 'text/html' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'generated-page.html';
+            a.click();
+            URL.revokeObjectURL(url);
+        }
+
+        function generateFullHTML() {
+            return '<!DOCTYPE html>\n' +
+                '<html lang="zh-TW">\n' +
+                '<head>\n' +
+                '    <meta charset="UTF-8">\n' +
+                '    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
+                '    <title>Generated HTML</title>\n' +
+                '    <style>\n' +
+                '        body { font-family: "Microsoft JhengHei", sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }\n' +
+                '        h1 { color: #2c3e50; font-size: 2.2rem; margin-bottom: 30px; text-align: center; padding-bottom: 15px; border-bottom: 3px solid #3498db; }\n' +
+                '        h2 { color: #34495e; font-size: 1.5rem; margin: 25px 0 15px 0; padding: 10px 0; border-bottom: 2px solid #ecf0f1; }\n' +
+                '        h3 { color: #7f8c8d; font-size: 1.2rem; margin: 20px 0 10px 0; }\n' +
+                '        ul, ol { margin: 15px 0; padding-left: 30px; }\n' +
+                '        li { margin: 8px 0; position: relative; }\n' +
+                '        .copy-btn { background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 10px; }\n' +
+                '        .navigation { position: sticky; top: 0; background: #2c5aa0; padding: 15px 0; margin-bottom: 20px; border-bottom: 1px solid #1e3d6f; z-index: 100; }\n' +
+                '        .nav-menu { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }\n' +
+                '        .nav-link { color: white; text-decoration: none; padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.1); transition: background-color 0.3s ease; }\n' +
+                '        .nav-link:hover { background: rgba(255, 255, 255, 0.2); color: white; }\n' +
+                '        .highlight { background-color: #ffeb3b; padding: 2px 4px; border-radius: 3px; font-weight: bold; }\n' +
+                '        strong { color: #007bff; text-decoration: underline; font-weight: bold; }\n' +
+                '        a { color: #007bff; text-decoration: none; border-bottom: 1px solid #007bff; transition: all 0.3s ease; }\n' +
+                '        a:hover { background-color: #007bff; color: white; padding: 2px 4px; border-radius: 3px; }\n' +
+                '        .youtube-embed { margin: 20px 0; text-align: center; }\n' +
+                '        .youtube-embed iframe { max-width: 100%; height: auto; aspect-ratio: 16/9; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }\n' +
+                '        .image-embed { margin: 20px 0; text-align: center; }\n' +
+                '        .image-embed img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }\n' +
+                '        .code-block { margin: 20px 0; border-radius: 8px; background: #f8f9fa; border: 1px solid #e9ecef; overflow: hidden; }\n' +
+                '        .code-header { background: #e9ecef; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dee2e6; }\n' +
+                '        .language-label { font-size: 12px; color: #6c757d; font-weight: 600; text-transform: uppercase; }\n' +
+                '        .code-copy-btn { background: #007bff; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }\n' +
+                '        .code-copy-btn:hover { background: #0056b3; }\n' +
+                '        .code-block pre { margin: 0; padding: 15px; background: white; overflow-x: auto; }\n' +
+                '        .code-block code { font-family: "Courier New", Consolas, monospace; font-size: 14px; line-height: 1.5; color: #333; white-space: pre-wrap; }\n' +
+                '    </style>\n' +
+                '</head>\n' +
+                '<body>\n' +
+                '    ' + generatedHTML + '\n' +
+                '    <script>\n' +
+                '        function copyText(text) {\n' +
+                '            var textarea = document.createElement("textarea");\n' +
+                '            textarea.innerHTML = text;\n' +
+                '            var decodedText = textarea.value;\n' +
+                '            navigator.clipboard.writeText(decodedText).then(function() {\n' +
+                '                alert("已複製：" + decodedText);\n' +
+                '            }).catch(function(err) {\n' +
+                '                var textArea = document.createElement("textarea");\n' +
+                '                textArea.value = decodedText;\n' +
+                '                document.body.appendChild(textArea);\n' +
+                '                textArea.select();\n' +
+                '                document.execCommand("copy");\n' +
+                '                document.body.removeChild(textArea);\n' +
+                '                alert("已複製：" + decodedText);\n' +
+                '            });\n' +
+                '        }\n' +
+                '        \n' +
+                '        function copyCodeBlock(button) {\n' +
+                '            var code = button.getAttribute("data-code");\n' +
+                '            var textarea = document.createElement("textarea");\n' +
+                '            textarea.innerHTML = code;\n' +
+                '            var decodedCode = textarea.value;\n' +
+                '            navigator.clipboard.writeText(decodedCode).then(function() {\n' +
+                '                alert("程式碼已複製！");\n' +
+                '            }).catch(function(err) {\n' +
+                '                var textArea = document.createElement("textarea");\n' +
+                '                textArea.value = decodedCode;\n' +
+                '                document.body.appendChild(textArea);\n' +
+                '                textArea.select();\n' +
+                '                document.execCommand("copy");\n' +
+                '                document.body.removeChild(textArea);\n' +
+                '                alert("程式碼已複製！");\n' +
+                '            });\n' +
+                '        }\n' +
+                '        \n' +
+                '        document.addEventListener("click", function(e) {\n' +
+                '            if (e.target.matches(".nav-link")) {\n' +
+                '                e.preventDefault();\n' +
+                '                const targetId = e.target.getAttribute("href").substring(1);\n' +
+                '                const targetElement = document.getElementById(targetId);\n' +
+                '                if (targetElement) {\n' +
+                '                    targetElement.scrollIntoView({ behavior: "smooth" });\n' +
+                '                }\n' +
+                '            }\n' +
+                '        });\n' +
+                '    <' + '/script>\n' +
+                '</body>\n' +
+                '</html>';
+        }
+
+        function clearAll() {
+            document.getElementById('markdownInput').value = '';
+            document.getElementById('htmlOutput').innerHTML = '<p style="color: #666; text-align: center; margin-top: 50px;">在左側輸入Markdown內容，然後點擊「轉換為HTML」按鈕來預覽結果。</p>';
+            generatedHTML = '';
+            h2Sections = [];
+        }
+
+        function showCopyNotification() {
+            const notification = document.getElementById('copyNotification');
+            notification.classList.add('show');
+            setTimeout(function() {
+                notification.classList.remove('show');
+            }, 2000);
+        }
+
+        // 平滑捲動效果
+        document.addEventListener('click', function(e) {
+            if (e.target.matches('.nav-link')) {
+                e.preventDefault();
+                const targetId = e.target.getAttribute('href').substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: 'smooth' });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
