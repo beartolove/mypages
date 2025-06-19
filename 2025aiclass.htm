@@ -1,0 +1,89 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Generated HTML</title>
+    <style>
+        body { font-family: "Microsoft JhengHei", sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }
+        h1 { color: #2c3e50; font-size: 2.2rem; margin-bottom: 30px; text-align: center; padding-bottom: 15px; border-bottom: 3px solid #3498db; }
+        h2 { color: #34495e; font-size: 1.5rem; margin: 25px 0 15px 0; padding: 10px 0; border-bottom: 2px solid #ecf0f1; }
+        h3 { color: #7f8c8d; font-size: 1.2rem; margin: 20px 0 10px 0; }
+        ul, ol { margin: 15px 0; padding-left: 30px; }
+        li { margin: 8px 0; position: relative; }
+        .copy-btn { background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 10px; }
+        .navigation { position: sticky; top: 0; background: #2c5aa0; padding: 15px 0; margin-bottom: 20px; border-bottom: 1px solid #1e3d6f; z-index: 100; }
+        .nav-menu { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }
+        .nav-link { color: white; text-decoration: none; padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.1); transition: background-color 0.3s ease; }
+        .nav-link:hover { background: rgba(255, 255, 255, 0.2); color: white; }
+        .highlight { background-color: #ffeb3b; padding: 2px 4px; border-radius: 3px; font-weight: bold; }
+        strong { color: #007bff; text-decoration: underline; font-weight: bold; }
+        a { color: #007bff; text-decoration: none; border-bottom: 1px solid #007bff; transition: all 0.3s ease; }
+        a:hover { background-color: #007bff; color: white; padding: 2px 4px; border-radius: 3px; }
+        .youtube-embed { margin: 20px 0; text-align: center; }
+        .youtube-embed iframe { max-width: 100%; height: auto; aspect-ratio: 16/9; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .image-embed { margin: 20px 0; text-align: center; }
+        .image-embed img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        .code-block { margin: 20px 0; border-radius: 8px; background: #f8f9fa; border: 1px solid #e9ecef; overflow: hidden; }
+        .code-header { background: #e9ecef; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dee2e6; }
+        .language-label { font-size: 12px; color: #6c757d; font-weight: 600; text-transform: uppercase; }
+        .code-copy-btn { background: #007bff; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }
+        .code-copy-btn:hover { background: #0056b3; }
+        .code-block pre { margin: 0; padding: 15px; background: white; overflow-x: auto; }
+        .code-block code { font-family: "Courier New", Consolas, monospace; font-size: 14px; line-height: 1.5; color: #333; white-space: pre-wrap; }
+    </style>
+</head>
+<body>
+    <div class="navigation"><div class="nav-menu"><a href="#一、基本操作篇" class="nav-link">一、基本操作篇</a></div></div><h1>【2025麻瓜AI課程】首頁</h1>
+
+<h2 id="一、基本操作篇">一、基本操作篇</h2>
+<ul><li><a href="https://beartolove.github.io/mypages/0chatgpt_login.htm" target="_blank" rel="noopener noreferrer">如何註冊免費ChatGPT</a></li></ul>
+    <script>
+        function copyText(text) {
+            var textarea = document.createElement("textarea");
+            textarea.innerHTML = text;
+            var decodedText = textarea.value;
+            navigator.clipboard.writeText(decodedText).then(function() {
+                alert("已複製：" + decodedText);
+            }).catch(function(err) {
+                var textArea = document.createElement("textarea");
+                textArea.value = decodedText;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+                alert("已複製：" + decodedText);
+            });
+        }
+        
+        function copyCodeBlock(button) {
+            var code = button.getAttribute("data-code");
+            var textarea = document.createElement("textarea");
+            textarea.innerHTML = code;
+            var decodedCode = textarea.value;
+            navigator.clipboard.writeText(decodedCode).then(function() {
+                alert("程式碼已複製！");
+            }).catch(function(err) {
+                var textArea = document.createElement("textarea");
+                textArea.value = decodedCode;
+                document.body.appendChild(textArea);
+                textArea.select();
+                document.execCommand("copy");
+                document.body.removeChild(textArea);
+                alert("程式碼已複製！");
+            });
+        }
+        
+        document.addEventListener("click", function(e) {
+            if (e.target.matches(".nav-link")) {
+                e.preventDefault();
+                const targetId = e.target.getAttribute("href").substring(1);
+                const targetElement = document.getElementById(targetId);
+                if (targetElement) {
+                    targetElement.scrollIntoView({ behavior: "smooth" });
+                }
+            }
+        });
+    </script>
+</body>
+</html>
