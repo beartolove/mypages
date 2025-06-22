@@ -179,53 +179,181 @@
             position: relative;
         }
 
-        .copy-btn {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 4px 8px;
-            border-radius: 4px;
-            font-size: 12px;
-            cursor: pointer;
-            margin-left: 10px;
-            opacity: 0.7;
-            transition: opacity 0.3s ease;
-        }
-
-        .copy-btn:hover {
-            opacity: 1;
-        }
-
-        .navigation {
-            position: sticky;
-            top: 0;
+        .hamburger-menu {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
             background: #2c5aa0;
-            padding: 15px 0;
+            width: 50px;
+            height: 50px;
+            border-radius: 10px;
+            cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            gap: 5px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu:hover {
+            background: #3a6bb0;
+            transform: translateY(-2px);
+        }
+
+        .hamburger-line {
+            width: 25px;
+            height: 3px;
+            background: white;
+            border-radius: 2px;
+            transition: all 0.3s ease;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(1) {
+            transform: rotate(45deg) translate(6px, 6px);
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger-menu.active .hamburger-line:nth-child(3) {
+            transform: rotate(-45deg) translate(6px, -6px);
+        }
+
+        .navigation-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 998;
+            opacity: 0;
+            visibility: hidden;
+            transition: all 0.3s ease;
+        }
+
+        .navigation-overlay.active {
+            opacity: 1;
+            visibility: visible;
+        }
+
+        .navigation-panel {
+            position: fixed;
+            top: 0;
+            left: -100%;
+            width: 350px;
+            height: 100%;
+            background: #2c5aa0;
+            z-index: 999;
+            transition: left 0.3s ease;
+            padding: 80px 20px 20px 20px;
+            box-shadow: 2px 0 10px rgba(0,0,0,0.2);
+            overflow-y: auto;
+        }
+
+        .navigation-panel.active {
+            left: 0;
+        }
+
+        /* 確保在小螢幕上選單完全隱藏 */
+        @media (max-width: 768px) {
+            .navigation-panel {
+                width: 280px;
+                left: -100%;
+            }
+            
+            .navigation-panel.active {
+                left: 0;
+            }
+        }
+
+        .nav-header {
+            color: white;
+            font-size: 1.2rem;
+            font-weight: bold;
             margin-bottom: 20px;
-            border-bottom: 1px solid #1e3d6f;
-            z-index: 100;
+            padding-bottom: 10px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
         }
 
         .nav-menu {
             display: flex;
-            flex-wrap: wrap;
-            gap: 15px;
-            justify-content: center;
+            flex-direction: column;
+            gap: 10px;
+            margin-bottom: 30px;
         }
 
         .nav-link {
             color: white;
             text-decoration: none;
-            padding: 8px 16px;
-            border-radius: 20px;
-            background: rgba(255, 255, 255, 0.1);
-            transition: background-color 0.3s ease;
-            font-size: 14px;
+            padding: 15px 20px;
+            border-radius: 8px;
+            background: transparent;
+            transition: all 0.3s ease;
+            font-size: 16px;
+            font-weight: 500;
+            border: 1px solid transparent;
         }
 
         .nav-link:hover {
+            color: #ffeb3b;
+            background: rgba(255, 235, 59, 0.1);
+            border: 1px solid rgba(255, 235, 59, 0.3);
+        }
+
+        .font-controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            align-items: center;
+            padding: 20px;
+            background: rgba(255, 255, 255, 0.1);
+            border-radius: 10px;
+        }
+
+        .font-controls-title {
+            color: white;
+            font-size: 1rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+
+        .font-controls-buttons {
+            display: flex;
+            gap: 10px;
+            align-items: center;
+        }
+
+        .font-btn {
             background: rgba(255, 255, 255, 0.2);
             color: white;
+            border: none;
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            cursor: pointer;
+            font-size: 18px;
+            font-weight: bold;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .font-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+            transform: scale(1.1);
+        }
+
+        .font-size-label {
+            color: white;
+            font-size: 14px;
+            margin: 0 10px;
+            font-weight: bold;
         }
 
         .highlight {
@@ -352,6 +480,10 @@
             transform: translateX(0);
         }
 
+        #contentArea {
+            transition: font-size 0.3s ease;
+        }
+
         @media (max-width: 768px) {
             .content {
                 flex-direction: column;
@@ -364,6 +496,22 @@
             
             .header h1 {
                 font-size: 2rem;
+            }
+            
+            .navigation-panel {
+                width: 280px;
+                left: -100%;
+            }
+            
+            .navigation-panel.active {
+                left: 0;
+            }
+            
+            .hamburger-menu {
+                top: 15px;
+                left: 15px;
+                width: 45px;
+                height: 45px;
             }
         }
     </style>
@@ -398,23 +546,13 @@
 - 功能三：響應式設計
 - 功能四：**粗體文字**顯示為藍色底線粗體
 - 功能五：==黃底螢光筆==效果
-
-### 多媒體與程式內容
-- YouTube影片：![影片說明](https://www.youtube.com/watch?v=FohdoJkiufg)
-- 圖片範例：![周星馳](https://frankchiu.io/wp-content/uploads/2025/01/20240219064426_0.png)
-- 外部連結：[文章標題](https://frankchiu.io/ai-chatgpt-intro/)
-- 程式區塊範例：
-
-```code
-你是一個職場專家，專門作為新進同仁的導師
-當使用者跟你詢問問題時
-你會用任務分析與拆解、工作流程最佳化等角度回答
-```
+- 功能六：字體大小調整功能
 
 ### 步驟說明
 1. 輸入Markdown內容
 2. 點擊轉換按鈕
-3. 檢視生成的HTML"></textarea>
+3. 檢視生成的HTML
+4. 使用上方的 + - 按鈕調整字體大小"></textarea>
                 
                 <div class="button-group">
                     <button class="btn btn-primary" onclick="convertMarkdown()">
@@ -453,72 +591,70 @@
     </div>
 
     <script>
-        let generatedHTML = '';
-        let h2Sections = [];
+        // 全域變數
+        var generatedHTML = '';
+        var h2Sections = [];
+        var currentFontScale = 1.0;
+        var minFontScale = 0.5;
+        var maxFontScale = 2.0;
+        var fontStep = 0.1;
 
+        // 主要轉換函數
         function convertMarkdown() {
-            const markdown = document.getElementById('markdownInput').value;
+            var markdown = document.getElementById('markdownInput').value;
             if (!markdown.trim()) {
                 alert('請先輸入Markdown內容！');
                 return;
             }
-
-            const html = markdownToHTML(markdown);
+            var html = markdownToHTML(markdown);
             generatedHTML = html;
             document.getElementById('htmlOutput').innerHTML = html;
         }
 
+        // Markdown轉HTML函數
         function markdownToHTML(markdown) {
-            let html = markdown;
+            var html = markdown;
             h2Sections = [];
-            let codeBlocks = [];
-            let codeBlockIndex = 0;
+            var codeBlocks = [];
+            var codeBlockIndex = 0;
 
-            // 第一步：先提取並暫存所有程式區塊，避免被其他轉換影響
+            // 提取程式區塊
             html = html.replace(/```(\w*)\n([\s\S]*?)\n```/g, function(match, language, code) {
-                const cleanCode = code.trim();
-                const languageLabel = language || 'code';
-                const placeholder = '___CODE_BLOCK_' + codeBlockIndex + '___';
-                
-                // 保存原始程式碼到陣列
+                var cleanCode = code.trim();
+                var languageLabel = language || 'code';
+                var placeholder = '___CODE_BLOCK_' + codeBlockIndex + '___';
                 codeBlocks[codeBlockIndex] = {
                     originalCode: cleanCode,
                     language: languageLabel
                 };
-                
                 codeBlockIndex++;
                 return placeholder;
             });
 
-            // 轉換YouTube內嵌影片
+            // 轉換YouTube影片
             html = html.replace(/!\[(.*?)\]\(https:\/\/www\.youtube\.com\/watch\?v=([a-zA-Z0-9_-]+)\)/g, function(match, altText, videoId) {
-                return '<div class="youtube-embed">' +
-                       '<iframe width="560" height="315" src="https://www.youtube.com/embed/' + videoId + '" ' +
-                       'title="' + altText + '" frameborder="0" allowfullscreen></iframe>' +
-                       '</div>';
+                return '<div class="youtube-embed"><iframe width="560" height="315" src="https://www.youtube.com/embed/' + videoId + '" title="' + altText + '" frameborder="0" allowfullscreen></iframe></div>';
             });
 
-            // 轉換一般圖片
+            // 轉換圖片
             html = html.replace(/!\[(.*?)\]\((https?:\/\/[^\)]+\.(png|jpg|jpeg|gif|webp|svg))\)/gi, function(match, altText, imageUrl) {
-                return '<div class="image-embed">' +
-                       '<img src="' + imageUrl + '" alt="' + altText + '" />' +
-                       '</div>';
+                return '<div class="image-embed"><img src="' + imageUrl + '" alt="' + altText + '" /></div>';
             });
 
-            // 轉換超連結
+            // 轉換連結
             html = html.replace(/\[([^\]]+)\]\((https?:\/\/[^\)]+)\)/g, function(match, text, url) {
                 return '<a href="' + url + '" target="_blank" rel="noopener noreferrer">' + text + '</a>';
             });
 
-            // 轉換黃底螢光筆效果
+            // 轉換螢光筆
             html = html.replace(/==([^=]+)==/g, '<span class="highlight">$1</span>');
 
             // 轉換粗體
             html = html.replace(/\*\*([^*]+)\*\*/g, '<strong>$1</strong>');
 
-            // 提取H2標題用於導航
+            // 轉換H2標題
             html = html.replace(/^## (.+)$/gm, function(match, title) {
-                const id = title.replace(/\s+/g, '-').toLowerCase();
+                var id = title.replace(/\s+/g, '-').toLowerCase();
                 h2Sections.push({ title: title, id: id });
                 return '<h2 id="' + id + '">' + title + '</h2>';
             });
@@ -529,46 +665,26 @@
             // 轉換H3
             html = html.replace(/^### (.+)$/gm, '<h3>$1</h3>');
 
-            // 轉換有序清單
-            html = html.replace(/^\d+\.\s(.+)$/gm, function(match, item) {
-                // 所有清單項目都不添加複製按鈕
-                return '<li>' + item + '</li>';
-            });
-            
-            // 轉換無序清單
-            html = html.replace(/^[-*]\s(.+)$/gm, function(match, item) {
-                // 所有清單項目都不添加複製按鈕
-                return '<li>' + item + '</li>';
-            });
+            // 轉換清單
+            html = html.replace(/^\d+\.\s(.+)$/gm, '<li>$1</li>');
+            html = html.replace(/^[-*]\s(.+)$/gm, '<li>$1</li>');
 
-            // 包裝清單項目
+            // 包裝清單
             html = html.replace(/(<li>.*?<\/li>\s*)+/g, function(match) {
-                if (match.includes('1.')) {
-                    return '<ol>' + match + '</ol>';
-                } else {
-                    return '<ul>' + match + '</ul>';
-                }
+                return '<ul>' + match + '</ul>';
             });
 
             // 轉換段落
-            const lines = html.split('\n');
-            let result = [];
-            let inList = false;
+            var lines = html.split('\n');
+            var result = [];
             
-            for (let i = 0; i < lines.length; i++) {
-                const line = lines[i].trim();
-                
+            for (var i = 0; i < lines.length; i++) {
+                var line = lines[i].trim();
                 if (line === '') {
-                    if (!inList) {
-                        result.push('');
-                    }
-                } else if (line.startsWith('<h') || line.startsWith('<ul>') || line.startsWith('<ol>') || line.includes('___CODE_BLOCK_')) {
-                    inList = line.startsWith('<ul>') || line.startsWith('<ol>');
+                    result.push('');
+                } else if (line.startsWith('<h') || line.startsWith('<ul>') || line.includes('___CODE_BLOCK_') || line.startsWith('<div class=')) {
                     result.push(line);
-                } else if (line.startsWith('</ul>') || line.startsWith('</ol>')) {
-                    inList = false;
-                    result.push(line);
-                } else if (!line.startsWith('<') && !inList && !line.includes('___CODE_BLOCK_')) {
+                } else if (!line.startsWith('<')) {
                     result.push('<p>' + line + '</p>');
                 } else {
                     result.push(line);
@@ -577,215 +693,177 @@
 
             html = result.join('\n');
 
-            // 最後一步：還原程式區塊
-            for (let i = 0; i < codeBlocks.length; i++) {
-                const placeholder = '___CODE_BLOCK_' + i + '___';
-                const block = codeBlocks[i];
-                const codeBlockHtml = '<div class="code-block">' +
-                       '<div class="code-header">' +
-                       '<span class="language-label">' + block.language + '</span>' +
-                       '<button class="code-copy-btn" data-code="' + block.originalCode.replace(/"/g, '&quot;').replace(/'/g, '&#x27;') + '" onclick="copyCodeBlock(this)">複製代碼</button>' +
-                       '</div>' +
-                       '<pre><code>' + block.originalCode.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code></pre>' +
-                       '</div>';
-                
+            // 還原程式區塊
+            for (var i = 0; i < codeBlocks.length; i++) {
+                var placeholder = '___CODE_BLOCK_' + i + '___';
+                var block = codeBlocks[i];
+                var codeBlockHtml = '<div class="code-block"><div class="code-header"><span class="language-label">' + block.language + '</span><button class="code-copy-btn" data-code="' + block.originalCode.replace(/"/g, '&quot;') + '" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>' + block.originalCode.replace(/</g, '&lt;').replace(/>/g, '&gt;') + '</code></pre></div>';
                 html = html.replace(placeholder, codeBlockHtml);
             }
 
-            // 添加導航
+            // 添加導航（改為漢堡選單）
             if (h2Sections.length > 0) {
-                const navLinks = h2Sections.map(function(section) {
-                    return '<a href="#' + section.id + '" class="nav-link">' + section.title + '</a>';
+                var navLinks = h2Sections.map(function(section) {
+                    return '<a href="#' + section.id + '" class="nav-link" onclick="closeNavigation()">' + section.title + '</a>';
                 }).join('');
                 
-                const navigation = '<div class="navigation"><div class="nav-menu">' + navLinks + '</div></div>';
-                html = navigation + html;
+                var navigation = '<div class="hamburger-menu" onclick="toggleNavigation()">' +
+                    '<div class="hamburger-line"></div>' +
+                    '<div class="hamburger-line"></div>' +
+                    '<div class="hamburger-line"></div>' +
+                    '</div>' +
+                    '<div class="navigation-overlay" onclick="closeNavigation()"></div>' +
+                    '<div class="navigation-panel">' +
+                    '<div class="nav-header">頁面導航</div>' +
+                    '<div class="nav-menu">' + navLinks + '</div>' +
+                    '<div class="font-controls">' +
+                    '<div class="font-controls-title">字體大小</div>' +
+                    '<div class="font-controls-buttons">' +
+                    '<button class="font-btn" onclick="decreaseFontSize()" title="縮小字體">−</button>' +
+                    '<span class="font-size-label" id="fontSizeDisplay">100%</span>' +
+                    '<button class="font-btn" onclick="increaseFontSize()" title="放大字體">+</button>' +
+                    '</div>' +
+                    '</div>' +
+                    '</div>' +
+                    '<div id="contentArea">';
+                
+                html = navigation + html + '</div>';
             }
 
             return html;
         }
 
+        // 字體控制函數
+        function increaseFontSize() {
+            if (currentFontScale < maxFontScale) {
+                currentFontScale += fontStep;
+                applyFontSize();
+            }
+        }
+
+        function decreaseFontSize() {
+            if (currentFontScale > minFontScale) {
+                currentFontScale -= fontStep;
+                applyFontSize();
+            }
+        }
+
+        function applyFontSize() {
+            var contentArea = document.getElementById('contentArea');
+            if (contentArea) {
+                contentArea.style.fontSize = (currentFontScale * 100) + '%';
+                var fontSizeDisplay = document.getElementById('fontSizeDisplay');
+                if (fontSizeDisplay) {
+                    fontSizeDisplay.textContent = Math.round(currentFontScale * 100) + '%';
+                }
+            }
+        }
+
+        // 複製程式碼
         function copyCodeBlock(button) {
-            const code = button.getAttribute('data-code');
-            // 解碼HTML實體，保持原始格式
-            const textarea = document.createElement('textarea');
+            var code = button.getAttribute('data-code');
+            var textarea = document.createElement('textarea');
             textarea.innerHTML = code;
-            const decodedCode = textarea.value;
+            var decodedCode = textarea.value;
             
-            navigator.clipboard.writeText(decodedCode).then(function() {
-                showCopyNotification();
-            }).catch(function(err) {
-                // 備用方案：使用傳統的複製方法
-                const textArea = document.createElement('textarea');
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(decodedCode).then(function() {
+                    showCopyNotification();
+                });
+            } else {
+                var textArea = document.createElement('textarea');
                 textArea.value = decodedCode;
                 document.body.appendChild(textArea);
                 textArea.select();
                 document.execCommand('copy');
                 document.body.removeChild(textArea);
                 showCopyNotification();
-            });
+            }
         }
 
-        function copyText(text) {
-            // 解碼HTML實體
-            const textarea = document.createElement('textarea');
-            textarea.innerHTML = text;
-            const decodedText = textarea.value;
-            
-            navigator.clipboard.writeText(decodedText).then(function() {
-                showCopyNotification();
-            }).catch(function(err) {
-                // 備用方案：使用傳統的複製方法
-                const textArea = document.createElement('textarea');
-                textArea.value = decodedText;
-                document.body.appendChild(textArea);
-                textArea.select();
-                document.execCommand('copy');
-                document.body.removeChild(textArea);
-                showCopyNotification();
-            });
-        }
-
+        // 複製HTML
         function copyHTML() {
             if (!generatedHTML) {
                 alert('請先轉換Markdown內容！');
                 return;
             }
-
-            const fullHTML = generateFullHTML();
-            navigator.clipboard.writeText(fullHTML).then(function() {
-                showCopyNotification();
-            });
+            var fullHTML = generateFullHTML();
+            if (navigator.clipboard) {
+                navigator.clipboard.writeText(fullHTML).then(function() {
+                    showCopyNotification();
+                });
+            }
         }
 
+        // 下載HTML
         function downloadHTML() {
             if (!generatedHTML) {
                 alert('請先轉換Markdown內容！');
                 return;
             }
-
-            const fullHTML = generateFullHTML();
-            const blob = new Blob([fullHTML], { type: 'text/html' });
-            const url = URL.createObjectURL(blob);
-            const a = document.createElement('a');
+            var fullHTML = generateFullHTML();
+            var blob = new Blob([fullHTML], { type: 'text/html' });
+            var url = URL.createObjectURL(blob);
+            var a = document.createElement('a');
             a.href = url;
             a.download = 'generated-page.html';
             a.click();
             URL.revokeObjectURL(url);
         }
 
+        // 生成完整HTML
         function generateFullHTML() {
-            return '<!DOCTYPE html>\n' +
-                '<html lang="zh-TW">\n' +
-                '<head>\n' +
-                '    <meta charset="UTF-8">\n' +
-                '    <meta name="viewport" content="width=device-width, initial-scale=1.0">\n' +
-                '    <title>Generated HTML</title>\n' +
-                '    <style>\n' +
-                '        body { font-family: "Microsoft JhengHei", sans-serif; line-height: 1.6; max-width: 800px; margin: 0 auto; padding: 20px; }\n' +
-                '        h1 { color: #2c3e50; font-size: 2.2rem; margin-bottom: 30px; text-align: center; padding-bottom: 15px; border-bottom: 3px solid #3498db; }\n' +
-                '        h2 { color: #34495e; font-size: 1.5rem; margin: 25px 0 15px 0; padding: 10px 0; border-bottom: 2px solid #ecf0f1; }\n' +
-                '        h3 { color: #7f8c8d; font-size: 1.2rem; margin: 20px 0 10px 0; }\n' +
-                '        ul, ol { margin: 15px 0; padding-left: 30px; }\n' +
-                '        li { margin: 8px 0; position: relative; }\n' +
-                '        .copy-btn { background: #28a745; color: white; border: none; padding: 4px 8px; border-radius: 4px; font-size: 12px; cursor: pointer; margin-left: 10px; }\n' +
-                '        .navigation { position: sticky; top: 0; background: #2c5aa0; padding: 15px 0; margin-bottom: 20px; border-bottom: 1px solid #1e3d6f; z-index: 100; }\n' +
-                '        .nav-menu { display: flex; flex-wrap: wrap; gap: 15px; justify-content: center; }\n' +
-                '        .nav-link { color: white; text-decoration: none; padding: 8px 16px; border-radius: 20px; background: rgba(255, 255, 255, 0.1); transition: background-color 0.3s ease; }\n' +
-                '        .nav-link:hover { background: rgba(255, 255, 255, 0.2); color: white; }\n' +
-                '        .highlight { background-color: #ffeb3b; padding: 2px 4px; border-radius: 3px; font-weight: bold; }\n' +
-                '        strong { color: #007bff; text-decoration: underline; font-weight: bold; }\n' +
-                '        a { color: #007bff; text-decoration: none; border-bottom: 1px solid #007bff; transition: all 0.3s ease; }\n' +
-                '        a:hover { background-color: #007bff; color: white; padding: 2px 4px; border-radius: 3px; }\n' +
-                '        .youtube-embed { margin: 20px 0; text-align: center; }\n' +
-                '        .youtube-embed iframe { max-width: 100%; height: auto; aspect-ratio: 16/9; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }\n' +
-                '        .image-embed { margin: 20px 0; text-align: center; }\n' +
-                '        .image-embed img { max-width: 100%; height: auto; border-radius: 8px; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }\n' +
-                '        .code-block { margin: 20px 0; border-radius: 8px; background: #f8f9fa; border: 1px solid #e9ecef; overflow: hidden; }\n' +
-                '        .code-header { background: #e9ecef; padding: 10px 15px; display: flex; justify-content: space-between; align-items: center; border-bottom: 1px solid #dee2e6; }\n' +
-                '        .language-label { font-size: 12px; color: #6c757d; font-weight: 600; text-transform: uppercase; }\n' +
-                '        .code-copy-btn { background: #007bff; color: white; border: none; padding: 5px 12px; border-radius: 4px; font-size: 12px; cursor: pointer; }\n' +
-                '        .code-copy-btn:hover { background: #0056b3; }\n' +
-                '        .code-block pre { margin: 0; padding: 15px; background: white; overflow-x: auto; }\n' +
-                '        .code-block code { font-family: "Courier New", Consolas, monospace; font-size: 14px; line-height: 1.5; color: #333; white-space: pre-wrap; }\n' +
-                '    </style>\n' +
-                '</head>\n' +
-                '<body>\n' +
-                '    ' + generatedHTML + '\n' +
-                '    <script>\n' +
-                '        function copyText(text) {\n' +
-                '            var textarea = document.createElement("textarea");\n' +
-                '            textarea.innerHTML = text;\n' +
-                '            var decodedText = textarea.value;\n' +
-                '            navigator.clipboard.writeText(decodedText).then(function() {\n' +
-                '                alert("已複製：" + decodedText);\n' +
-                '            }).catch(function(err) {\n' +
-                '                var textArea = document.createElement("textarea");\n' +
-                '                textArea.value = decodedText;\n' +
-                '                document.body.appendChild(textArea);\n' +
-                '                textArea.select();\n' +
-                '                document.execCommand("copy");\n' +
-                '                document.body.removeChild(textArea);\n' +
-                '                alert("已複製：" + decodedText);\n' +
-                '            });\n' +
-                '        }\n' +
-                '        \n' +
-                '        function copyCodeBlock(button) {\n' +
-                '            var code = button.getAttribute("data-code");\n' +
-                '            var textarea = document.createElement("textarea");\n' +
-                '            textarea.innerHTML = code;\n' +
-                '            var decodedCode = textarea.value;\n' +
-                '            navigator.clipboard.writeText(decodedCode).then(function() {\n' +
-                '                alert("程式碼已複製！");\n' +
-                '            }).catch(function(err) {\n' +
-                '                var textArea = document.createElement("textarea");\n' +
-                '                textArea.value = decodedCode;\n' +
-                '                document.body.appendChild(textArea);\n' +
-                '                textArea.select();\n' +
-                '                document.execCommand("copy");\n' +
-                '                document.body.removeChild(textArea);\n' +
-                '                alert("程式碼已複製！");\n' +
-                '            });\n' +
-                '        }\n' +
-                '        \n' +
-                '        document.addEventListener("click", function(e) {\n' +
-                '            if (e.target.matches(".nav-link")) {\n' +
-                '                e.preventDefault();\n' +
-                '                const targetId = e.target.getAttribute("href").substring(1);\n' +
-                '                const targetElement = document.getElementById(targetId);\n' +
-                '                if (targetElement) {\n' +
-                '                    targetElement.scrollIntoView({ behavior: "smooth" });\n' +
-                '                }\n' +
-                '            }\n' +
-                '        });\n' +
-                '    <' + '/script>\n' +
-                '</body>\n' +
-                '</html>';
+            return '<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>Generated HTML</title><style>body{font-family:Microsoft JhengHei,sans-serif;line-height:1.6;max-width:800px;margin:0 auto;padding:20px}h1{color:#2c3e50;font-size:2.2rem;margin-bottom:30px;text-align:center;padding-bottom:15px;border-bottom:3px solid #3498db}h2{color:#34495e;font-size:1.5rem;margin:25px 0 15px 0;padding:10px 0;border-bottom:2px solid #ecf0f1}h3{color:#7f8c8d;font-size:1.2rem;margin:20px 0 10px 0}ul,ol{margin:15px 0;padding-left:30px}li{margin:8px 0}.hamburger-menu{position:fixed;top:20px;left:20px;z-index:1000;background:#2c5aa0;width:50px;height:50px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:all 0.3s ease}.hamburger-menu:hover{background:#3a6bb0;transform:translateY(-2px)}.hamburger-line{width:25px;height:3px;background:white;border-radius:2px;transition:all 0.3s ease}.hamburger-menu.active .hamburger-line:nth-child(1){transform:rotate(45deg) translate(6px,6px)}.hamburger-menu.active .hamburger-line:nth-child(2){opacity:0}.hamburger-menu.active .hamburger-line:nth-child(3){transform:rotate(-45deg) translate(6px,-6px)}.navigation-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease}.navigation-overlay.active{opacity:1;visibility:visible}.navigation-panel{position:fixed;top:0;left:-100%;width:350px;height:100%;background:#2c5aa0;z-index:999;transition:left 0.3s ease;padding:80px 20px 20px 20px;box-shadow:2px 0 10px rgba(0,0,0,0.2);overflow-y:auto}.navigation-panel.active{left:0}.nav-header{color:white;font-size:1.2rem;font-weight:bold;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.2)}.nav-menu{display:flex;flex-direction:column;gap:10px;margin-bottom:30px}.nav-link{color:white;text-decoration:none;padding:15px 20px;border-radius:8px;background:transparent;transition:all 0.3s ease;font-size:16px;font-weight:500;border:1px solid transparent}.nav-link:hover{color:#ffeb3b;background:rgba(255,235,59,0.1);border:1px solid rgba(255,235,59,0.3)}.font-controls{display:flex;flex-direction:column;gap:15px;align-items:center;padding:20px;background:rgba(255,255,255,0.1);border-radius:10px}.font-controls-title{color:white;font-size:1rem;font-weight:bold;margin-bottom:10px}.font-controls-buttons{display:flex;gap:10px;align-items:center}.font-btn{background:rgba(255,255,255,0.2);color:white;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px;font-weight:bold;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center}.font-btn:hover{background:rgba(255,255,255,0.3);transform:scale(1.1)}.font-size-label{color:white;font-size:14px;margin:0 10px;font-weight:bold}.highlight{background-color:#ffeb3b;padding:2px 4px;border-radius:3px;font-weight:bold}strong{color:#007bff;text-decoration:underline;font-weight:bold}a{color:#007bff;text-decoration:none;border-bottom:1px solid #007bff;transition:all 0.3s ease}a:hover{background-color:#007bff;color:white;padding:2px 4px;border-radius:3px}.youtube-embed{margin:20px 0;text-align:center}.youtube-embed iframe{max-width:100%;height:auto;aspect-ratio:16/9;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.image-embed{margin:20px 0;text-align:center}.image-embed img{max-width:100%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.code-block{margin:20px 0;border-radius:8px;background:#f8f9fa;border:1px solid #e9ecef;overflow:hidden}.code-header{background:#e9ecef;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #dee2e6}.language-label{font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase}.code-copy-btn{background:#007bff;color:white;border:none;padding:5px 12px;border-radius:4px;font-size:12px;cursor:pointer}.code-copy-btn:hover{background:#0056b3}.code-block pre{margin:0;padding:15px;background:white;overflow-x:auto}.code-block code{font-family:Courier New,Consolas,monospace;font-size:14px;line-height:1.5;color:#333;white-space:pre-wrap}#contentArea{transition:font-size 0.3s ease}@media (max-width:768px){.navigation-panel{width:280px;left:-100%}.navigation-panel.active{left:0}.hamburger-menu{top:15px;left:15px;width:45px;height:45px}}</style></head><body>' + generatedHTML + '<script>var currentFontScale=1,minFontScale=.5,maxFontScale=2,fontStep=.1;function toggleNavigation(){var e=document.querySelector(".hamburger-menu"),t=document.querySelector(".navigation-overlay"),n=document.querySelector(".navigation-panel");e.classList.toggle("active"),t.classList.toggle("active"),n.classList.toggle("active")}function closeNavigation(){var e=document.querySelector(".hamburger-menu"),t=document.querySelector(".navigation-overlay"),n=document.querySelector(".navigation-panel");e.classList.remove("active"),t.classList.remove("active"),n.classList.remove("active")}function increaseFontSize(){currentFontScale<maxFontScale&&(currentFontScale+=fontStep,applyFontSize())}function decreaseFontSize(){currentFontScale>minFontScale&&(currentFontScale-=fontStep,applyFontSize())}function applyFontSize(){var e=document.getElementById("contentArea");if(e){e.style.fontSize=100*currentFontScale+"%";var t=document.getElementById("fontSizeDisplay");t&&(t.textContent=Math.round(100*currentFontScale)+"%")}}function copyCodeBlock(e){var t=e.getAttribute("data-code"),n=document.createElement("textarea");n.innerHTML=t;var o=n.value;navigator.clipboard?navigator.clipboard.writeText(o).then(function(){alert("程式碼已複製！")}):(n=document.createElement("textarea")).value=o,document.body.appendChild(n),n.select(),document.execCommand("copy"),document.body.removeChild(n),alert("程式碼已複製！")}document.addEventListener("click",function(e){if(e.target.matches(".nav-link")){e.preventDefault();var t=e.target.getAttribute("href").substring(1),n=document.getElementById(t);n&&(n.scrollIntoView({behavior:"smooth"}),closeNavigation())}});<\/script></body></html>';
         }
 
+        // 清除所有內容
         function clearAll() {
             document.getElementById('markdownInput').value = '';
             document.getElementById('htmlOutput').innerHTML = '<p style="color: #666; text-align: center; margin-top: 50px;">在左側輸入Markdown內容，然後點擊「轉換為HTML」按鈕來預覽結果。</p>';
             generatedHTML = '';
             h2Sections = [];
+            currentFontScale = 1.0;
         }
 
+        // 顯示複製通知
         function showCopyNotification() {
-            const notification = document.getElementById('copyNotification');
+            var notification = document.getElementById('copyNotification');
             notification.classList.add('show');
             setTimeout(function() {
                 notification.classList.remove('show');
             }, 2000);
         }
 
-        // 平滑捲動效果
+        // 導航選單控制
+        function toggleNavigation() {
+            var hamburger = document.querySelector('.hamburger-menu');
+            var overlay = document.querySelector('.navigation-overlay');
+            var panel = document.querySelector('.navigation-panel');
+            
+            hamburger.classList.toggle('active');
+            overlay.classList.toggle('active');
+            panel.classList.toggle('active');
+        }
+
+        function closeNavigation() {
+            var hamburger = document.querySelector('.hamburger-menu');
+            var overlay = document.querySelector('.navigation-overlay');
+            var panel = document.querySelector('.navigation-panel');
+            
+            hamburger.classList.remove('active');
+            overlay.classList.remove('active');
+            panel.classList.remove('active');
+        }
+
+        // 導航點擊事件
         document.addEventListener('click', function(e) {
             if (e.target.matches('.nav-link')) {
                 e.preventDefault();
-                const targetId = e.target.getAttribute('href').substring(1);
-                const targetElement = document.getElementById(targetId);
+                var targetId = e.target.getAttribute('href').substring(1);
+                var targetElement = document.getElementById(targetId);
                 if (targetElement) {
                     targetElement.scrollIntoView({ behavior: 'smooth' });
+                    closeNavigation(); // 點擊後關閉選單
                 }
             }
         });
