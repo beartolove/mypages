@@ -1,0 +1,359 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"> <!-- 添加視口設置，用於RWD -->
+    <title>2023年全球與台灣主要港口貨櫃吞吐量洞見</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            font-family: "Helvetica Neue", Arial, sans-serif;
+            background-color: #f8f8f8; /* 淺色背景 */
+            margin: 0; /* 移除預設邊距 */
+            color: #333;
+            line-height: 1.6;
+            padding: 20px; /* 整體內邊距 */
+        }
+
+        .container {
+            display: grid;
+            /* 預設在大螢幕上顯示為左右兩欄 */
+            /* 左邊佔1份，右邊佔2份 */
+            grid-template-columns: 1fr 2fr;
+            gap: 30px; /* 左右欄間距 */
+            max-width: 1200px; /* 內容最大寬度 */
+            margin: 0 auto; /* 內容置中 */
+        }
+
+        /* 小螢幕時 (例如手機) 改為上下堆疊 */
+        @media (max-width: 768px) {
+            .container {
+                grid-template-columns: 1fr; /* 只佔1份，即單欄 */
+                gap: 20px; /* 上下間距 */
+            }
+            /* 小螢幕下左邊面板可能需要一些底部間距 */
+             .left-panel {
+                margin-bottom: 0; /* 重置大螢幕設置 */
+             }
+        }
+
+        .left-panel, .right-panel {
+            background-color: white; /* 面板白色背景 */
+            padding: 25px; /* 面板內邊距 */
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.1);
+            overflow: hidden; /* 防止內容溢出面板 */
+        }
+
+        .left-panel {
+             /* 在大螢幕上，讓左邊面板高度與右邊圖表大致相當，或設定最大高度 */
+             /* 確保在高度有限時可以捲動 */
+            display: flex; /* 使用flexbox來控制內部元素高度 */
+            flex-direction: column; /* 垂直排列 */
+        }
+
+        .left-panel h2 {
+            color: #2c3e50; /* 深灰色標題 */
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: center;
+        }
+
+        .insights-content {
+            flex-grow: 1; /* 讓內容區域佔據剩餘空間 */
+            overflow-y: auto; /* 內容過長時顯示垂直捲軸 */
+            max-height: calc(100vh - 150px); /* 設定一個最大高度，例如視窗高度減去一些固定偏移 */
+            padding-right: 15px; /* 為捲軸留出一些空間，避免文字緊貼邊緣 */
+             /* 自定義捲軸樣式 (可選) */
+            scrollbar-width: thin;
+            scrollbar-color: #ccc #f1f1f1;
+        }
+
+        .insights-content::-webkit-scrollbar {
+            width: 8px;
+        }
+
+        .insights-content::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 10px;
+        }
+
+        .insights-content::-webkit-scrollbar-thumb {
+            background: #ccc;
+            border-radius: 10px;
+        }
+
+        .insights-content::-webkit-scrollbar-thumb:hover {
+            background: #999;
+        }
+
+
+        .insights-content p {
+            text-align: justify; /* 文字左右對齊 */
+            margin-bottom: 1em; /* 段落間距 */
+            font-size: 1em;
+            line-height: 1.8; /* 行高 */
+            color: #555;
+        }
+
+        .insights-content strong {
+             color: #2c3e50; /* 重點文字顏色 */
+        }
+
+        .right-panel h1 {
+             text-align: center;
+            color: #2c3e50; /* 深灰色標題 */
+            margin-top: 0;
+            margin-bottom: 10px;
+            font-size: 1.8em;
+        }
+        .right-panel p {
+            text-align: center;
+            font-size: 0.9em;
+            color: #555;
+            margin-top: 5px;
+            margin-bottom: 20px;
+        }
+
+        .chart-container {
+            position: relative;
+            width: 100%; /* 讓圖表容器填滿右側面板 */
+            height: 55vh; /* 設定圖表高度，可依需求調整 */
+            /* 移除原本置中的 margin auto 和 max-width */
+             /* margin: 20px auto; */
+             /* max-width: 1000px; */
+
+            /* 圖表本身的背景和邊框已在 Chart.js container 中設定 */
+            background-color: none;
+            padding: 0;
+            box-shadow: none;
+        }
+
+        .chart-note {
+            text-align: center;
+            font-size: 0.8em;
+            color: #777;
+            margin-top: 15px;
+        }
+
+         /* 小螢幕下調整標題大小 */
+        @media (max-width: 768px) {
+            .right-panel h1 {
+                font-size: 1.5em;
+            }
+             .left-panel h2 {
+                font-size: 1.3em;
+             }
+             .insights-content {
+                 max-height: 30vh; /* 小螢幕下可以給個較小的最大高度 */
+             }
+             .chart-container {
+                 height: 45vh; /* 小螢幕下調整圖表高度 */
+             }
+        }
+
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="left-panel">
+            <h2>深度洞見：數據呈現的三個重點現象</h2>
+            <div class="insights-content">
+                <p>
+                    這份2023年全球及台灣主要港口貨櫃吞吐量數據，不僅呈現了各港口的繁忙程度，更蘊含了當前全球貿易格局與區域經濟動態的重要洞見。透過深入分析這些數字，我們可以歸納出以下三個重點現象：
+                </p>
+                <p>
+                    <strong>現象一：亞洲港口，特別是中國港口的絕對主導地位與高度集中。</strong>
+                    從排名前十的港口中，可以清楚看到中國港口佔據了其中七個席位，且前五名中有四個來自中國。上海港以接近5000萬TEU的吞吐量遙遙領先，其規模幾乎是排名第十的香港港的三倍。這強烈顯示了全球製造業和貿易流動對亞洲的極度依賴，尤其是以中國為核心的生產和出口活動。這種高度集中性，雖然體現了效率和規模經濟，但也意味著全球供應鏈在面對區域性風險（如疫情、地緣政治緊張）時可能較為脆弱。數據中的巨大差距，突顯了頭部港口在世界海運網絡中的關鍵節點作用。
+                </p>
+                <p>
+                    <strong>現象二：轉運樞紐港的重要性及其競爭態勢。</strong>
+                    新加坡港和阿拉伯聯合大公國的傑貝阿里港（杜拜）作為非中國港口躋身前十，尤其新加坡港位列第二，這突顯了它們作為國際轉運樞紐的關鍵角色。這些港口本身不一定依賴巨大的腹地產業，而是憑藉其優越的地理位置、高效的作業能力和完善的物流網絡，成為連接全球主要航線的中轉站。它們的蓬勃發展反映了跨區域貿易和航線網絡的複雜性，以及爭奪轉運業務帶來的激烈競爭。這類樞紐港的表現，往往是全球貿易活絡程度以及主要航線佈局的晴雨表。
+                </p>
+                 <p>
+                    <strong>現象三：台灣港口在全球格局中的特定位置與結構性挑戰。</strong>
+                    台灣港群總計吞吐量約1359萬TEU，其中高雄港約883萬TEU，排名約全球第18。基隆、台中、台北港則位列全球百名之後。這顯示台灣港口群整體規模相較於全球前十大港口有顯著差距，即使是最大的高雄港，其吞吐量也不及上海港的五分之一。這反映了台灣經濟體量和地理位置所決定的港口角色——作為重要的區域性港口，服務本地製造業的進出口需求，並在一定程度上參與區域內的轉運。然而，面對鄰近超大型港口（如上海、深圳、寧波、甚至新加坡）的競爭，台灣港口在維持和提升其在全球供應鏈中的連結性方面面臨結構性挑戰。數據提醒我們，台灣港口需在效率、自動化、特定航線連結或高價值貨物處理等方面持續投資和創新，以鞏固其在競爭激烈的東北亞-東南亞航線上的地位。
+                </p>
+                <p>
+                    總結來看，2023年的港口數據描繪了一幅全球貿易重心高度集中於亞洲的圖景，其中中國港口佔據壓倒性優勢。轉運樞紐港扮演著不可或缺的連接角色，而台灣港口則在這一龐大體系中扮演著重要的區域節點，同時也面臨著與超大型鄰居競爭的長期課題。這些數字不僅是貨物量的統計，更是全球經濟版圖變遷的縮影。
+                </p>
+            </div>
+        </div>
+        <div class="right-panel">
+            <h1>2023年全球與台灣主要港口貨櫃吞吐量及排名</h1>
+            <p>數據來源: 根據搜尋結果整理</p>
+            <div class="chart-container">
+                <canvas id="containerThroughputChart"></canvas>
+            </div>
+            <p class="chart-note">
+                註：圖表中包含搜尋結果中找到2023年具體吞吐量數據的港口。全球港口吞吐量單位為千TEU並轉換為萬TEU [9, 11, 13, 19, 21]。台灣港口吞吐量數字參考台灣港務公司資料 [5, 12]，該資料中台灣各港數字單位標示為萬TEU。不同資料來源在統計單位和方法上可能略有差異。排名主要參考Alphaliner及AJOT數據 [9, 11, 13, 19, 21]。數據點後的數字為搜尋結果編號，方便追溯。
+            </p>
+        </div>
+    </div>
+
+    <script>
+        // 整理後的港口數據 (單位: 千TEU 或 萬TEU，依據來源標示)
+        // 全球前10數據主要來自 Alphaliner/AJOT/Wikipedia (單位千TEU) [9, 11, 13, 19, 21]
+        // 台灣港口數據參考台灣港務公司 (單位萬TEU) [5, 12]
+        const portsDataRaw = [
+            { name: '上海港', throughput_k_teu: 49158, rank: 1 },
+            { name: '新加坡港', throughput_k_teu: 39013, rank: 2 },
+            { name: '寧波舟山港', throughput_k_teu: 35301, rank: 3 },
+            { name: '深圳港', throughput_k_teu: 29880, rank: 4 },
+            { name: '青島港', throughput_k_teu: 28582, rank: 5 },
+            { name: '廣州港', throughput_k_teu: 25410, rank: 6 },
+            { name: '釜山港', throughput_k_teu: 22750, rank: 7 },
+            { name: '天津港', throughput_k_teu: 22187, rank: 8 },
+            { name: '傑貝阿里港', throughput_k_teu: 14472, rank: 9 },
+            { name: '香港港', throughput_k_teu: 14342, rank: 10 },
+            { name: '高雄港', throughput_w_teu: 883.16, rank: 18 },
+            { name: '台北港', throughput_w_teu: 161.8, rank: 90 }, // 根據文件[12]標示單位萬TEU
+            { name: '台中港', throughput_w_teu: 158.6, rank: 89 }, // 根據文件[12]標示單位萬TEU
+            { name: '基隆港', throughput_w_teu: 64.4, rank: 92 }  // 根據文件[12]標示單位萬TEU
+        ];
+
+        // 統一將數據轉為萬TEU用於繪圖，並保留原始單位資訊用於Tooltip
+        const portsData = portsDataRaw.map(port => {
+            if (port.throughput_k_teu !== undefined) {
+                return {
+                    name: port.name,
+                    throughput_w_teu: port.throughput_k_teu / 10, // 千TEU 轉 萬TEU
+                    original_value: port.throughput_k_teu,
+                    original_unit: '千TEU',
+                    rank: port.rank
+                };
+            } else if (port.throughput_w_teu !== undefined) {
+                 return {
+                    name: port.name,
+                    throughput_w_teu: port.throughput_w_teu,
+                    original_value: port.throughput_w_teu,
+                    original_unit: '萬TEU',
+                    rank: port.rank
+                };
+            }
+            return null; // Should not happen with this data
+        }).filter(port => port !== null);
+
+        // 依照吞吐量排序 (由高到低)
+        portsData.sort((a, b) => b.throughput_w_teu - a.throughput_w_teu);
+
+        const chartLabels = portsData.map(port => port.name);
+        const chartData = portsData.map(port => parseFloat(port.throughput_w_teu.toFixed(2))); // 保留兩位小數繪製
+
+        const ctx = document.getElementById('containerThroughputChart').getContext('2d');
+
+        const containerThroughputChart = new Chart(ctx, {
+            type: 'bar',
+            data: {
+                labels: chartLabels,
+                datasets: [{
+                    label: '貨櫃吞吐量 (萬TEU)',
+                    data: chartData,
+                    backgroundColor: 'rgba(54, 162, 235, 0.7)', // 條圖顏色
+                    borderColor: 'rgba(54, 162, 235, 1)', // 條圖邊界顏色
+                    borderWidth: 1,
+                    hoverBackgroundColor: 'rgba(54, 162, 235, 0.9)', // 滑鼠移上時顏色變深
+                    hoverBorderColor: 'black', // 滑鼠移上時黑色邊框
+                    hoverBorderWidth: 3 // 滑鼠移上時邊框加粗
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    tooltip: {
+                        callbacks: {
+                            label: function(context) {
+                                const index = context.dataIndex;
+                                const port = portsData[index];
+                                const lines = [];
+                                lines.push(`港口: ${port.name}`);
+                                // Tooltip顯示原始單位和數值
+                                if (port.original_unit === '千TEU') {
+                                     lines.push(`數量: ${port.original_value.toLocaleString()} 千TEU (${port.throughput_w_teu.toFixed(1)} 萬TEU)`);
+                                } else { // original_unit === '萬TEU'
+                                     lines.push(`數量: ${port.original_value.toFixed(2)} 萬TEU (${(port.original_value * 10).toLocaleString()} 千TEU)`);
+                                }
+
+                                if (port.rank !== undefined) {
+                                    lines.push(`排名: ${port.rank}`);
+                                } else {
+                                     lines.push(`排名: 資料不明`);
+                                }
+                                return lines;
+                            }
+                        },
+                        titleFont: {
+                            size: 14,
+                            weight: 'bold'
+                        },
+                        bodyFont: {
+                            size: 12
+                        },
+                         padding: 10,
+                         boxPadding: 5,
+                         displayColors: false // 不顯示顏色方塊
+                    },
+                    legend: {
+                        display: true,
+                        position: 'top',
+                        labels: {
+                            color: '#333',
+                            font: {
+                                size: 12
+                            }
+                        }
+                    }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        title: {
+                            display: true,
+                            text: '貨櫃吞吐量 (萬TEU)',
+                            color: '#555',
+                             font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                         ticks: {
+                            color: '#555',
+                             font: {
+                                size: 10
+                            },
+                            callback: function(value, index, values) {
+                                // 格式化Y軸標籤，顯示整數或一位小數
+                                if (value >= 100) return value.toFixed(0);
+                                return value.toFixed(1);
+                            }
+                        }
+                    },
+                    x: {
+                         title: {
+                            display: false, // 港口名稱在標籤上，不需額外標題
+                            color: '#555',
+                             font: {
+                                size: 14,
+                                weight: 'bold'
+                            }
+                        },
+                        ticks: {
+                            color: '#555',
+                            maxRotation: 45,
+                            minRotation: 0,
+                             font: {
+                                size: 10
+                            }
+                        }
+                    }
+                },
+                 animation: {
+                    duration: 1500, // 動畫時間
+                    easing: 'easeInOutQuart' // 動畫效果
+                }
+            }
+        });
+    </script>
+</body>
+</html>
