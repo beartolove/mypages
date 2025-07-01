@@ -1,0 +1,509 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>台灣郵輪港口文化體驗之旅 - 8日緊湊行程</title>
+    <!-- Tailwind CSS CDN -->
+    <link href="https://cdn.jsdelivr.net/npm/tailwindcss@2.2.19/dist/tailwind.min.css" rel="stylesheet">
+    <!-- Chart.js CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.7.0/dist/chart.min.js"></script>
+    <style>
+        /* Optional: Smooth scrolling for navigation */
+        html {
+            scroll-behavior: smooth;
+        }
+        .timeline {
+            position: relative;
+            padding: 20px 0;
+        }
+        .timeline:before {
+            content: '';
+            position: absolute;
+            left: 20px;
+            top: 0;
+            bottom: 0;
+            width: 2px;
+            background: #d1d5db; /* gray-300 */
+        }
+        .timeline-item {
+            position: relative;
+            margin-bottom: 30px;
+            padding-left: 40px;
+        }
+        .timeline-item:before {
+            content: '';
+            position: absolute;
+            left: 15px;
+            top: 5px;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            background: #3b82f6; /* blue-500 */
+            z-index: 1;
+        }
+         /* Hide sections by default, JS will show/hide */
+        .content-section {
+            display: none;
+        }
+        .content-section.active {
+            display: block;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 text-gray-800 font-sans leading-normal">
+
+    <!-- Navigation Bar -->
+    <nav class="bg-blue-600 p-4 fixed top-0 w-full shadow-md z-50">
+        <div class="container mx-auto flex justify-center space-x-4">
+            <a href="#overview" class="nav-link text-white hover:text-blue-200">行程總覽</a>
+            <a href="#transport-accom" class="nav-link text-white hover:text-blue-200">交通住宿</a>
+            <a href="#daily-itinerary" class="nav-link text-white hover:text-blue-200">每日行程</a>
+            <a href="#food-map" class="nav-link text-white hover:text-blue-200">美食地圖</a>
+            <a href="#preparation" class="nav-link text-white hover:text-blue-200">行前準備</a>
+        </div>
+    </nav>
+
+    <main class="container mx-auto mt-20 p-6">
+
+        <!-- Itinerary Overview Section -->
+        <section id="overview" class="content-section active bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold text-blue-700 mb-4">台灣郵輪港口文化體驗之旅 - 8日緊湊行程總覽</h2>
+            <p class="mb-4">
+                這是一份根據您提供的需求量身打造的 8 日台灣環島（含澎湖）緊湊文化體驗行程，涵蓋了基隆、蘇澳、台中、苗栗、台南、高雄、澎湖等地的主要郵輪旅運中心與文化景點。考量到時間有限且點位分散，行程安排將非常緊湊，交通以高鐵、飛機為主，搭配台鐵及市區交通，以最大化您的觀光時間。
+            </p>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-lg">
+                <div>
+                    <p><strong class="text-blue-600">旅遊天數:</strong> 8 天</p>
+                    <p><strong class="text-blue-600">旅遊日期:</strong> 2025/6/22 ~ 2025/6/29</p>
+                    <p><strong class="text-blue-600">出發地:</strong> 桃園機場 (TPE)</p>
+                    <p><strong class="text-blue-600">目的地:</strong> 基隆, 蘇澳, 台中, 苗栗, 台南, 高雄, 澎湖</p>
+                </div>
+                <div>
+                     <p><strong class="text-blue-600">行程風格:</strong> 極度緊湊、文化體驗為主、港口旅運中心巡禮</p>
+                     <p><strong class="text-blue-600">必去重點:</strong> 基隆港, 蘇澳港, 馬公港, 高雄港, 安平港 (台南), 台中港 (視情況安排), 苗栗勝興客棧</p>
+                </div>
+            </div>
+            <p class="mt-4 text-red-600 font-bold">
+                注意：此行程安排非常緊湊，每日交通時間長，請務必提前預訂交通票券（尤其高鐵和飛機）並保有彈性準備。
+            </p>
+        </section>
+
+        <!-- Transport and Accommodation Section -->
+        <section id="transport-accom" class="content-section bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold text-blue-700 mb-4">交通與住宿建議</h2>
+
+            <div class="mb-6">
+                <h3 class="text-2xl font-semibold text-blue-600 mb-3">交通方式</h3>
+                <p class="mb-2">考量行程跨越南北與離島，主要依賴以下交通工具：</p>
+                <ul class="list-disc list-inside ml-4">
+                    <li><strong>台灣高鐵 (THSR):</strong> 連接主要城市的快速骨幹，大幅縮短移動時間。建議搭乘高鐵標準對號座。</li>
+                    <li><strong>國內飛機:</strong> 前往澎湖的唯一快速方式，主要從高雄小港機場 (KHH) 或台北松山機場 (TSA) 出發。本次行程規劃從高雄出發較順。</li>
+                    <li><strong>台灣鐵路 (TRA):</strong> 前往蘇澳及苗栗勝興的必要交通，或作為高鐵站與市區間的接駁。</li>
+                    <li><strong>客運/公車:</strong> 桃園機場到基隆，或城市內的短程接駁。</li>
+                    <li><strong>捷運:</strong> 高雄市區的便捷交通。</li>
+                    <li><strong>計程車/叫車服務:</strong> 機動性高，適用於點到點快速移動，尤其從車站/機場到住宿地點或特定景點。</li>
+                </ul>
+            </div>
+
+             <div class="mb-6">
+                <h3 class="text-2xl font-semibold text-blue-600 mb-3">交通時間與費用比較 (預估)</h3>
+                <p class="mb-3">以下為幾個主要路段不同交通方式的預估時間與票價比較，幫助您理解交通選擇的差異：</p>
+                <div class="w-full md:w-2/3 mx-auto">
+                     <canvas id="transportChart"></canvas>
+                </div>
+                 <p class="text-sm text-gray-600 mt-2">* 票價為單程全票參考價，時間為預估的搭乘時間，不含轉乘及等候時間。實際可能因班次、日期、訂票時間而有差異。</p> [7, 8, 10, 13, 14, 15, 16, 17, 19, 20, 21, 24, 25, 26, 28, 31, 32, 35, 38, 40, 41, 42, 44]
+            </div>
+
+
+            <div class="mb-6">
+                <h3 class="text-2xl font-semibold text-blue-600 mb-3">住宿建議</h3>
+                <p class="mb-2">建議選擇交通便利、靠近車站或市中心的區域：</p>
+                <ul class="list-disc list-inside ml-4">
+                    <li>**基隆/台北:** 考量隔天前往蘇澳及搭高鐵，可選擇基隆市區或回台北市區（靠近板橋或台北車站）。</li>
+                    <li>**台中:** 高鐵台中站或台中市區（如逢甲、一中街商圈附近），方便市區活動及前往苗栗。</li>
+                    <li>**台南:** 台南火車站周邊或安平區，方便市區文化景點及安平港。</li>
+                    <li>**高雄:** 高鐵左營站、高雄火車站或美麗島站周邊，方便市區移動、前往高雄港及小港機場。</li>
+                    <li>**澎湖:** 馬公市區，便利港口及市內活動。</li>
+                </ul>
+                 <p class="text-sm text-gray-600 mt-2">具體飯店/民宿請依您的預算與偏好自行預訂。</p>
+            </div>
+
+        </section>
+
+        <!-- Daily Itinerary Section -->
+        <section id="daily-itinerary" class="content-section bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold text-blue-700 mb-4">每日行程細節</h2>
+
+            <div class="timeline">
+                <!-- Day 1 -->
+                <div class="timeline-item">
+                    <div class="text-lg font-semibold text-blue-700 mb-1">Day 1: 2025/6/22 (週日) 桃園機場 → 基隆 → 台北/板橋</div>
+                    <p class="mb-2">初抵台灣，前往北部港都基隆，再返回台北住宿。</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>09:00: 桃園國際機場 (TPE) 抵達 <a href="https://maps.google.com/?q=桃園國際機場" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a></li>
+                        <li>09:00 - 10:30: 入境手續與領取行李。</li>
+                        <li>10:30 - 12:00: 搭乘客運前往基隆。預估交通時間：1.5 小時。</li>
+                        <li>12:00 - 13:00: 基隆市區午餐 (推薦基隆廟口小吃)。</li>
+                        <li>13:00 - 14:30: 參觀基隆港東岸旅運中心 <a href="https://maps.google.com/?q=基隆港東岸旅運中心" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a> 及周邊港區。建議停留時間：1.5 小時。</li>
+                         <li>14:30 - 16:00: 探索基隆市區文化景點 (如基隆廟口、正濱漁港色彩屋)。</li>
+                        <li>16:00 - 17:00: 搭乘台鐵或客運返回台北市區。預估交通時間：1 小時。</li>
+                        <li>17:00 - 18:00: 前往台北/板橋住宿地點辦理入住。</li>
+                        <li>18:00 onwards: 台北/板橋晚餐與自由活動。</li>
+                    </ul>
+                </div>
+
+                <!-- Day 2 -->
+                <div class="timeline-item">
+                    <div class="text-lg font-semibold text-blue-700 mb-1">Day 2: 2025/6/23 (週一) 台北/板橋 → 蘇澳 → 台中</div>
+                    <p class="mb-2">東行蘇澳訪港，下午搭高鐵南下台中。</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>08:00: 台北/板橋住宿處出發。</li>
+                        <li>08:00 - 10:00: 搭乘台鐵前往蘇澳。預估交通時間：2 小時。</li>
+                         <li>10:00 - 11:30: 參觀蘇澳港旅客服務中心 <a href="https://maps.google.com/?q=蘇澳港旅客服務中心" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a> 及周邊。建議停留時間：1.5 小時。</li>
+                        <li>11:30 - 12:30: 蘇澳午餐 (推薦海鮮或在地小吃)。</li>
+                        <li>12:30 - 14:30: 搭乘台鐵返回台北/板橋。預估交通時間：2 小時。</li>
+                        <li>14:30 - 15:30: 從台北/板橋車站移動至高鐵站，準備搭乘高鐵。</li>
+                        <li>15:30 - 16:30: 搭乘高鐵前往台中。預估交通時間：1 小時。 <a href="https://maps.google.com/?saddr=台灣高鐵+板橋站&daddr=台灣高鐵+台中站" target="_blank" class="text-blue-500 hover:underline">(路線建議)</a></li>
+                        <li>16:30 - 17:30: 抵達高鐵台中站 <a href="https://maps.google.com/?q=台灣高鐵+台中站" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>，前往台中住宿處辦理入住。</li>
+                        <li>17:30 onwards: 台中晚餐與自由活動。</li>
+                    </ul>
+                </div>
+
+                 <!-- Day 3 -->
+                <div class="timeline-item">
+                    <div class="text-lg font-semibold text-blue-700 mb-1">Day 3: 2025/6/24 (週二) 台中 → 苗栗勝興 → 台南</div>
+                    <p class="mb-2">上午前往苗栗三義探訪勝興，下午高鐵南下文化古都台南。</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>08:00: 台中住宿處出發。</li>
+                        <li>08:00 - 08:30: 搭乘台鐵前往三義車站。預估交通時間：30 分鐘。 <a href="https://maps.google.com/?saddr=台鐵+台中車站&daddr=台鐵+三義車站" target="_blank" class="text-blue-500 hover:underline">(路線建議)</a></li>
+                        <li>08:30 - 09:00: 從三義車站搭乘計程車或接駁前往勝興車站。預估交通時間：15-20 分鐘。</li>
+                         <li>09:00 - 10:30: 參觀勝興車站周邊景點 <a href="https://maps.google.com/?q=勝興車站" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>。建議停留時間：1.5 小時。</li>
+                         <li>10:30 - 12:00: 於勝興客棧享用午餐 <a href="https://maps.google.com/?q=勝興客棧" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>。建議停留時間：1.5 小時。</li>
+                        <li>12:00 - 12:30: 從勝興搭乘計程車或接駁返回三義車站。</li>
+                        <li>12:30 - 13:00: 搭乘台鐵從三義車站返回台中車站。預估交通時間：30 分鐘。</li>
+                         <li>13:00 - 14:00: 從台中車站移動至高鐵台中站，準備搭乘高鐵。</li>
+                        <li>14:00 - 15:00: (視時間彈性) 可考慮快速參訪台中港區 <a href="https://maps.google.com/?q=台中港旅客服務中心" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a> 或台中市區景點。*台中港主要為貨運，旅運較少，此為彈性安排。</li>
+                        <li>15:00 - 16:00: 搭乘高鐵前往台南。預估交通時間：40 分鐘。 <a href="https://maps.google.com/?saddr=台灣高鐵+台中站&daddr=台灣高鐵+台南站" target="_blank" class="text-blue-500 hover:underline">(路線建議)</a></li>
+                        <li>16:00 - 17:00: 抵達高鐵台南站 <a href="https://maps.google.com/?q=台灣高鐵+台南站" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>，前往台南住宿處辦理入住。</li>
+                        <li>17:00 onwards: 台南晚餐與探索赤崁樓、國華街等市區文化景點。</li>
+                    </ul>
+                </div>
+
+                 <!-- Day 4 -->
+                <div class="timeline-item">
+                    <div class="text-lg font-semibold text-blue-700 mb-1">Day 4: 2025/6/25 (週三) 台南文化深度體驗 (含安平港)</div>
+                    <p class="mb-2">整日於文化古都台南，深度體驗歷史與美食。</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>09:00: 台南住宿處出發。</li>
+                        <li>09:00 - 12:00: 參觀安平港周邊 <a href="https://maps.google.com/?q=安平港旅運中心" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a> (如安平漁人碼頭) 及安平古堡、億載金城等歷史景點。建議停留時間：3 小時。</li>
+                        <li>12:00 - 13:30: 安平區午餐 (推薦安平豆花、蝦捲等小吃)。</li>
+                        <li>13:30 - 17:30: 探索台南市區文化景點 (如赤崁樓 <a href="https://maps.google.com/?q=赤崁樓" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>、孔廟、台灣文學館、林百貨等)。建議停留時間：4 小時。</li>
+                        <li>17:30 - 18:30: 返回台南市區或國華街等美食區域，享用晚餐。</li>
+                        <li>18:30 onwards: 台南市區自由活動，感受古都夜色。</li>
+                    </ul>
+                </div>
+
+                 <!-- Day 5 -->
+                <div class="timeline-item">
+                    <div class="text-lg font-semibold text-blue-700 mb-1">Day 5: 2025/6/26 (週四) 台南 → 高雄 (含高雄港)</div>
+                    <p class="mb-2">短程移動至南台灣大城高雄，參訪高雄港並探索市區。</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>09:00: 台南住宿處出發，前往台南火車站或高鐵台南站。</li>
+                        <li>09:30 - 10:00: 搭乘台鐵或高鐵前往高雄 (台鐵高雄站或高鐵左營站)。預估交通時間：30 分鐘。 <a href="https://maps.google.com/?saddr=台鐵+台南車站&daddr=台鐵+高雄車站" target="_blank" class="text-blue-500 hover:underline">(台鐵路線建議)</a> 或 <a href="https://maps.google.com/?saddr=台灣高鐵+台南站&daddr=台灣高鐵+左營站" target="_blank" class="text-blue-500 hover:underline">(高鐵路線建議)</a></li>
+                        <li>10:00 - 11:00: 前往高雄住宿處辦理入住。</li>
+                        <li>11:00 - 12:30: 參觀高雄港旅運中心 <a href="https://maps.google.com/?q=高雄港旅運中心" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a> 及駁二藝術特區 <a href="https://maps.google.com/?q=駁二藝術特區" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a> 等周邊景點。建議停留時間：1.5 小時。</li>
+                        <li>12:30 - 14:00: 高雄午餐 (推薦駁二或鹽埕區美食)。</li>
+                        <li>14:00 - 17:30: 探索高雄市區文化景點 (如旗津半島、蓮池潭龍虎塔、鳳儀書院等)。建議停留時間：3.5 小時。</li>
+                         <li>17:30 - 18:30: 前往瑞豐夜市或六合夜市 <a href="https://maps.google.com/?q=瑞豐夜市" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>，享用晚餐。</li>
+                        <li>18:30 onwards: 高雄市區自由活動。</li>
+                    </ul>
+                </div>
+
+                 <!-- Day 6 -->
+                <div class="timeline-item">
+                    <div class="text-lg font-semibold text-blue-700 mb-1">Day 6: 2025/6/27 (週五) 高雄 → 澎湖 (含馬公港)</div>
+                    <p class="mb-2">搭乘飛機前往離島澎湖，感受菊島風情。</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>08:00: 高雄住宿處出發，搭乘捷運前往高雄國際機場 (KHH)。預估交通時間：30 分鐘。 <a href="https://maps.google.com/?saddr=高雄市&daddr=高雄國際機場" target="_blank" class="text-blue-500 hover:underline">(路線建議)</a></li>
+                        <li>08:30 - 10:00: 抵達高雄國際機場 <a href="https://maps.google.com/?q=高雄國際機場" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>，辦理登機手續。</li>
+                        <li>10:00 - 11:00: 搭乘國內線班機前往澎湖馬公機場 (MZG)。預估飛行時間：50 分鐘。</li>
+                        <li>11:00 - 12:00: 抵達馬公航空站 <a href="https://maps.google.com/?q=馬公航空站" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>，搭乘計程車或接駁前往馬公市區住宿處。</li>
+                        <li>12:00 - 13:00: 澎湖馬公市區午餐。</li>
+                        <li>13:00 - 14:30: 參觀馬公港 <a href="https://maps.google.com/?q=馬公港" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a> 周邊，感受離島港口氛圍。建議停留時間：1.5 小時。</li>
+                         <li>14:30 - 18:00: 探索馬公市區文化景點 (如天后宮、四眼井、順承門、觀音亭)。建議停留時間：3.5 小時。</li>
+                        <li>18:00 onwards: 澎湖馬公市區晚餐與自由活動 (如逛街、品嚐海產)。</li>
+                    </ul>
+                </div>
+
+                 <!-- Day 7 -->
+                <div class="timeline-item">
+                    <div class="text-lg font-semibold text-blue-700 mb-1">Day 7: 2025/6/28 (週六) 澎湖跳島或環島體驗</div>
+                    <p class="mb-2">安排澎湖跳島或本島環島，深入體驗菊島自然風光與人文。</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>全天: 依天氣與個人偏好選擇以下行程：</li>
+                        <li><strong>選項 A (跳島):</strong> 搭乘船班前往南海遊客中心，選擇南海跳島一日遊 (七美、望安、虎井等)。<br>或選擇東海、北海等不同路線。</li>
+                        <li><strong>選項 B (本島環島):</strong> 租機車或包車，遊覽本島北環 (跨海大橋 <a href="https://maps.google.com/?q=澎湖跨海大橋" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>、漁翁島燈塔等) 或南環 (風櫃洞 <a href="https://maps.google.com/?q=風櫃洞" target="_blank" class="text-blue-500 hover:underline">(Google Maps)</a>、山水沙灘等)。</li>
+                        <li>午餐與晚餐: 依當日行程地點安排。</li>
+                        <li>傍晚: 返回馬公市區。</li>
+                    </ul>
+                </div>
+
+                 <!-- Day 8 -->
+                <div class="timeline-item">
+                    <div class="text-lg font-semibold text-blue-700 mb-1">Day 8: 2025/6/29 (週日) 澎湖 → 桃園機場</div>
+                    <p class="mb-2">結束豐富的旅程，從澎湖搭機返回桃園機場。</p>
+                    <ul class="list-disc list-inside ml-4">
+                        <li>上午: 在馬公市區享用早餐，可進行最後採買或短暫散步。</li>
+                        <li>依航班時間提前約 1.5 - 2 小時從馬公市區前往馬公航空站 (MZG)。</li>
+                        <li>搭乘國內線班機從 MZG 飛往桃園國際機場 (TPE)。預估飛行時間：1 小時。 <a href="https://maps.google.com/?saddr=馬公航空站&daddr=桃園國際機場" target="_blank" class="text-blue-500 hover:underline">(路線建議)</a></li>
+                        <li>抵達桃園國際機場 (TPE)，辦理離境手續，結束行程。</li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+
+        <!-- Food Map Section -->
+        <section id="food-map" class="content-section bg-white p-6 rounded-lg shadow-md mb-8">
+             <h2 class="text-3xl font-bold text-blue-700 mb-4">美食地圖</h2>
+
+             <div class="mb-4">
+                 <h3 class="text-2xl font-semibold text-blue-600 mb-3">推薦餐廳與在地美食</h3>
+                 <p class="mb-3">台灣各地區都有獨特的風味美食，以下列出行程中提及的以及部分推薦：</p>
+
+                 <div class="mb-4">
+                    <button class="filter-btn bg-blue-500 text-white px-4 py-2 rounded mr-2 mb-2" data-category="all">全部</button>
+                    <button class="filter-btn bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 mb-2" data-category="客家菜">客家菜</button>
+                    <button class="filter-btn bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 mb-2" data-category="小吃">小吃</button>
+                     <button class="filter-btn bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 mb-2" data-category="海鮮">海鮮</button>
+                     <button class="filter-3tn bg-gray-300 text-gray-800 px-4 py-2 rounded mr-2 mb-2" data-category="其他">其他</button>
+                 </div>
+
+                 <div id="restaurant-list" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                     <!-- Restaurant Items -->
+                     <div class="restaurant-item border p-4 rounded-md" data-category="客家菜">
+                         <h4 class="text-lg font-semibold text-blue-700">勝興客棧</h4>
+                         <p class="text-sm text-gray-600 mb-2">必吃！位於苗栗三義勝興，提供道地客家菜餚。</p>
+                         <a href="https://maps.google.com/?q=勝興客棧" target="_blank" class="text-blue-500 hover:underline text-sm">查看地圖</a> [23]
+                     </div>
+                      <div class="restaurant-item border p-4 rounded-md" data-category="小吃">
+                         <h4 class="text-lg font-semibold text-blue-700">基隆廟口夜市小吃</h4>
+                         <p class="text-sm text-gray-600 mb-2">基隆必訪美食天堂，天婦羅、鼎邊趖、奶油螃蟹等。</p>
+                         <a href="https://maps.google.com/?q=基隆廟口夜市" target="_blank" class="text-blue-500 hover:underline text-sm">查看地圖</a>
+                     </div>
+                      <div class="restaurant-item border p-4 rounded-md" data-category="海鮮">
+                         <h4 class="text-lg font-semibold text-blue-700">蘇澳海鮮餐廳</h4>
+                         <p class="text-sm text-gray-600 mb-2">蘇澳漁港新鮮直送，品嚐各式海產。</p>
+                         <a href="https://maps.google.com/?q=蘇澳海鮮餐廳" target="_blank" class="text-blue-500 hover:underline text-sm">查看地圖</a>
+                     </div>
+                      <div class="restaurant-item border p-4 rounded-md" data-category="小吃">
+                         <h4 class="text-lg font-semibold text-blue-700">台南國華街/保安路小吃</h4>
+                         <p class="text-sm text-gray-600 mb-2">米糕、碗粿、牛肉湯、蝦捲、豆花等台南經典小吃聚集地。</p>
+                         <a href="https://maps.google.com/?q=台南國華街美食" target="_blank" class="text-blue-500 hover:underline text-sm">查看地圖</a>
+                     </div>
+                      <div class="restaurant-item border p-4 rounded-md" data-category="小吃">
+                         <h4 class="text-lg font-semibold text-blue-700">高雄瑞豐夜市</h4>
+                         <p class="text-sm text-gray-600 mb-2">人氣夜市，多樣化在地美食與小吃。</p>
+                         <a href="https://maps.google.com/?q=瑞豐夜市" target="_blank" class="text-blue-500 hover:underline text-sm">查看地圖</a>
+                     </div>
+                     <div class="restaurant-item border p-4 rounded-md" data-category="海鮮">
+                         <h4 class="text-lg font-semibold text-blue-700">澎湖海鮮餐廳</h4>
+                         <p class="text-sm text-gray-600 mb-2">新鮮海產，花枝丸、小管麵線、清蒸鮮魚等。</p>
+                         <a href="https://maps.google.com/?q=澎湖海鮮餐廳+馬公市" target="_blank" class="text-blue-500 hover:underline text-sm">查看地圖</a>
+                     </div>
+                     <!-- Add more restaurants here -->
+                 </div>
+             </div>
+        </section>
+
+        <!-- Preparation Tips Section -->
+        <section id="preparation" class="content-section bg-white p-6 rounded-lg shadow-md mb-8">
+            <h2 class="text-3xl font-bold text-blue-700 mb-4">行前準備</h2>
+            <ul class="list-disc list-inside ml-4">
+                <li><strong>交通預訂:</strong> 高鐵票可在乘車日前29天購票 [24, 25, 40]，越早訂越有機會享早鳥優惠 [40]。國內機票也建議提早預訂，尤其暑假期間。</li>
+                <li><strong>住宿預訂:</strong> 確認每日落腳處並提早預訂。</li>
+                <li><strong>證件準備:</strong> 護照、簽證 (若需要)、身份證件。</li>
+                <li><strong>行李:</strong> 輕便為主，考量頻繁移動。攜帶適合夏季的衣物、防曬用品、雨具。</li>
+                <li><strong>支付:</strong> 準備新台幣現金，信用卡在市區或飯店較普及。</li>
+                <li><strong>通訊:</strong> 購買預付卡或租用 WiFi 分享器以便隨時使用網路查詢資訊與導航。</li>
+                <li><strong>應用程式:</strong> 下載 Google Maps (離線地圖功能實用)、台灣高鐵 T-EX 行動購票、台鐵e訂通、航空公司App、叫車服務App 等。</li>
+                 <li><strong>緊急聯絡:</strong> 記下重要聯絡電話，如外交部緊急聯絡中心、當地緊急電話等。</li>
+                 <li><strong>行程彈性:</strong> 雖然行程緊湊，但旅行中總有變數，請保持彈性並享受過程。</li>
+            </ul>
+        </section>
+
+    </main>
+
+    <footer class="bg-gray-200 text-center p-4 mt-8 text-gray-600">
+        <p>&copy; 2025 您的專屬旅遊規劃 | 設計與前端實作 by Gemini AI</p>
+    </footer>
+
+    <script>
+        // Smooth scrolling for navigation
+        document.querySelectorAll('nav a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const targetId = this.getAttribute('href');
+                const targetSection = document.querySelector(targetId);
+
+                // Hide all content sections
+                document.querySelectorAll('.content-section').forEach(section => {
+                    section.classList.remove('active');
+                });
+
+                // Show the target section
+                if (targetSection) {
+                     targetSection.classList.add('active');
+                     // Scroll to the target section with offset for the fixed header
+                     const offsetTop = targetSection.offsetTop - document.querySelector('nav').offsetHeight;
+                     window.scrollTo({
+                         top: offsetTop,
+                         behavior: 'smooth'
+                     });
+                }
+            });
+        });
+
+         // Initial state: Show only the first section
+        document.addEventListener('DOMContentLoaded', () => {
+            const firstSection = document.querySelector('.content-section');
+            if (firstSection) {
+                firstSection.classList.add('active');
+            }
+
+            // Highlight the initial active nav link
+             const firstNavLink = document.querySelector('nav a[href="#overview"]');
+             if(firstNavLink){
+                 firstNavLink.classList.add('bg-blue-800', 'bg-opacity-50'); // Add highlighting class
+             }
+        });
+
+         // Update active nav link on scroll (Optional, more complex for SPA)
+         // For simplicity in this single HTML SPA, click handles section visibility.
+         // If implementing scroll spy, need IntersectionObserver.
+
+         // Update active nav link on click
+         document.querySelectorAll('.nav-link').forEach(link => {
+             link.addEventListener('click', function() {
+                 document.querySelectorAll('.nav-link').forEach(nav => nav.classList.remove('bg-blue-800', 'bg-opacity-50'));
+                 this.classList.add('bg-blue-800', 'bg-opacity-50');
+             });
+         });
+
+
+        // Food filter logic
+        document.querySelectorAll('.filter-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const category = this.getAttribute('data-category');
+                const items = document.querySelectorAll('#restaurant-list .restaurant-item');
+
+                // Update button styles
+                 document.querySelectorAll('.filter-btn').forEach(btn => {
+                     btn.classList.remove('bg-blue-500', 'text-white');
+                     btn.classList.add('bg-gray-300', 'text-gray-800');
+                 });
+                 this.classList.remove('bg-gray-300', 'text-gray-800');
+                 this.classList.add('bg-blue-500', 'text-white');
+
+
+                items.forEach(item => {
+                    const itemCategory = item.getAttribute('data-category');
+                    if (category === 'all' || itemCategory === category) {
+                        item.style.display = 'block';
+                    } else {
+                        item.style.display = 'none';
+                    }
+                });
+            });
+        });
+
+        // Initialize Chart.js
+        document.addEventListener('DOMContentLoaded', function() {
+            const ctx = document.getElementById('transportChart').getContext('2d');
+
+             // Data based on search results (approximate values)
+            const transportData = {
+                labels: ['台北-台中', '台中-台南', '台南-左營', '高雄-澎湖'],
+                datasets: [
+                    {
+                        label: '時間 (小時)',
+                        data: [
+                            1, // HSR 台北-台中 約1小時 [7]
+                            0.75, // HSR 台中-台南 約45分鐘 [28]
+                            0.2, // HSR 台南-左營 約12-15分鐘 [14, 16, 21]
+                            0.8 // Flight 高雄-澎湖 含機場往返市區及飛行時間 約40-50分鐘飛行時間+地面交通 [8, 15, 32, 38]
+                            // Alternative transport times (example, not all included for chart simplicity)
+                            // TRA 台北-台中 約2.5-3小時
+                            // Bus 台北-台中 約2.5-3.5小時
+                            // TRA 台南-高雄 約0.5-1小時
+                            // Ferry 高雄-澎湖 約4小時+
+                        ],
+                        backgroundColor: 'rgba(59, 130, 246, 0.6)', // blue-500
+                        borderColor: 'rgba(59, 130, 246, 1)',
+                        borderWidth: 1
+                    },
+                     {
+                        label: '費用 (新台幣)',
+                        data: [
+                            700, // HSR 台北-台中 約700 [19, 25]
+                            650, // HSR 台中-台南 約650 [10, 25]
+                            140, // HSR 台南-左營 約140 [21, 25]
+                            2900 // Flight 高雄-澎湖 約2900+ (參考來回票價除以2並估計) [8, 15, 32, 38]
+                            // Alternative transport costs (example)
+                            // TRA 台北-台中 約400-500
+                            // Bus 台北-台中 約250-350
+                            // TRA 台南-高雄 約70-110
+                            // Ferry 高雄-澎湖 約800-1000+
+                        ],
+                        backgroundColor: 'rgba(165, 180, 252, 0.6)', // indigo-300
+                        borderColor: 'rgba(165, 180, 252, 1)',
+                        borderWidth: 1
+                    }
+                ]
+            };
+
+            const transportChart = new Chart(ctx, {
+                type: 'bar',
+                data: transportData,
+                options: {
+                    responsive: true,
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            ticks: {
+                                callback: function(value, index, values) {
+                                     // Custom tick format to show hours for time and TWD for cost
+                                    if(index % 2 === 0){ // Time data (simplified check)
+                                        return value + ' 小時';
+                                    } else { // Cost data (simplified check)
+                                         return 'NT$' + value;
+                                    }
+                                }
+                            }
+                        }
+                    },
+                    plugins: {
+                        tooltip: {
+                            callbacks: {
+                                label: function(context) {
+                                    let label = context.dataset.label || '';
+                                    if (label) {
+                                        label += ': ';
+                                    }
+                                    if (context.dataset.label === '時間 (小時)') {
+                                         label += context.parsed.y + ' 小時';
+                                    } else {
+                                         label += 'NT$' + context.parsed.y;
+                                    }
+                                    return label;
+                                }
+                            }
+                        }
+                    }
+                }
+            });
+        });
+    </script>
+
+</body>
+</html>
