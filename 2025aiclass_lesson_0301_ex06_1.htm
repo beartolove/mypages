@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>國際商港客船業務費試算</title>
+    <style>
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Open Sans", "Helvetica Neue", sans-serif;
+            background-color: #f2f2f7;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            min-height: 100vh;
+        }
+
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 500px;
+            box-sizing: border-box;
+        }
+
+        h1 {
+            text-align: center;
+            color: #333;
+            margin-bottom: 30px;
+            font-size: 24px;
+        }
+
+        .form-group {
+            margin-bottom: 20px;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            color: #555;
+        }
+
+        input[type="number"],
+        select,
+        input[type="datetime-local"] {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #d1d1d6;
+            border-radius: 5px;
+            box-sizing: border-box;
+            font-size: 16px;
+            appearance: none; /* Remove default browser styling for select/number */
+            -webkit-appearance: none;
+            -moz-appearance: none;
+        }
+
+        input[type="number"]::-webkit-outer-spin-button,
+        input[type="number"]::-webkit-inner-spin-button {
+            -webkit-appearance: none;
+            margin: 0;
+        }
+        input[type="number"] {
+            -moz-appearance: textfield;
+        }
+
+        select {
+            background-color: #ffffff;
+            cursor: pointer;
+            background-image: url('data:image/svg+xml;utf8,<svg fill="%23555" height="24" viewBox="0 0 24 24" width="24" xmlns="http://www.w3.org/2000/svg"><path d="M7 10l5 5 5-5z"/></svg>');
+            background-repeat: no-repeat;
+            background-position: right 10px top 50%;
+            background-size: 16px auto;
+        }
+
+
+        button {
+            width: 100%;
+            padding: 12px;
+            background-color: #007aff; /* Apple Blue */
+            color: white;
+            border: none;
+            border-radius: 5px;
+            font-size: 18px;
+            cursor: pointer;
+            transition: background-color 0.2s ease;
+        }
+
+        button:hover {
+            background-color: #005fcc; /* Darker blue on hover */
+        }
+
+        .results {
+            margin-top: 30px;
+            border-top: 1px solid #d1d1d6;
+            padding-top: 20px;
+        }
+
+        .result-item {
+            margin-bottom: 10px;
+            font-size: 18px;
+            color: #333;
+        }
+
+        .result-item strong {
+            font-weight: 600;
+        }
+
+        .result-item span {
+            float: right;
+            font-weight: 600;
+        }
+
+        .total-result {
+            font-size: 20px;
+            font-weight: 700;
+            color: #007aff; /* Highlight total */
+            margin-top: 15px;
+            padding-top: 15px;
+            border-top: 1px dashed #d1d1d6;
+        }
+         .total-result span {
+            float: right;
+         }
+
+         .error-message {
+             color: #ff3b30; /* Apple Red */
+             margin-top: 10px;
+             font-size: 14px;
+         }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>國際商港客船業務費試算</h1>
+
+        <div class="form-group">
+            <label for="tonnage">船舶總噸位等級 (客船):</label>
+            <select id="tonnage">
+                <option value="550" data-peak-rate="605">未滿 5,000</option>
+                <option value="850" data-peak-rate="935">5,000 以上未滿 10,000</option>
+                <option value="1350" data-peak-rate="1485">10,000 以上未滿 20,000</option>
+                <option value="2050" data-peak-rate="2255">20,000 以上未滿 40,000</option>
+                <option value="2950" data-peak-rate="3245">40,000 以上未滿 60,000</option>
+                <option value="4050" data-peak-rate="4455">60,000 以上未滿 80,000</option>
+                <option value="5350" data-peak-rate="5885">80,000 以上未滿 100,000</option>
+                <option value="6850" data-peak-rate="7535">100,000 以上未滿 120,000</option>
+                <option value="8550" data-peak-rate="9405">120,000 以上未滿 140,000</option>
+                <option value="10450" data-peak-rate="11495">140,000 以上未滿 160,000</option>
+                <option value="12550" data-peak-rate="13805">160,000 以上</option>
+            </select>
+        </div>
+
+        <div class="form-group">
+            <label for="start_time">停泊起始時間:</label>
+            <input type="datetime-local" id="start_time">
+        </div>
+
+        <div class="form-group">
+            <label for="end_time">停泊結束時間:</label>
+            <input type="datetime-local" id="end_time">
+             <div id="time-error" class="error-message"></div>
+        </div>
+
+         <div class="form-group">
+            <label for="passengers">需計費旅客人數:</label>
+            <input type="number" id="passengers" min="0" value="0">
+             <div id="passenger-error" class="error-message"></div>
+        </div>
+
+        <button onclick="calculateFees()">計算費用</button>
+
+        <div class="results">
+            <div class="result-item">
+                <strong>碇泊費:</strong> <span id="berthage_fee">--</span>
+            </div>
+            <div class="result-item">
+                <strong>旅客服務費:</strong> <span id="passenger_fee">--</span>
+            </div>
+            <div class="total-result">
+                <strong>總計費用:</strong> <span id="total_fee">--</span>
+            </div>
+             <div id="calculation-info" class="error-message" style="color: #555;"></div>
+        </div>
+    </div>
+
+    <script>
+        function calculateFees() {
+            const tonnageSelect = document.getElementById('tonnage');
+            const startTimeInput = document.getElementById('start_time');
+            const endTimeInput = document.getElementById('end_time');
+            const passengersInput = document.getElementById('passengers');
+
+            const berthageFeeSpan = document.getElementById('berthage_fee');
+            const passengerFeeSpan = document.getElementById('passenger_fee');
+            const totalFeeSpan = document.getElementById('total_fee');
+            const timeErrorDiv = document.getElementById('time-error');
+            const passengerErrorDiv = document.getElementById('passenger-error');
+             const calcInfoDiv = document.getElementById('calculation-info');
+
+            berthageFeeSpan.textContent = '--';
+            passengerFeeSpan.textContent = '--';
+            totalFeeSpan.textContent = '--';
+            timeErrorDiv.textContent = '';
+            passengerErrorDiv.textContent = '';
+             calcInfoDiv.textContent = '';
+
+
+            // --- Input Validation ---
+            const startTime = new Date(startTimeInput.value);
+            const endTime = new Date(endTimeInput.value);
+            const passengers = parseInt(passengersInput.value, 10);
+             const selectedOption = tonnageSelect.options[tonnageSelect.selectedIndex];
+            const baseRate = parseFloat(selectedOption.value);
+
+            if (!startTimeInput.value || !endTimeInput.value) {
+                timeErrorDiv.textContent = '請輸入完整的停泊起始與結束時間。';
+                return;
+            }
+
+            if (endTime < startTime) {
+                timeErrorDiv.textContent = '結束時間不能早於起始時間。';
+                return;
+            }
+
+             if (isNaN(passengers) || passengers < 0) {
+                passengerErrorDiv.textContent = '請輸入有效的旅客人數 (非負整數)。';
+                return;
+             }
+
+            // --- Berthage Fee Calculation ---
+            const durationMs = endTime.getTime() - startTime.getTime();
+            const durationHours = durationMs / (1000 * 60 * 60); // Duration in hours
+
+            // Determine if any part of the duration falls on Fri, Sat, or Sun
+            let isPeakPeriod = false;
+            let currentTime = new Date(startTime);
+            while (currentTime <= endTime) {
+                const dayOfWeek = currentTime.getDay(); // 0 is Sunday, 5 is Friday, 6 is Saturday
+                if (dayOfWeek === 5 || dayOfWeek === 6 || dayOfWeek === 0) {
+                    isPeakPeriod = true;
+                    break; // Found a peak day, no need to check further
+                }
+                 // Move to the next day
+                 currentTime.setDate(currentTime.getDate() + 1);
+                 currentTime.setHours(0, 0, 0, 0); // Reset time to start of day for loop check
+
+                 // Prevent infinite loop in case of very large duration (though unlikely with datetime-local)
+                 if (currentTime > new Date(endTime.getTime() + 24 * 60 * 60 * 1000)) break; // Stop if we're way past the end
+            }
+
+             let effectiveRate = baseRate;
+             let peakInfo = '';
+            if (isPeakPeriod) {
+                 effectiveRate = parseFloat(selectedOption.dataset.peakRate); // Use the pre-calculated peak rate
+                 peakInfo = ' (含尖峰時段加成)';
+            }
+
+            const berthageFee = durationHours * effectiveRate;
+
+
+            // --- Passenger Service Fee Calculation ---
+            const passengerFee = passengers * 460;
+
+            // --- Total Fee Calculation ---
+            const totalFee = berthageFee + passengerFee;
+
+            // --- Display Results ---
+            berthageFeeSpan.textContent = `NT$ ${berthageFee.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`; // Format with commas
+            passengerFeeSpan.textContent = `NT$ ${passengerFee.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+            totalFeeSpan.textContent = `NT$ ${totalFee.toFixed(2).replace(/\B(?=(\d{3})+(?!\d))/g, ',')}`;
+            calcInfoDiv.textContent = `計算基礎：停泊時數約 ${durationHours.toFixed(2)} 小時, 碇泊費率 ${effectiveRate.toFixed(2)} 元/小時${peakInfo}。`;
+        }
+    </script>
+</body>
+</html>
