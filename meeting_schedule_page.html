@@ -1,0 +1,803 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>中央氣象署參訪基隆港行程表</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        :root {
+            --primary-color: #2c3e50;
+            --secondary-color: #3498db;
+            --accent-color: #e74c3c;
+            --text-color: #2c3e50;
+            --bg-color: #f8f9fa;
+            --card-bg: #ffffff;
+            --border-color: #e9ecef;
+            --shadow: 0 2px 10px rgba(0,0,0,0.1);
+            --font-size-base: 16px;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Microsoft JhengHei', '微軟正黑體', sans-serif;
+            line-height: 1.6;
+            color: var(--text-color);
+            background-color: var(--bg-color);
+            font-size: var(--font-size-base);
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 15px;
+        }
+
+        /* Header */
+        header {
+            background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+            color: white;
+            padding: 1rem 0;
+            position: fixed;
+            width: 100%;
+            top: 0;
+            z-index: 1000;
+            box-shadow: var(--shadow);
+        }
+
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        /* Hamburger Menu */
+        .hamburger {
+            display: none;
+            flex-direction: column;
+            cursor: pointer;
+            padding: 5px;
+        }
+
+        .hamburger span {
+            width: 25px;
+            height: 3px;
+            background: white;
+            margin: 3px 0;
+            transition: 0.3s;
+        }
+
+        .hamburger.active span:nth-child(1) {
+            transform: rotate(-45deg) translate(-5px, 6px);
+        }
+
+        .hamburger.active span:nth-child(2) {
+            opacity: 0;
+        }
+
+        .hamburger.active span:nth-child(3) {
+            transform: rotate(45deg) translate(-5px, -6px);
+        }
+
+        /* Navigation */
+        .nav {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-menu {
+            display: flex;
+            gap: 2rem;
+            list-style: none;
+        }
+
+        .nav-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.5rem 1rem;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .nav-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        .font-controls {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .font-btn {
+            background: rgba(255, 255, 255, 0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem;
+            border-radius: 50%;
+            cursor: pointer;
+            width: 35px;
+            height: 35px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.2rem;
+            transition: background-color 0.3s;
+        }
+
+        .font-btn:hover {
+            background: rgba(255, 255, 255, 0.3);
+        }
+
+        /* Mobile Menu */
+        .mobile-menu {
+            display: none;
+            position: fixed;
+            top: 70px;
+            left: 0;
+            width: 100%;
+            background: var(--primary-color);
+            padding: 1rem;
+            box-shadow: var(--shadow);
+        }
+
+        .mobile-menu.active {
+            display: block;
+        }
+
+        .mobile-menu ul {
+            list-style: none;
+            padding: 0;
+        }
+
+        .mobile-menu li {
+            margin: 1rem 0;
+        }
+
+        .mobile-menu a {
+            color: white;
+            text-decoration: none;
+            padding: 0.8rem 1rem;
+            display: block;
+            border-radius: 5px;
+            transition: background-color 0.3s;
+        }
+
+        .mobile-menu a:hover {
+            background-color: rgba(255, 255, 255, 0.1);
+        }
+
+        /* Main Content */
+        main {
+            margin-top: 80px;
+            padding: 2rem 0;
+        }
+
+        .hero {
+            text-align: center;
+            padding: 3rem 0;
+            background: linear-gradient(135deg, var(--secondary-color), var(--primary-color));
+            color: white;
+            margin-bottom: 2rem;
+        }
+
+        .hero h1 {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .hero p {
+            font-size: 1.2rem;
+            opacity: 0.9;
+        }
+
+        .section {
+            margin-bottom: 3rem;
+        }
+
+        .section-title {
+            background: var(--primary-color);
+            color: white;
+            padding: 1rem;
+            border-radius: 10px 10px 0 0;
+            font-size: 1.5rem;
+            font-weight: bold;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            overflow: hidden;
+        }
+
+        .card-content {
+            padding: 1.5rem;
+        }
+
+        /* Meeting Info */
+        .meeting-info {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            margin-bottom: 2rem;
+        }
+
+        .info-item {
+            background: var(--card-bg);
+            padding: 1.5rem;
+            border-radius: 10px;
+            box-shadow: var(--shadow);
+            border-left: 4px solid var(--secondary-color);
+        }
+
+        .info-item h3 {
+            color: var(--primary-color);
+            margin-bottom: 0.5rem;
+            font-size: 1.2rem;
+        }
+
+        /* Schedule Table */
+        .schedule-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 1rem;
+        }
+
+        .schedule-table th,
+        .schedule-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .schedule-table th {
+            background: var(--bg-color);
+            font-weight: bold;
+            color: var(--primary-color);
+        }
+
+        .schedule-table tr:hover {
+            background-color: rgba(52, 152, 219, 0.1);
+        }
+
+        /* Attendees */
+        .attendees-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(500px, 1fr));
+            gap: 2rem;
+            margin-top: 1rem;
+        }
+
+        .attendee-group {
+            background: var(--card-bg);
+            border-radius: 10px;
+            overflow: hidden;
+            box-shadow: var(--shadow);
+        }
+
+        .attendee-header {
+            background: var(--secondary-color);
+            color: white;
+            padding: 1rem;
+            font-weight: bold;
+            text-align: center;
+        }
+
+        .attendee-list {
+            padding: 1rem;
+        }
+
+        .attendee-list table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .attendee-list td {
+            padding: 0.5rem;
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        .attendee-list tr:last-child td {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        footer {
+            background: var(--primary-color);
+            color: white;
+            text-align: center;
+            padding: 2rem 0;
+            margin-top: 3rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .hamburger {
+                display: flex;
+            }
+
+            .nav-menu {
+                display: none;
+            }
+
+            .font-controls {
+                order: -1;
+            }
+
+            .header-content {
+                flex-wrap: wrap;
+                gap: 1rem;
+            }
+
+            .hero h1 {
+                font-size: 2rem;
+            }
+
+            .meeting-info {
+                grid-template-columns: 1fr;
+            }
+
+            .attendees-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .schedule-table {
+                font-size: 0.9rem;
+            }
+
+            .schedule-table th,
+            .schedule-table td {
+                padding: 0.5rem;
+            }
+        }
+
+        @media (max-width: 480px) {
+            .hero h1 {
+                font-size: 1.5rem;
+            }
+
+            .hero p {
+                font-size: 1rem;
+            }
+
+            .section-title {
+                font-size: 1.2rem;
+            }
+
+            .schedule-table {
+                font-size: 0.8rem;
+            }
+        }
+
+        /* Smooth scrolling */
+        html {
+            scroll-behavior: smooth;
+        }
+
+        /* Highlight section when scrolled to */
+        .section:target {
+            animation: highlight 2s ease-in-out;
+        }
+
+        @keyframes highlight {
+            0% { background-color: rgba(52, 152, 219, 0.1); }
+            100% { background-color: transparent; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">港務公司</div>
+                <nav class="nav">
+                    <div class="font-controls">
+                        <button class="font-btn" onclick="changeFontSize(-1)">-</button>
+                        <button class="font-btn" onclick="changeFontSize(1)">+</button>
+                    </div>
+                    <ul class="nav-menu">
+                        <li><a href="#meeting-info">會議資訊</a></li>
+                        <li><a href="#schedule">行程表</a></li>
+                        <li><a href="#attendees">出席名單</a></li>
+                    </ul>
+                    <div class="hamburger" onclick="toggleMenu()">
+                        <span></span>
+                        <span></span>
+                        <span></span>
+                    </div>
+                </nav>
+            </div>
+        </div>
+    </header>
+
+    <div class="mobile-menu" id="mobile-menu">
+        <ul>
+            <li><a href="#meeting-info" onclick="closeMenu()">會議資訊</a></li>
+            <li><a href="#schedule" onclick="closeMenu()">行程表</a></li>
+            <li><a href="#attendees" onclick="closeMenu()">出席名單</a></li>
+        </ul>
+    </div>
+
+    <main>
+        <section class="hero">
+            <div class="container">
+                <h1>中央氣象署參訪基隆港</h1>
+                <p>戰情中心與基隆港VTS參訪行程</p>
+            </div>
+        </section>
+
+        <div class="container">
+            <section id="meeting-info" class="section">
+                <div class="card">
+                    <div class="section-title">會議資訊</div>
+                    <div class="card-content">
+                        <div class="meeting-info">
+                            <div class="info-item">
+                                <h3>📍 會議地點</h3>
+                                <p>基隆港海港大樓<br>
+                                   地址：基隆市仁愛區港西街6號</p>
+                            </div>
+                            <div class="info-item">
+                                <h3>📅 會議時間</h3>
+                                <p>114年7月10日（星期四）<br>
+                                   下午1時30分</p>
+                            </div>
+                            <div class="info-item">
+                                <h3>📌 討論重點</h3>
+                                <ul>
+                                    <li>港務公司介紹戰情中心與VTS業務項目</li>
+                                    <li>氣象署介紹氣象產品</li>
+                                    <li>參觀基隆港戰情中心</li>
+                                    <li>參觀基隆港VTS</li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="schedule" class="section">
+                <div class="card">
+                    <div class="section-title">詳細行程表</div>
+                    <div class="card-content">
+                        <table class="schedule-table">
+                            <thead>
+                                <tr>
+                                    <th>時間</th>
+                                    <th>地點</th>
+                                    <th>活動說明</th>
+                                    <th>備註</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td>12:15-13:20<br>(65分鐘)</td>
+                                    <td>饗泰多基隆店</td>
+                                    <td>會前餐敘</td>
+                                    <td>餐敘人數：20位<br>地址：基隆市中正區中正路3號2樓</td>
+                                </tr>
+                                <tr>
+                                    <td>13:30-14:30<br>(60分鐘)</td>
+                                    <td>基隆港海港大樓5樓會議室</td>
+                                    <td>1. 戰情中心與VTS業務介紹(15分鐘)<br>
+                                        2. 氣象產品介紹(25分鐘)<br>
+                                        3. 綜合討論(20分鐘)</td>
+                                    <td>基分簡報人：何文綺助理工程師<br>
+                                        氣象署簡報人：黃士哲科長</td>
+                                </tr>
+                                <tr>
+                                    <td>14:30-15:00<br>(30分鐘)</td>
+                                    <td>基隆港戰情中心</td>
+                                    <td>參觀基隆港戰情中心</td>
+                                    <td>簡報人：林宏儒副工程師</td>
+                                </tr>
+                                <tr>
+                                    <td>15:00-15:30<br>(30分鐘)</td>
+                                    <td>車程(海港大樓-VTS)</td>
+                                    <td>由基隆分公司協助派車事宜</td>
+                                    <td>車號：830-WB</td>
+                                </tr>
+                                <tr>
+                                    <td>15:30-16:00<br>(30分鐘)</td>
+                                    <td>基隆港VTS</td>
+                                    <td>參觀基隆港VTS</td>
+                                    <td>簡報人：蘇婉怡助理技術員</td>
+                                </tr>
+                                <tr>
+                                    <td>16:00-16:30<br>(30分鐘)</td>
+                                    <td>車程(VTS-海港大樓)</td>
+                                    <td>由基隆分公司協助派車事宜</td>
+                                    <td>車號：830-WB</td>
+                                </tr>
+                                <tr>
+                                    <td>16:30~</td>
+                                    <td>-</td>
+                                    <td>參訪行程結束</td>
+                                    <td>-</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <div style="margin-top: 1rem; font-size: 0.9rem; color: #666;">
+                            <p><strong>聯絡資訊：</strong></p>
+                            <p>總公司窗口：蘇志峯經理 07-5219000 分機3310 / 薛湘樺高級技術員 07-5219000 分機3315</p>
+                        </div>
+                    </div>
+                </div>
+            </section>
+
+            <section id="attendees" class="section">
+                <div class="card">
+                    <div class="section-title">出席名單</div>
+                    <div class="card-content">
+                        <div class="attendees-grid">
+                            <div class="attendee-group">
+                                <div class="attendee-header">港務公司</div>
+                                <div class="attendee-list">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>單位</th>
+                                                <th>職稱</th>
+                                                <th>姓名</th>
+                                                <th>備註</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>總經理室</td>
+                                                <td>助理副總經理</td>
+                                                <td>王月惠</td>
+                                                <td>率隊長官</td>
+                                            </tr>
+                                            <tr>
+                                                <td rowspan="2">工程處</td>
+                                                <td>資深副處長</td>
+                                                <td>鄭志宏</td>
+                                                <td>中午餐敘</td>
+                                            </tr>
+                                            <tr>
+                                                <td>副工程師</td>
+                                                <td>賴志炫</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td rowspan="4">港棧管理處</td>
+                                                <td>資深處長</td>
+                                                <td>張乃文</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>督導</td>
+                                                <td>林欣緯</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>經理</td>
+                                                <td>蘇志峯</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>高級技術員</td>
+                                                <td>薛湘樺</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td rowspan="2">職業安全衛生處</td>
+                                                <td>經理</td>
+                                                <td>石振榮</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>管理師</td>
+                                                <td>張祐銘</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td rowspan="5">基隆分公司港務處</td>
+                                                <td>港務長</td>
+                                                <td>陳世鴻</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>處長</td>
+                                                <td>曾盛哲</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>工程師</td>
+                                                <td>曹兆凡</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>副工程師</td>
+                                                <td>林宏儒</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>助理工程師</td>
+                                                <td>何文綺</td>
+                                                <td>-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+
+                            <div class="attendee-group">
+                                <div class="attendee-header">中央氣象署</div>
+                                <div class="attendee-list">
+                                    <table>
+                                        <thead>
+                                            <tr>
+                                                <th>單位</th>
+                                                <th>職稱</th>
+                                                <th>姓名</th>
+                                                <th>備註</th>
+                                            </tr>
+                                        </thead>
+                                        <tbody>
+                                            <tr>
+                                                <td>-</td>
+                                                <td>副署長</td>
+                                                <td>洪景山</td>
+                                                <td>率隊長官</td>
+                                            </tr>
+                                            <tr>
+                                                <td>海象氣候組</td>
+                                                <td>組長</td>
+                                                <td>潘琦</td>
+                                                <td>中午餐敘</td>
+                                            </tr>
+                                            <tr>
+                                                <td>大氣觀測組</td>
+                                                <td>副組長</td>
+                                                <td>李秀蓮</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>科技發展組</td>
+                                                <td>簡任技正</td>
+                                                <td>曾俊二</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>氣象預報中心</td>
+                                                <td>技正</td>
+                                                <td>林伯東</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>地震測報中心</td>
+                                                <td>科長</td>
+                                                <td>廖哲緯</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>海象氣候組</td>
+                                                <td>科長</td>
+                                                <td>黃士哲</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>基隆氣象站</td>
+                                                <td>主任</td>
+                                                <td>白意詩</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>基隆氣象站</td>
+                                                <td>技佐</td>
+                                                <td>鄧乃誠</td>
+                                                <td>-</td>
+                                            </tr>
+                                            <tr>
+                                                <td>基隆氣象站</td>
+                                                <td>技佐</td>
+                                                <td>莊采妮</td>
+                                                <td>-</td>
+                                            </tr>
+                                        </tbody>
+                                    </table>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </section>
+        </div>
+    </main>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2024 臺灣港務股份有限公司 版權所有</p>
+        </div>
+    </footer>
+
+    <script>
+        // 漢堡選單功能
+        function toggleMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            hamburger.classList.toggle('active');
+            mobileMenu.classList.toggle('active');
+        }
+
+        function closeMenu() {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            hamburger.classList.remove('active');
+            mobileMenu.classList.remove('active');
+        }
+
+        // 字體大小調整功能
+        let currentFontSize = 16;
+        const minFontSize = 12;
+        const maxFontSize = 24;
+
+        function changeFontSize(delta) {
+            currentFontSize += delta;
+            
+            if (currentFontSize < minFontSize) {
+                currentFontSize = minFontSize;
+            } else if (currentFontSize > maxFontSize) {
+                currentFontSize = maxFontSize;
+            }
+            
+            document.documentElement.style.setProperty('--font-size-base', currentFontSize + 'px');
+            
+            // 儲存設定到 localStorage
+            localStorage.setItem('fontSize', currentFontSize);
+        }
+
+        // 頁面載入時恢復字體大小設定
+        window.addEventListener('load', function() {
+            const savedFontSize = localStorage.getItem('fontSize');
+            if (savedFontSize) {
+                currentFontSize = parseInt(savedFontSize);
+                document.documentElement.style.setProperty('--font-size-base', currentFontSize + 'px');
+            }
+        });
+
+        // 點擊頁面其他地方時關閉選單
+        document.addEventListener('click', function(event) {
+            const hamburger = document.querySelector('.hamburger');
+            const mobileMenu = document.getElementById('mobile-menu');
+            
+            if (!hamburger.contains(event.target) && !mobileMenu.contains(event.target)) {
+                hamburger.classList.remove('active');
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // 滑順滾動到指定區域
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function (e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    const headerOffset = 80;
+                    const elementPosition = target.offsetTop;
+                    const offsetPosition = elementPosition - headerOffset;
+
+                    window.scrollTo({
+                        top: offsetPosition,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+    </script>
+</body>
+</html>
