@@ -1,0 +1,779 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>港務新聞搜尋器</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        .line-clamp-3 {
+            display: -webkit-box;
+            -webkit-line-clamp: 3;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+        }
+        .animate-spin {
+            animation: spin 1s linear infinite;
+        }
+        @keyframes spin {
+            from { transform: rotate(0deg); }
+            to { transform: rotate(360deg); }
+        }
+        .keyword-tag {
+            transition: all 0.2s ease;
+        }
+        .keyword-tag:hover {
+            transform: translateY(-1px);
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        }
+        
+        /* 浮動選單樣式 */
+        .floating-menu-btn {
+            position: fixed;
+            top: 20px;
+            left: 20px;
+            z-index: 1000;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #3b82f6, #1d4ed8);
+            box-shadow: 0 4px 20px rgba(59, 130, 246, 0.4);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            color: white;
+        }
+        
+        .floating-menu-btn:hover {
+            transform: scale(1.1);
+            box-shadow: 0 6px 25px rgba(59, 130, 246, 0.6);
+        }
+        
+        .floating-menu-panel {
+            position: fixed;
+            top: 20px;
+            left: 90px;
+            z-index: 999;
+            background: white;
+            border-radius: 16px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.15);
+            opacity: 0;
+            transform: translateX(-20px) scale(0.95);
+            transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+            pointer-events: none;
+            max-width: 90vw;
+            width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
+        }
+        
+        .floating-menu-panel.show {
+            opacity: 1;
+            transform: translateX(0) scale(1);
+            pointer-events: all;
+        }
+        
+        .floating-menu-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            background: rgba(0, 0, 0, 0.3);
+            z-index: 998;
+            opacity: 0;
+            pointer-events: none;
+            transition: opacity 0.3s ease;
+        }
+        
+        .floating-menu-overlay.show {
+            opacity: 1;
+            pointer-events: all;
+        }
+        
+        /* 響應式設計 */
+        @media (max-width: 768px) {
+            .floating-menu-panel {
+                width: calc(100vw - 40px);
+                left: 20px;
+                top: 90px;
+            }
+        }
+        
+        /* 選單內容樣式 */
+        .menu-section {
+            padding: 24px;
+            border-bottom: 1px solid #e5e7eb;
+        }
+        
+        .menu-section:last-child {
+            border-bottom: none;
+        }
+        
+        .menu-title {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 18px;
+            font-weight: 600;
+            color: #374151;
+            margin-bottom: 12px;
+        }
+        
+        .menu-description {
+            font-size: 14px;
+            color: #6b7280;
+            margin-bottom: 16px;
+        }
+    </style>
+</head>
+<body class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-100 p-4">
+    <div class="max-w-6xl mx-auto">
+        <!-- 浮動選單按鈕 -->
+        <button id="floatingMenuBtn" class="floating-menu-btn">
+            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+            </svg>
+        </button>
+
+        <!-- 選單遮罩 -->
+        <div id="floatingMenuOverlay" class="floating-menu-overlay"></div>
+
+        <!-- 浮動選單面板 -->
+        <div id="floatingMenuPanel" class="floating-menu-panel">
+            <!-- 常用關鍵字區域 -->
+            <div class="menu-section">
+                <h3 class="menu-title">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z"></path>
+                    </svg>
+                    常用關鍵字
+                </h3>
+                <p class="menu-description">點擊任何關鍵字進行快速搜尋</p>
+                <div class="grid grid-cols-2 md:grid-cols-3 gap-2" id="keywordTags">
+                    <!-- 關鍵字標籤會在這裡動態生成 -->
+                </div>
+            </div>
+            
+            <!-- 批次搜尋區域 -->
+            <div class="menu-section">
+                <div class="flex justify-between items-start mb-4">
+                    <div class="flex-1">
+                        <h3 class="menu-title">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5H7a2 2 0 00-2 2v10a2 2 0 002 2h8a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2m-3 7h3m-3 4h3m-6-4h.01M9 16h.01"></path>
+                            </svg>
+                            批次搜尋
+                        </h3>
+                        <p class="menu-description">將依序搜尋所有預設關鍵字，並顯示各關鍵字的新聞數量</p>
+                    </div>
+                    <button
+                        id="batchSearchBtn"
+                        class="px-4 py-2 bg-green-600 text-white rounded-lg hover:bg-green-700 focus:outline-none focus:ring-2 focus:ring-green-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors ml-4"
+                    >
+                        開始批次搜尋
+                    </button>
+                </div>
+                
+                <!-- 批次搜尋進度 -->
+                <div id="batchProgress" class="mt-4 hidden">
+                    <div class="bg-gray-200 rounded-full h-2 mb-2">
+                        <div id="progressBar" class="bg-blue-600 h-2 rounded-full transition-all duration-300" style="width: 0%"></div>
+                    </div>
+                    <p id="progressText" class="text-sm text-gray-600">準備開始...</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- 標題區域 -->
+        <div class="text-center mb-8">
+            <h1 class="text-4xl font-bold text-gray-800 mb-2">
+                港務新聞搜尋器
+            </h1>
+            <p class="text-gray-600">搜尋近 48 小時內的港務相關新聞</p>
+        </div>
+
+        <!-- 搜尋區域 -->
+        <div class="bg-white rounded-lg shadow-lg p-6 mb-8">
+            <div class="flex gap-4">
+                <div class="flex-1 relative">
+                    <input
+                        type="text"
+                        id="keyword"
+                        placeholder="輸入關鍵字搜尋新聞..."
+                        class="w-full px-4 py-3 pl-12 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    />
+                    <svg class="absolute left-4 top-1/2 transform -translate-y-1/2 text-gray-400 w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"></path>
+                    </svg>
+                </div>
+                <button
+                    id="searchBtn"
+                    class="px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:opacity-50 disabled:cursor-not-allowed transition-colors"
+                >
+                    搜尋
+                </button>
+            </div>
+        </div>
+
+        <!-- 錯誤訊息 -->
+        <div id="errorMessage" class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded-lg mb-6 hidden">
+        </div>
+
+        <!-- 載入中 -->
+        <div id="loadingSpinner" class="text-center py-12 hidden">
+            <div class="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto"></div>
+            <p class="text-gray-600 mt-4">正在搜尋新聞...</p>
+        </div>
+
+        <!-- 批次搜尋結果摘要 -->
+        <div id="batchSummary" class="bg-white rounded-lg shadow-lg p-6 mb-8 hidden">
+            <h3 class="text-lg font-semibold text-gray-700 mb-4">批次搜尋結果摘要</h3>
+            <div id="batchSummaryContent" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                <!-- 批次搜尋結果會在這裡顯示 -->
+            </div>
+        </div>
+
+        <!-- 新聞結果 -->
+        <div id="newsResults" class="space-y-4 hidden">
+            <div class="flex items-center justify-between text-gray-700 mb-4">
+                <div class="flex items-center gap-2">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                    </svg>
+                    <span id="newsCount">找到 0 則近 48 小時內的新聞</span>
+                </div>
+                <span id="currentKeyword" class="text-sm bg-blue-100 text-blue-800 px-3 py-1 rounded-full"></span>
+            </div>
+            <div id="newsList"></div>
+        </div>
+
+        <!-- 使用說明 -->
+        <div class="mt-12 bg-gray-50 rounded-lg p-6">
+            <h3 class="text-lg font-semibold text-gray-800 mb-3">使用說明</h3>
+            <ul class="text-gray-600 space-y-2">
+                <li>• <strong>單一搜尋：</strong>輸入關鍵字後按搜尋，或點擊選單中的常用關鍵字</li>
+                <li>• <strong>常用關鍵字：</strong>點擊搜尋框右側的選單圖示查看預設關鍵字</li>
+                <li>• <strong>批次搜尋：</strong>在選單中點擊「開始批次搜尋」可一次搜尋所有關鍵字</li>
+                <li>• <strong>時間範圍：</strong>系統會自動過濾近 48 小時內的新聞</li>
+                <li>• <strong>新聞來源：</strong>支援正體中文搜尋，結果以臺灣地區新聞為主</li>
+            </ul>
+        </div>
+    </div>
+
+    <script>
+        // 預設關鍵字
+        const defaultKeywords = [
+            '基隆港', '臺中港', '台中港', '高雄港', '花蓮港', '台北港', '臺北港',
+            '蘇澳港', '布袋港', '安平港', '馬公港', '澎湖港', '南方澳',
+            '港務公司', '港勤公司', '土地開發公司', '風電', '風能訓練公司',
+            '海運', '貨櫃', '陽明海運', '運價', '自由貿易港'
+        ];
+
+        let isLoading = false;
+        let batchSearchInProgress = false;
+        let allBatchResults = [];
+
+        // DOM 元素
+        const keywordInput = document.getElementById('keyword');
+        const searchBtn = document.getElementById('searchBtn');
+        const floatingMenuBtn = document.getElementById('floatingMenuBtn');
+        const floatingMenuPanel = document.getElementById('floatingMenuPanel');
+        const floatingMenuOverlay = document.getElementById('floatingMenuOverlay');
+        const batchSearchBtn = document.getElementById('batchSearchBtn');
+        const keywordTags = document.getElementById('keywordTags');
+        const errorMessage = document.getElementById('errorMessage');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const newsResults = document.getElementById('newsResults');
+        const newsCount = document.getElementById('newsCount');
+        const currentKeyword = document.getElementById('currentKeyword');
+        const newsList = document.getElementById('newsList');
+        const batchProgress = document.getElementById('batchProgress');
+        const progressBar = document.getElementById('progressBar');
+        const progressText = document.getElementById('progressText');
+        const batchSummary = document.getElementById('batchSummary');
+        const batchSummaryContent = document.getElementById('batchSummaryContent');
+
+        // 初始化
+        function init() {
+            generateKeywordTags();
+        }
+
+        // 生成關鍵字標籤
+        function generateKeywordTags() {
+            keywordTags.innerHTML = defaultKeywords.map(keyword => `
+                <button 
+                    class="keyword-tag px-3 py-2 bg-blue-100 text-blue-800 rounded-full text-sm hover:bg-blue-200 focus:outline-none focus:ring-2 focus:ring-blue-500 transition-colors"
+                    onclick="quickSearch('${keyword}')"
+                >
+                    ${keyword}
+                </button>
+            `).join('');
+        }
+
+        // 快速搜尋
+        function quickSearch(keyword) {
+            keywordInput.value = keyword;
+            hideFloatingMenu(); // 選擇關鍵字後自動關閉選單
+            searchNews();
+        }
+
+        // 浮動選單控制
+        function toggleFloatingMenu() {
+            if (floatingMenuPanel.classList.contains('show')) {
+                hideFloatingMenu();
+            } else {
+                showFloatingMenu();
+            }
+        }
+
+        function showFloatingMenu() {
+            floatingMenuPanel.classList.add('show');
+            floatingMenuOverlay.classList.add('show');
+            
+            // 更改按鈕圖示為 X
+            floatingMenuBtn.innerHTML = `
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"></path>
+                </svg>
+            `;
+        }
+
+        function hideFloatingMenu() {
+            floatingMenuPanel.classList.remove('show');
+            floatingMenuOverlay.classList.remove('show');
+            
+            // 恢復按鈕圖示為漢堡選單
+            floatingMenuBtn.innerHTML = `
+                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path>
+                </svg>
+            `;
+        }
+
+        // 單一搜尋功能（加入錯誤處理改善）
+        async function searchNews() {
+            const keyword = keywordInput.value.trim();
+            
+            if (!keyword) {
+                showError('請輸入關鍵字');
+                return;
+            }
+
+            if (isLoading || batchSearchInProgress) return;
+
+            setLoading(true);
+            hideError();
+            hideResults();
+            hideBatchSummary();
+
+            try {
+                const news = await fetchNews(keyword);
+                displayNews(news, keyword);
+                
+                if (news.length === 0) {
+                    showError(`找不到「${keyword}」的 48 小時內相關新聞，可能是該關鍵字較冷門或新聞更新較少`);
+                }
+            } catch (err) {
+                console.error('搜尋錯誤:', err);
+                
+                if (err.message.includes('所有代理服務都無法使用')) {
+                    showError('目前所有新聞來源都無法存取，請稍後再試或檢查網路連線');
+                } else if (err.message.includes('AbortError') || err.message.includes('timeout')) {
+                    showError('搜尋逾時，請檢查網路連線或稍後再試');
+                } else {
+                    showError(`搜尋時發生錯誤：${err.message}。建議稍後再試或嘗試其他關鍵字`);
+                }
+            } finally {
+                setLoading(false);
+            }
+        }
+
+        // 批次搜尋功能（加入智慧延遲）
+        async function batchSearch() {
+            if (batchSearchInProgress || isLoading) return;
+
+            batchSearchInProgress = true;
+            allBatchResults = [];
+            hideError();
+            hideResults();
+            showBatchProgress();
+            hideBatchSummary();
+
+            batchSearchBtn.disabled = true;
+            batchSearchBtn.textContent = '搜尋中...';
+
+            // 隨機排列關鍵字以分散請求模式
+            const shuffledKeywords = [...defaultKeywords].sort(() => Math.random() - 0.5);
+
+            try {
+                for (let i = 0; i < shuffledKeywords.length; i++) {
+                    const keyword = shuffledKeywords[i];
+                    const progress = ((i + 1) / shuffledKeywords.length) * 100;
+                    
+                    updateProgress(progress, `正在搜尋「${keyword}」... (${i + 1}/${shuffledKeywords.length})`);
+                    
+                    try {
+                        const news = await fetchNews(keyword);
+                        allBatchResults.push({
+                            keyword: keyword,
+                            count: news.length,
+                            news: news
+                        });
+                        
+                        console.log(`「${keyword}」搜尋完成，找到 ${news.length} 則新聞`);
+                        
+                    } catch (err) {
+                        console.error(`搜尋「${keyword}」時發生錯誤:`, err);
+                        allBatchResults.push({
+                            keyword: keyword,
+                            count: 0,
+                            news: [],
+                            error: true
+                        });
+                    }
+                    
+                    // 智慧延遲：根據進度調整延遲時間
+                    if (i < shuffledKeywords.length - 1) { // 不是最後一個
+                        const baseDelay = 800; // 基礎延遲
+                        const randomDelay = Math.random() * 400; // 隨機延遲 0-400ms
+                        const adaptiveDelay = baseDelay + randomDelay;
+                        
+                        updateProgress(progress, `等待中... (${Math.round(adaptiveDelay/1000)}秒)`);
+                        await new Promise(resolve => setTimeout(resolve, adaptiveDelay));
+                    }
+                }
+
+                updateProgress(100, '搜尋完成！');
+                
+                // 按原始順序重新排列結果
+                allBatchResults.sort((a, b) => {
+                    return defaultKeywords.indexOf(a.keyword) - defaultKeywords.indexOf(b.keyword);
+                });
+                
+                displayBatchSummary();
+                
+                setTimeout(() => {
+                    hideBatchProgress();
+                }, 1500);
+
+            } catch (err) {
+                showError('批次搜尋過程中發生錯誤');
+                console.error('批次搜尋錯誤:', err);
+                hideBatchProgress();
+            } finally {
+                batchSearchInProgress = false;
+                batchSearchBtn.disabled = false;
+                batchSearchBtn.textContent = '開始批次搜尋';
+            }
+        }
+
+        // 獲取新聞（帶重試機制和多個備用服務）
+        async function fetchNews(keyword, retryCount = 0) {
+            const maxRetries = 3;
+            const retryDelay = 1000 * (retryCount + 1); // 遞增延遲：1秒、2秒、3秒
+            
+            // 多個RSS代理服務備案
+            const rssProxyServices = [
+                {
+                    name: 'RSS2JSON',
+                    url: (rssUrl) => `https://api.rss2json.com/v1/api.json?rss_url=${encodeURIComponent(rssUrl)}`
+                },
+                {
+                    name: 'AllOrigins',
+                    url: (rssUrl) => `https://api.allorigins.win/get?url=${encodeURIComponent(rssUrl)}`
+                },
+                {
+                    name: 'ThingProxy',
+                    url: (rssUrl) => `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(rssUrl)}`
+                }
+            ];
+
+            const rssUrl = `https://news.google.com/rss/search?q=${encodeURIComponent(keyword)}&hl=zh-TW&gl=TW&ceid=TW:zh-Hant`;
+            
+            for (let serviceIndex = 0; serviceIndex < rssProxyServices.length; serviceIndex++) {
+                const service = rssProxyServices[serviceIndex];
+                
+                try {
+                    console.log(`嘗試使用 ${service.name} 搜尋「${keyword}」`);
+                    
+                    const proxyUrl = service.url(rssUrl);
+                    const controller = new AbortController();
+                    const timeoutId = setTimeout(() => controller.abort(), 10000); // 10秒逾時
+                    
+                    const response = await fetch(proxyUrl, {
+                        signal: controller.signal,
+                        headers: {
+                            'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36',
+                            'Accept': 'application/json, text/plain, */*',
+                            'Accept-Language': 'zh-TW,zh;q=0.9,en;q=0.8'
+                        }
+                    });
+                    
+                    clearTimeout(timeoutId);
+                    
+                    if (!response.ok) {
+                        throw new Error(`HTTP ${response.status}: ${response.statusText}`);
+                    }
+                    
+                    let data;
+                    
+                    if (service.name === 'RSS2JSON') {
+                        data = await response.json();
+                        if (data.status !== 'ok') {
+                            throw new Error(`RSS2JSON 錯誤: ${data.message || '未知錯誤'}`);
+                        }
+                    } else {
+                        // 其他服務需要解析 XML
+                        const textData = await response.text();
+                        let xmlContent;
+                        
+                        if (service.name === 'AllOrigins') {
+                            const jsonData = JSON.parse(textData);
+                            xmlContent = jsonData.contents;
+                        } else {
+                            xmlContent = textData;
+                        }
+                        
+                        data = parseRSSXML(xmlContent);
+                    }
+                    
+                    // 過濾 48 小時內的新聞
+                    const now = new Date();
+                    const fortyEightHoursAgo = new Date(now.getTime() - 48 * 60 * 60 * 1000);
+                    
+                    const filteredNews = (data.items || []).filter(item => {
+                        const pubDate = new Date(item.pubDate);
+                        return pubDate >= fortyEightHoursAgo;
+                    });
+                    
+                    console.log(`使用 ${service.name} 成功取得 ${filteredNews.length} 則新聞`);
+                    return filteredNews;
+                    
+                } catch (error) {
+                    console.warn(`${service.name} 服務失敗:`, error.message);
+                    
+                    // 如果是最後一個服務且還有重試次數
+                    if (serviceIndex === rssProxyServices.length - 1 && retryCount < maxRetries) {
+                        console.log(`等待 ${retryDelay}ms 後重試... (${retryCount + 1}/${maxRetries})`);
+                        await new Promise(resolve => setTimeout(resolve, retryDelay));
+                        return fetchNews(keyword, retryCount + 1);
+                    }
+                }
+            }
+            
+            throw new Error('所有代理服務都無法使用，請稍後再試');
+        }
+
+        // 解析 RSS XML 的簡單函數
+        function parseRSSXML(xmlString) {
+            try {
+                const parser = new DOMParser();
+                const xmlDoc = parser.parseFromString(xmlString, 'text/xml');
+                
+                const items = [];
+                const itemNodes = xmlDoc.querySelectorAll('item');
+                
+                itemNodes.forEach(item => {
+                    const title = item.querySelector('title')?.textContent || '';
+                    const link = item.querySelector('link')?.textContent || '';
+                    const description = item.querySelector('description')?.textContent || '';
+                    const pubDate = item.querySelector('pubDate')?.textContent || new Date().toISOString();
+                    const source = item.querySelector('source')?.textContent || '未知來源';
+                    
+                    items.push({
+                        title: title.trim(),
+                        link: link.trim(),
+                        description: description.trim(),
+                        pubDate: pubDate.trim(),
+                        source: source.trim()
+                    });
+                });
+                
+                return { items };
+            } catch (error) {
+                console.error('XML 解析錯誤:', error);
+                return { items: [] };
+            }
+        }
+
+        // 顯示新聞
+        function displayNews(news, keyword) {
+            newsCount.textContent = `找到 ${news.length} 則近 48 小時內的新聞`;
+            currentKeyword.textContent = `關鍵字：${keyword}`;
+            
+            newsList.innerHTML = news.map(item => `
+                <div class="bg-white rounded-lg shadow-md p-6 hover:shadow-lg transition-shadow">
+                    <div class="flex justify-between items-start mb-3">
+                        <h3 class="text-xl font-semibold text-gray-800 flex-1 mr-4">
+                            ${item.title}
+                        </h3>
+                        <a
+                            href="${item.link}"
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            class="text-blue-600 hover:text-blue-800 flex items-center gap-1 text-sm"
+                        >
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"></path>
+                            </svg>
+                            閱讀完整新聞
+                        </a>
+                    </div>
+                    
+                    <p class="text-gray-600 mb-4 line-clamp-3">
+                        ${item.description ? item.description.replace(/<[^>]*>/g, '') : '無摘要'}
+                    </p>
+                    
+                    <div class="flex items-center justify-between text-sm text-gray-500">
+                        <span class="font-medium">${item.source || '未知來源'}</span>
+                        <div class="flex items-center gap-1">
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                            <span>${formatDate(item.pubDate)}</span>
+                        </div>
+                    </div>
+                </div>
+            `).join('');
+            
+            showResults();
+        }
+
+        // 顯示批次搜尋摘要
+        function displayBatchSummary() {
+            const totalNews = allBatchResults.reduce((sum, result) => sum + result.count, 0);
+            const validResults = allBatchResults.filter(result => !result.error);
+            
+            batchSummaryContent.innerHTML = allBatchResults.map(result => {
+                const bgColor = result.error ? 'bg-red-100' : 
+                               result.count > 0 ? 'bg-green-100' : 'bg-gray-100';
+                const textColor = result.error ? 'text-red-800' : 
+                                result.count > 0 ? 'text-green-800' : 'text-gray-800';
+                
+                return `
+                    <div class="p-4 rounded-lg ${bgColor} ${textColor}">
+                        <div class="flex justify-between items-center mb-2">
+                            <h4 class="font-semibold">${result.keyword}</h4>
+                            <span class="text-sm">${result.error ? '錯誤' : result.count + ' 則'}</span>
+                        </div>
+                        ${result.count > 0 ? `
+                            <button 
+                                onclick="showKeywordNews('${result.keyword}')"
+                                class="text-sm underline hover:no-underline"
+                            >
+                                查看詳細新聞
+                            </button>
+                        ` : ''}
+                    </div>
+                `;
+            }).join('');
+            
+            // 在摘要前添加總計
+            batchSummaryContent.insertAdjacentHTML('afterbegin', `
+                <div class="col-span-full p-4 bg-blue-100 text-blue-800 rounded-lg mb-4">
+                    <h4 class="font-semibold text-lg">批次搜尋總計</h4>
+                    <p>共搜尋 ${defaultKeywords.length} 個關鍵字，找到 ${totalNews} 則新聞</p>
+                </div>
+            `);
+            
+            showBatchSummary();
+        }
+
+        // 顯示特定關鍵字的新聞
+        function showKeywordNews(keyword) {
+            const result = allBatchResults.find(r => r.keyword === keyword);
+            if (result && result.news.length > 0) {
+                displayNews(result.news, keyword);
+            }
+        }
+
+        // 格式化日期
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            const now = new Date();
+            const diffInHours = Math.floor((now - date) / (1000 * 60 * 60));
+            
+            if (diffInHours < 1) {
+                return '剛剛';
+            } else if (diffInHours < 24) {
+                return `${diffInHours} 小時前`;
+            } else {
+                return `${Math.floor(diffInHours / 24)} 天前`;
+            }
+        }
+
+        // UI 控制函數
+        function setLoading(loading) {
+            isLoading = loading;
+            searchBtn.disabled = loading;
+            keywordInput.disabled = loading;
+            searchBtn.textContent = loading ? '搜尋中...' : '搜尋';
+            
+            if (loading) {
+                loadingSpinner.classList.remove('hidden');
+            } else {
+                loadingSpinner.classList.add('hidden');
+            }
+        }
+
+        function updateProgress(percent, text) {
+            progressBar.style.width = percent + '%';
+            progressText.textContent = text;
+        }
+
+        function showBatchProgress() {
+            batchProgress.classList.remove('hidden');
+        }
+
+        function hideBatchProgress() {
+            batchProgress.classList.add('hidden');
+        }
+
+        function showBatchSummary() {
+            batchSummary.classList.remove('hidden');
+        }
+
+        function hideBatchSummary() {
+            batchSummary.classList.add('hidden');
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorMessage.classList.remove('hidden');
+        }
+
+        function hideError() {
+            errorMessage.classList.add('hidden');
+        }
+
+        function showResults() {
+            newsResults.classList.remove('hidden');
+        }
+
+        function hideResults() {
+            newsResults.classList.add('hidden');
+        }
+
+        // 事件監聽器
+        searchBtn.addEventListener('click', searchNews);
+        floatingMenuBtn.addEventListener('click', toggleFloatingMenu);
+        floatingMenuOverlay.addEventListener('click', hideFloatingMenu);
+        batchSearchBtn.addEventListener('click', () => {
+            hideFloatingMenu(); // 開始批次搜尋時關閉選單
+            batchSearch();
+        });
+        keywordInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchNews();
+            }
+        });
+
+        // 初始化應用
+        init();
+    </script>
+</body>
+</html>
