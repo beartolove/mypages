@@ -1,0 +1,102 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{{REPORT_TITLE}}</title>
+    <link rel="stylesheet" href="https://beartolove.github.io/mypages/summary_common.css">
+</head>
+<body class="font-md">
+    <!-- 遮罩層 -->
+    <div class="overlay" id="overlay"></div>
+
+    <!-- 漢堡選單 -->
+    <div class="hamburger-menu">
+        <button class="hamburger-toggle" id="hamburger-toggle">
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+            <div class="hamburger-line"></div>
+        </button>
+
+        <nav class="nav-panel" id="nav-panel">
+            <div class="nav-section">
+                <div class="nav-title">區域導航</div>
+                <div class="nav-links">
+                    <a href="#summary" class="nav-link">重點摘要</a>
+                    <a href="#highlights" class="nav-link">條列重點</a>
+                    <a href="#mindmap" class="nav-link">心智圖重點</a>
+                    <a href="#keywords" class="nav-link">關鍵字重點</a>
+                </div>
+            </div>
+            <div class="nav-section">
+                <div class="nav-title">文字大小</div>
+                <div class="font-controls">
+                    <button class="font-btn" onclick="changeFontSize('xs')">XS</button>
+                    <button class="font-btn" onclick="changeFontSize('sm')">S</button>
+                    <button class="font-btn active" onclick="changeFontSize('md')">M</button>
+                    <button class="font-btn" onclick="changeFontSize('lg')">L</button>
+                    <button class="font-btn" onclick="changeFontSize('xl')">XL</button>
+                    <button class="font-btn" onclick="changeFontSize('xxl')">XXL</button>
+                </div>
+            </div>
+        </nav>
+    </div>
+
+    <div class="container">
+        <!-- 標題區 -->
+        <header class="header">
+            <h1>{{REPORT_TITLE}}</h1>
+            <p>{{ONE_LINE_SUMMARY}}</p>
+        </header>
+
+        <!-- 重點摘要區 -->
+        <section id="summary" class="content-section">
+            <h2 class="section-title">🔖重點摘要</h2>
+            
+            <div class="summary-content">
+                <p>{{DETAILED_SUMMARY}}</p>
+            </div>
+        </section>
+
+        <!-- 條列重點區 -->
+        <section id="highlights" class="content-section">
+            <div class="section-header">
+                <h2 class="section-title">📌條列重點</h2>
+                <button class="copy-btn" onclick="copyHighlights()" title="複製條列重點內容">
+                    <span class="copy-icon">📋</span>
+                    <span class="copy-text">複製</span>
+                </button>
+            </div>
+            
+            <ul class="highlight-list" id="highlight-content">
+                {{HIGHLIGHT_ITEMS}}
+            </ul>
+        </section>
+
+        <!-- 心智圖重點區 -->
+        <section id="mindmap" class="content-section">
+            <h2 class="section-title">🧠心智圖重點</h2>
+            
+            <div class="mindmap-container">
+                <div id="mindmap-content" class="mindmap-markdown">{{MINDMAP_MARKDOWN}}</div>
+                <svg id="mindmap-svg"></svg>
+            </div>
+        </section>
+
+        <!-- 關鍵字重點區 -->
+        <section id="keywords" class="content-section">
+            <h2 class="section-title">💡關鍵字重點</h2>
+            
+            <div class="keywords-grid">
+                {{KEYWORD_PAIRS}}
+            </div>
+        </section>
+    </div>
+
+    <!-- 載入必要的腳本 -->
+    <script src="https://cdn.jsdelivr.net/npm/d3@7"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-lib@0.15.3/dist/browser/index.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/markmap-view@0.15.3/dist/browser/index.js"></script>
+    <script src="https://beartolove.github.io/mypages/summary_common.js"></script>
+</body>
+</html>
