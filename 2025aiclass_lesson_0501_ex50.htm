@@ -1,0 +1,424 @@
+<!DOCTYPE html><html lang="zh-TW"><head><meta charset="UTF-8"><meta name="viewport" content="width=device-width, initial-scale=1.0"><title>【2025麻瓜AI課程】</title><style>body{font-family:Microsoft JhengHei,sans-serif;line-height:1.6;max-width:800px;margin:0 auto;padding:20px}h1{color:#2c3e50;font-size:2.2rem;margin-bottom:30px;text-align:center;padding-bottom:15px;border-bottom:3px solid #3498db}h2{color:#34495e;font-size:1.5rem;margin:25px 0 15px 0;padding:10px 0;border-bottom:2px solid #ecf0f1}h3{color:#7f8c8d;font-size:1.2rem;margin:20px 0 10px 0}ul,ol{margin:15px 0;padding-left:30px}li{margin:8px 0}.hamburger-menu{position:fixed;top:20px;left:20px;z-index:1000;background:#2c5aa0;width:50px;height:50px;border-radius:10px;cursor:pointer;display:flex;flex-direction:column;justify-content:center;align-items:center;gap:5px;box-shadow:0 4px 12px rgba(0,0,0,0.2);transition:all 0.3s ease}.hamburger-menu:hover{background:#3a6bb0;transform:translateY(-2px)}.hamburger-line{width:25px;height:3px;background:white;border-radius:2px;transition:all 0.3s ease}.hamburger-menu.active .hamburger-line:nth-child(1){transform:rotate(45deg) translate(6px,6px)}.hamburger-menu.active .hamburger-line:nth-child(2){opacity:0}.hamburger-menu.active .hamburger-line:nth-child(3){transform:rotate(-45deg) translate(6px,-6px)}.navigation-overlay{position:fixed;top:0;left:0;width:100%;height:100%;background:rgba(0,0,0,0.5);z-index:998;opacity:0;visibility:hidden;transition:all 0.3s ease}.navigation-overlay.active{opacity:1;visibility:visible}.navigation-panel{position:fixed;top:0;left:-100%;width:350px;height:100%;background:#2c5aa0;z-index:999;transition:left 0.3s ease;padding:80px 20px 20px 20px;box-shadow:2px 0 10px rgba(0,0,0,0.2);overflow-y:auto}.navigation-panel.active{left:0}.nav-header{color:white;font-size:1.2rem;font-weight:bold;margin-bottom:20px;padding-bottom:10px;border-bottom:1px solid rgba(255,255,255,0.2)}.nav-menu{display:flex;flex-direction:column;gap:10px;margin-bottom:30px}.nav-link{color:white;text-decoration:none;padding:15px 20px;border-radius:8px;background:transparent;transition:all 0.3s ease;font-size:16px;font-weight:500;border:1px solid transparent}.nav-link:hover{color:#ffeb3b;background:rgba(255,235,59,0.1);border:1px solid rgba(255,235,59,0.3)}.font-controls{display:flex;flex-direction:column;gap:15px;align-items:center;padding:20px;background:rgba(255,255,255,0.1);border-radius:10px}.font-controls-title{color:white;font-size:1rem;font-weight:bold;margin-bottom:10px}.font-controls-buttons{display:flex;gap:10px;align-items:center}.font-btn{background:rgba(255,255,255,0.2);color:white;border:none;width:40px;height:40px;border-radius:50%;cursor:pointer;font-size:18px;font-weight:bold;transition:all 0.3s ease;display:flex;align-items:center;justify-content:center}.font-btn:hover{background:rgba(255,255,255,0.3);transform:scale(1.1)}.font-size-label{color:white;font-size:14px;margin:0 10px;font-weight:bold}.highlight{background-color:#ffeb3b;padding:2px 4px;border-radius:3px;font-weight:bold}strong{color:#007bff;text-decoration:underline;font-weight:bold}a{color:#007bff;text-decoration:none;border-bottom:1px solid #007bff;transition:all 0.3s ease}a:hover{background-color:#007bff;color:white;padding:2px 4px;border-radius:3px}.youtube-embed{margin:20px 0;text-align:center}.youtube-embed iframe{max-width:100%;height:auto;aspect-ratio:16/9;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.image-embed{margin:20px 0;text-align:center}.image-embed img{max-width:100%;height:auto;border-radius:8px;box-shadow:0 4px 12px rgba(0,0,0,0.15)}.code-block{margin:20px 0;border-radius:8px;background:#f8f9fa;border:1px solid #e9ecef;overflow:hidden}.code-header{background:#e9ecef;padding:10px 15px;display:flex;justify-content:space-between;align-items:center;border-bottom:1px solid #dee2e6}.language-label{font-size:12px;color:#6c757d;font-weight:600;text-transform:uppercase}.code-copy-btn{background:#007bff;color:white;border:none;padding:5px 12px;border-radius:4px;font-size:12px;cursor:pointer}.code-copy-btn:hover{background:#0056b3}.code-block pre{margin:0;padding:15px;background:white;overflow-x:auto}.code-block code{font-family:Courier New,Consolas,monospace;font-size:14px;line-height:1.5;color:#333;white-space:pre-wrap}#contentArea{transition:font-size 0.3s ease}@media (max-width:768px){.navigation-panel{width:280px;left:-100%}.navigation-panel.active{left:0}.hamburger-menu{top:15px;left:15px;width:45px;height:45px}}</style></head><body><div class="hamburger-menu" onclick="toggleNavigation()"><div class="hamburger-line"></div><div class="hamburger-line"></div><div class="hamburger-line"></div></div><div class="navigation-overlay" onclick="closeNavigation()"></div><div class="navigation-panel"><div class="nav-header">頁面導航</div><div class="nav-menu"><a href="#一、行政應用" class="nav-link" onclick="closeNavigation()">一、行政應用</a><a href="#二、教育訓練" class="nav-link" onclick="closeNavigation()">二、教育訓練</a><a href="#三、資料分析" class="nav-link" onclick="closeNavigation()">三、資料分析</a><a href="#四、esg行銷" class="nav-link" onclick="closeNavigation()">四、ESG行銷</a><a href="#五、創新研發與政策模擬" class="nav-link" onclick="closeNavigation()">五、創新研發與政策模擬</a></div><div class="font-controls"><div class="font-controls-title">字體大小</div><div class="font-controls-buttons"><button class="font-btn" onclick="decreaseFontSize()" title="縮小字體">−</button><span class="font-size-label" id="fontSizeDisplay">100%</span><button class="font-btn" onclick="increaseFontSize()" title="放大字體">+</button></div></div></div><div id="contentArea"><h1>AI在港口的應用：50個無涉機敏範例</h1>
+
+<h3>🏠<a href="https://beartolove.github.io/mypages/2025aiclass.htm" target="_blank" rel="noopener noreferrer">系列課程官網</a></h3>
+<h2 id="一、行政應用">一、行政應用</h2>
+
+<h3>1. 公文潤稿與標準格式修正</h3>
+<ul><li><strong>功能</strong>：文書優化    </li>
+<li><strong>產出</strong>：正式公文版本、口吻調整稿    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我潤飾以下一份內部公文，使其語句符合台灣行政機關標準格式，並語氣得體：（貼上內容）" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我潤飾以下一份內部公文，使其語句符合台灣行政機關標準格式，並語氣得體：（貼上內容）</code></pre></div>
+
+
+<h3>2. 公告語句轉換（剛性轉柔性）</h3>
+<ul><li><strong>功能</strong>：語氣轉換    </li>
+<li><strong>產出</strong>：客氣版公告語句    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請將以下公告語句轉為較具說服力與親和力的說法，避免生硬命令語氣：（貼上內容）" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請將以下公告語句轉為較具說服力與親和力的說法，避免生硬命令語氣：（貼上內容）</code></pre></div>
+
+
+
+<h3>3. 工程施工公告草稿撰寫</h3>
+<ul><li><strong>功能</strong>：通知文件撰寫    </li>
+<li><strong>產出</strong>：公告初稿、通知格式    </li>
+<li><strong>提示詞</strong>：   </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我撰寫一份碼頭區因設備施工將暫時封閉的公告通知草稿，時間地點與原因需簡明清楚，並使用正式語氣。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我撰寫一份碼頭區因設備施工將暫時封閉的公告通知草稿，時間地點與原因需簡明清楚，並使用正式語氣。</code></pre></div>
+
+
+<h3>4. 會議記錄摘要化（匿名）</h3>
+<ul><li><strong>功能</strong>：內容濃縮    </li>
+<li><strong>產出</strong>：條列式三點重點摘要    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="以下是經過匿名處理的會議記錄內容，請幫我摘要為三大重點條列，每點不超過30字：（貼上記錄）" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>以下是經過匿名處理的會議記錄內容，請幫我摘要為三大重點條列，每點不超過30字：（貼上記錄）</code></pre></div>
+
+
+<h3>5. 對外新聞稿撰寫（形象宣傳）</h3>
+<ul><li><strong>功能</strong>：公共傳播撰文    </li>
+<li><strong>產出</strong>：新聞稿草案    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我撰寫一篇新聞稿，主題是“高雄港完成首座風力發電設施”，內容需含背景、成果與未來效益，採新聞報導格式。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我撰寫一篇新聞稿，主題是“高雄港完成首座風力發電設施”，內容需含背景、成果與未來效益，採新聞報導格式。</code></pre></div>
+
+
+<h3>6. 文件條列與分類</h3>
+<ul><li><strong>功能</strong>：資訊整理    </li>
+<li><strong>產出</strong>：條列清單、分段文本    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我將以下內容整理為有邏輯順序的條列格式，並依主題分段：（貼上原始文件）" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我將以下內容整理為有邏輯順序的條列格式，並依主題分段：（貼上原始文件）</code></pre></div>
+
+
+<h3>7. 港區導覽說明手冊草稿</h3>
+<ul><li><strong>功能</strong>：導覽資料設計    </li>
+<li><strong>產出</strong>：導覽手冊段落內容（中英版）    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我撰寫一份港口導覽說明草稿，對象是首次參觀港區的高中生，內容包含：設施介紹、安全須知與參觀路線。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我撰寫一份港口導覽說明草稿，對象是首次參觀港區的高中生，內容包含：設施介紹、安全須知與參觀路線。</code></pre></div>
+
+
+
+<h3>8. 檢核清單產生（例：颱風前作業）</h3>
+<ul><li><strong>功能</strong>：SOP 條列生成    </li>
+<li><strong>產出</strong>：檢查表、待辦事項表格    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請協助我列出颱風來臨前港區各單位需完成的10項準備作業，格式為「作業項目＋簡要說明」。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請協助我列出颱風來臨前港區各單位需完成的10項準備作業，格式為「作業項目＋簡要說明」。</code></pre></div>
+
+
+<h3>9. 行政簡報分頁規劃</h3>
+<ul><li><strong>功能</strong>：簡報設計架構    </li>
+<li><strong>產出</strong>：簡報大綱    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請依照“港區自動化設備建置進度報告”為主題，建議一份8頁簡報的大綱，每頁建議標題與重點內容。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請依照“港區自動化設備建置進度報告”為主題，建議一份8頁簡報的大綱，每頁建議標題與重點內容。</code></pre></div>
+
+
+<h3>10. 講稿產出（如主管簡報講稿）</h3>
+<ul><li><strong>功能</strong>：口語化書寫    </li>
+<li><strong>產出</strong>：逐字講稿    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我撰寫一篇針對“智慧港口建設成果”的口語簡報講稿，時間控制在3分鐘，語氣自然且具鼓舞性。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我撰寫一篇針對“智慧港口建設成果”的口語簡報講稿，時間控制在3分鐘，語氣自然且具鼓舞性。</code></pre></div>
+
+
+<h2 id="二、教育訓練">二、教育訓練</h2>
+<h3>1. 港務人員教育教材撰寫</h3>
+<ul><li><strong>功能</strong>：教材開發    </li>
+<li><strong>產出</strong>：段落式教材（可用於PPT或教案）    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請撰寫一段簡要教材，說明“港埠”與“自由貿易港區”的差異，用詞簡明，適合給新進港務人員使用。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請撰寫一段簡要教材，說明“港埠”與“自由貿易港區”的差異，用詞簡明，適合給新進港務人員使用。</code></pre></div>
+
+
+
+<h3>2. 職安宣導簡報大綱設計</h3>
+<ul><li><strong>功能</strong>：簡報設計    </li>
+<li><strong>產出</strong>：頁次建議與段落大綱    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請根據“碼頭作業安全與風險預防”為主題，設計一份11頁的簡報大綱，每頁建議主題與關鍵內容。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請根據“碼頭作業安全與風險預防”為主題，設計一份11頁的簡報大綱，每頁建議主題與關鍵內容。</code></pre></div>
+
+
+
+<h3>3. 新進人員港區導覽講稿</h3>
+<ul><li><strong>功能</strong>：導覽內容書寫    </li>
+<li><strong>產出</strong>：口語化逐段導覽講稿    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我撰寫一份新進人員港區導覽講稿，需包含：入港規定、主要設施介紹、港區安全須知，語氣友善自然。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我撰寫一份新進人員港區導覽講稿，需包含：入港規定、主要設施介紹、港區安全須知，語氣友善自然。</code></pre></div>
+
+
+
+<h3>4. 測驗題庫生成（選擇題）</h3>
+<ul><li><strong>功能</strong>：評量設計    </li>
+<li><strong>產出</strong>：選擇題題目與答案    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我設計10題選擇題，主題為“碼頭作業基本常識”，每題含4個選項並標註正確答案。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我設計10題選擇題，主題為“碼頭作業基本常識”，每題含4個選項並標註正確答案。</code></pre></div>
+
+
+
+<h3>5. 分組討論題目設計</h3>
+<ul><li><strong>功能</strong>：互動教學設計    </li>
+<li><strong>產出</strong>：討論題目與引導問題    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請設計兩輪分組討論題目，主題為“智慧港口的利與弊”，每輪包含主要問題與三個引導提問句。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請設計兩輪分組討論題目，主題為“智慧港口的利與弊”，每輪包含主要問題與三個引導提問句。</code></pre></div>
+
+
+
+<h3>6. 課後心得反思題建議</h3>
+<ul><li><strong>功能</strong>：學習反思引導    </li>
+<li><strong>產出</strong>：開放式問題清單    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請根據以下主題“AI在港區管理的應用”，提供三個課後心得問題，幫助學員進行學習反思。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請根據以下主題“AI在港區管理的應用”，提供三個課後心得問題，幫助學員進行學習反思。</code></pre></div>
+
+
+
+<h3>7. 短片腳本撰寫（職安宣導）</h3>
+<ul><li><strong>功能</strong>：影片腳本創作    </li>
+<li><strong>產出</strong>：1分鐘腳本內容    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請撰寫一段1分鐘長度的港區職業安全宣導影片腳本，內容簡潔有力、適合動畫呈現，對象為新進員工。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請撰寫一段1分鐘長度的港區職業安全宣導影片腳本，內容簡潔有力、適合動畫呈現，對象為新進員工。</code></pre></div>
+
+
+<h3>8. 參訪行程介紹文案產出</h3>
+<ul><li><strong>功能</strong>：參訪文案撰寫    </li>
+<li><strong>產出</strong>：活動介紹段落（含引言與重點）    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請撰寫一段港區參訪活動文案，對象為高中學生，需簡介活動目的、參訪內容與注意事項。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請撰寫一段港區參訪活動文案，對象為高中學生，需簡介活動目的、參訪內容與注意事項。</code></pre></div>
+
+
+
+<h3>9. 多語翻譯（非個資）</h3>
+<ul><li><strong>功能</strong>：語言轉換    </li>
+<li><strong>產出</strong>：英文與日文版導覽說明    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請將以下港區簡介文字翻譯為英文與日文，語氣正式清晰，供外籍來賓閱讀使用。（貼上中文簡介）" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請將以下港區簡介文字翻譯為英文與日文，語氣正式清晰，供外籍來賓閱讀使用。（貼上中文簡介）</code></pre></div>
+
+
+
+<h3>10. 問卷設計協助</h3>
+<ul><li><strong>功能</strong>：評量設計    </li>
+<li><strong>產出</strong>：5題滿意度量表問卷    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我設計一份港區參訪後的滿意度調查問卷，共5題，使用5點量表（非常不滿意至非常滿意），並提供簡要標題與每題內容。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我設計一份港區參訪後的滿意度調查問卷，共5題，使用5點量表（非常不滿意至非常滿意），並提供簡要標題與每題內容。</code></pre></div>
+
+
+<h2 id="三、資料分析">三、資料分析</h2>
+<h3>1. 問卷意見摘要與分類（匿名化資料）</h3>
+<ul><li><strong>功能</strong>：文字摘要、意見整理    </li>
+<li><strong>產出</strong>：重點摘要、分類清單    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請協助我分析以下問卷的開放性文字回應（已去識別化），並整理成3～5類主題分類，每類舉例說明。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請協助我分析以下問卷的開放性文字回應（已去識別化），並整理成3～5類主題分類，每類舉例說明。</code></pre></div>
+
+
+<h3>2. 港口進出口趨勢分析（CSV 數據）</h3>
+<ul><li><strong>功能</strong>：資料理解、趨勢解釋    </li>
+<li><strong>產出</strong>：文字摘要與圖表建議    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="以下是近五年港口貨物進出口量的CSV數據摘要，請協助分析趨勢並指出明顯成長或衰退年份。也請建議適合的統計圖表類型。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>以下是近五年港口貨物進出口量的CSV數據摘要，請協助分析趨勢並指出明顯成長或衰退年份。也請建議適合的統計圖表類型。</code></pre></div>
+
+
+<h3>3. 永續報告條文摘要（ESG 章節）</h3>
+<ul><li><strong>功能</strong>：段落摘要、語意濃縮    </li>
+<li><strong>產出</strong>：300字摘要、重點條列    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="以下是某港區永續報告的節錄段落，請協助我濃縮成一段不超過300字的摘要，並列出3項重點觀察：（貼上節錄內容）" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>以下是某港區永續報告的節錄段落，請協助我濃縮成一段不超過300字的摘要，並列出3項重點觀察：（貼上節錄內容）</code></pre></div>
+
+
+
+<h3>4. 資料表格轉圖表解說</h3>
+<ul><li><strong>功能</strong>：圖表說明、視覺輔助    </li>
+<li><strong>產出</strong>：圖說文字、結論摘要    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="以下是港區設備稼動率的表格資料，請協助我撰寫一段可搭配統計圖使用的解說文字，包含圖表重點與可見趨勢。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>以下是港區設備稼動率的表格資料，請協助我撰寫一段可搭配統計圖使用的解說文字，包含圖表重點與可見趨勢。</code></pre></div>
+
+
+
+<h3>5. KPI 數據轉敘述文字</h3>
+<ul><li><strong>功能</strong>：報表敘述生成    </li>
+<li><strong>產出</strong>：月報/季報摘要段落    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請將以下港務處每月KPI統計數據整理成三段敘述文字，語氣正式，可用於月報摘要使用。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請將以下港務處每月KPI統計數據整理成三段敘述文字，語氣正式，可用於月報摘要使用。</code></pre></div>
+
+
+
+<h3>6. 多年度數據比較分析</h3>
+<ul><li><strong>功能</strong>：年度變化分析    </li>
+<li><strong>產出</strong>：條列結論、建議方向    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請協助比較2021至2024年間，高雄港三大碼頭的年貨櫃量變化，列出主要趨勢與任何異常變化年份。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請協助比較2021至2024年間，高雄港三大碼頭的年貨櫃量變化，列出主要趨勢與任何異常變化年份。</code></pre></div>
+
+
+<h3>7. 問卷數據圖表建議與排版邏輯</h3>
+<ul><li><strong>功能</strong>：圖表建議、邏輯結構設計    </li>
+<li><strong>產出</strong>：圖表順序建議、敘述結構    </li>
+<li><strong>提示詞</strong>：</li>
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="我準備將以下問卷數據製成簡報圖表，請建議合理的圖表呈現順序與邏輯架構（如先滿意度，再分區比較）。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>我準備將以下問卷數據製成簡報圖表，請建議合理的圖表呈現順序與邏輯架構（如先滿意度，再分區比較）。</code></pre></div>
+
+
+<h3>8. CSV 自動摘要與重點提取</h3>
+<ul><li><strong>功能</strong>：文字生成、報表初稿產出    </li>
+<li><strong>產出</strong>：條列重點、趨勢分析摘要    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="我將匯入一份CSV資料，內容為各碼頭每日靠泊艘次與船型分類，請協助產出一頁重點摘要並列出可觀察的營運趨勢。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>我將匯入一份CSV資料，內容為各碼頭每日靠泊艘次與船型分類，請協助產出一頁重點摘要並列出可觀察的營運趨勢。</code></pre></div>
+
+
+<h3>9. 圖表描述文字自動生成</h3>
+<ul><li><strong>功能</strong>：圖表圖說撰寫    </li>
+<li><strong>產出</strong>：口語化說明句、圖下說明    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請根據以下統計圖內容撰寫一段圖說文字，用於解說簡報，語氣需簡潔清楚。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請根據以下統計圖內容撰寫一段圖說文字，用於解說簡報，語氣需簡潔清楚。</code></pre></div>
+
+
+<h3>10. 過去五年趨勢報告初稿</h3>
+<ul><li><strong>功能</strong>：長期觀測報告產出    </li>
+<li><strong>產出</strong>：報告草案、建議結論    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請依據以下資料，撰寫一份過去五年港口碳排量與用電量的變化分析報告草稿，包含簡要背景、趨勢描述與建議方向。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請依據以下資料，撰寫一份過去五年港口碳排量與用電量的變化分析報告草稿，包含簡要背景、趨勢描述與建議方向。</code></pre></div>
+
+
+<h2 id="四、esg行銷">四、ESG行銷</h2>
+<h3>1. CSR 專案報告潤稿與改寫</h3>
+<ul><li><strong>功能</strong>：文件潤飾、語句專業化    </li>
+<li><strong>產出</strong>：CSR成果報告段落    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="以下是一段CSR專案報告草稿，請幫我潤飾為正式專案成果摘要，語氣需專業且結構清晰。（貼上草稿）" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>以下是一段CSR專案報告草稿，請幫我潤飾為正式專案成果摘要，語氣需專業且結構清晰。（貼上草稿）</code></pre></div>
+
+
+
+<h3>2. SDGs 對應表製作（永續目標對照）</h3>
+<ul><li><strong>功能</strong>：政策對應整理    </li>
+<li><strong>產出</strong>：條列式SDG對應表    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="以下為高雄港綠能與節水專案內容，請協助對應聯合國17項SDG目標，列出對應編號與原因簡述。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>以下為高雄港綠能與節水專案內容，請協助對應聯合國17項SDG目標，列出對應編號與原因簡述。</code></pre></div>
+
+
+<h3>3. 節能減碳簡報文字產出</h3>
+<ul><li><strong>功能</strong>：簡報文案產出    </li>
+<li><strong>產出</strong>：口語化段落、簡報敘述文字    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請協助撰寫一段簡報文字，主題為“港區節能減碳實踐成果”，可用於主管對外簡報，限150字內。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請協助撰寫一段簡報文字，主題為“港區節能減碳實踐成果”，可用於主管對外簡報，限150字內。</code></pre></div>
+
+
+<h3>4. ESG 專區網頁文案撰寫</h3>
+<ul><li><strong>功能</strong>：網頁說明設計    </li>
+<li><strong>產出</strong>：中英雙語版說明段落    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我撰寫一段 ESG 專區網頁介紹文字（中英文對照），內容需涵蓋港口永續承諾、主題行動與目標。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我撰寫一段 ESG 專區網頁介紹文字（中英文對照），內容需涵蓋港口永續承諾、主題行動與目標。</code></pre></div>
+
+
+
+<h3>5. 社群貼文文案（永續活動）</h3>
+<ul><li><strong>功能</strong>：行銷文案生成    </li>
+<li><strong>產出</strong>：FB/IG 帖文建議內容    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請針對“世界海洋日港區淨灘活動”設計3則社群貼文文案，語氣親切、具行動號召力，每則限50字內。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請針對“世界海洋日港區淨灘活動”設計3則社群貼文文案，語氣親切、具行動號召力，每則限50字內。</code></pre></div>
+
+
+<h3>6. ESG 宣導影片腳本撰寫</h3>
+<ul><li><strong>功能</strong>：影音腳本編撰    </li>
+<li><strong>產出</strong>：90秒內腳本、分鏡概念    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請撰寫一段長度約90秒的 ESG 宣導影片腳本，主題為“智慧港口與永續未來”，對象為高中以上觀眾。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請撰寫一段長度約90秒的 ESG 宣導影片腳本，主題為“智慧港口與永續未來”，對象為高中以上觀眾。</code></pre></div>
+
+
+<h3>7. ESG 年報章節初稿產出</h3>
+<ul><li><strong>功能</strong>：報告草擬    </li>
+<li><strong>產出</strong>：章節段落草稿    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我撰寫一段“港區生態保育行動”章節初稿，可用於 ESG 年報，語氣正式，字數約300字。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我撰寫一段“港區生態保育行動”章節初稿，可用於 ESG 年報，語氣正式，字數約300字。</code></pre></div>
+
+
+<h3>8. 港區友善評比指標建議</h3>
+<ul><li><strong>功能</strong>：指標設計    </li>
+<li><strong>產出</strong>：條列式評比項目    </li>
+<li><strong>提示詞</strong>：</li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請設計一份港區友善度評比指標草案，主題為“智慧、綠色、人本”，每類各列出3項具體可量化項目。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請設計一份港區友善度評比指標草案，主題為“智慧、綠色、人本”，每類各列出3項具體可量化項目。</code></pre></div>
+
+
+<h3>9. 國內外港口ESG案例整理</h3>
+<ul><li><strong>功能</strong>：案例研究彙整    </li>
+<li><strong>產出</strong>：港口名稱＋摘要說明    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請列出3個國際港口推行ESG成功案例，簡述其主題（如碳中和、社區參與）與具體成果。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請列出3個國際港口推行ESG成功案例，簡述其主題（如碳中和、社區參與）與具體成果。</code></pre></div>
+
+
+<h3>10. ESG 品牌標語設計</h3>
+<ul><li><strong>功能</strong>：創意行銷    </li>
+<li><strong>產出</strong>：中英文口號清單    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請設計5句港口ESG形象品牌標語（中英文），核心精神為“責任、創新、共好”，語句簡潔有力。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請設計5句港口ESG形象品牌標語（中英文），核心精神為“責任、創新、共好”，語句簡潔有力。</code></pre></div>
+
+
+<h2 id="五、創新研發與政策模擬">五、創新研發與政策模擬</h2>
+<h3>1. 智慧港口技術彙整（全球案例）</h3>
+<ul><li><strong>功能</strong>：深入研究    </li>
+<li><strong>產出</strong>：PDF、簡報、報告摘要    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請列出全球10種智慧港口技術並各自簡要說明（中譯），列出港口名稱與應用背景。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請列出全球10種智慧港口技術並各自簡要說明（中譯），列出港口名稱與應用背景。</code></pre></div>
+
+
+
+<h3>2. AI 應用場景腦力激盪（作業流程優化）</h3>
+<ul><li><strong>功能</strong>：創意擴散    </li>
+<li><strong>產出</strong>：條列清單、流程圖初稿    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請針對港口營運的智慧化流程，列出10項可運用AI技術優化的場景，說明目前痛點與建議改善方法。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請針對港口營運的智慧化流程，列出10項可運用AI技術優化的場景，說明目前痛點與建議改善方法。</code></pre></div>
+
+
+<h3>3. 智慧物流/專案簡報草稿撰寫</h3>
+<ul><li><strong>功能</strong>：簡報撰寫    </li>
+<li><strong>產出</strong>：簡報大綱、PPT內容草稿    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請協助我撰寫一段智慧物流專案簡報開場段落，主題為「高雄港貨櫃流動可視化系統」。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請協助我撰寫一段智慧物流專案簡報開場段落，主題為「高雄港貨櫃流動可視化系統」。</code></pre></div>
+
+
+<h3>4. 數據開放港口研究</h3>
+<ul><li><strong>功能</strong>：資料研究、比較分析    </li>
+<li><strong>產出</strong>：比較表、摘要段落    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請列出全球三個已開放港區資料的平台，包括國家、平台名稱、可查詢資訊種類及使用方式簡介。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請列出全球三個已開放港區資料的平台，包括國家、平台名稱、可查詢資訊種類及使用方式簡介。</code></pre></div>
+
+
+<h3>5. 論文題目建議（如智慧港與碳排放）</h3>
+<ul><li><strong>功能</strong>：學術提案生成    </li>
+<li><strong>產出</strong>：題目清單、研究架構草案    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="針對「港口數位轉型與減碳策略」主題，請建議5個可行的碩士論文題目，並簡述研究方向與核心問題。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>針對「港口數位轉型與減碳策略」主題，請建議5個可行的碩士論文題目，並簡述研究方向與核心問題。</code></pre></div>
+
+
+<h3>6. 創新競賽題目設定（如港口黑客松）</h3>
+<ul><li><strong>功能</strong>：活動設計與命題    </li>
+<li><strong>產出</strong>：比賽命題草案、規則簡述    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我設計一個以「智慧港口資料可視化」為主題的黑客松競賽命題，包括命題背景、任務說明、評分指標建議。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我設計一個以「智慧港口資料可視化」為主題的黑客松競賽命題，包括命題背景、任務說明、評分指標建議。</code></pre></div>
+
+
+<h3>7. 政策QA模擬（如零碳碼頭推動疑慮）</h3>
+<ul><li><strong>功能</strong>：模擬問答、政策溝通    </li>
+<li><strong>產出</strong>：Q&A 對話稿、FAQ文件    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請模擬當港口推動零碳碼頭政策時，可能會遇到的5個利害關係人疑問，並提供合適回應建議。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請模擬當港口推動零碳碼頭政策時，可能會遇到的5個利害關係人疑問，並提供合適回應建議。</code></pre></div>
+
+
+<h3>8. 港區轉型口號建議</h3>
+<ul><li><strong>功能</strong>：創意標語    </li>
+<li><strong>產出</strong>：標語清單、行銷草案    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請根據「智慧、綠色、人本」三個價值，設計5句適合港區轉型的中文標語，並對應一句英文翻譯。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請根據「智慧、綠色、人本」三個價值，設計5句適合港區轉型的中文標語，並對應一句英文翻譯。</code></pre></div>
+
+
+<h3>9. 專案報告摘要產出（非機密）</h3>
+<ul><li><strong>功能</strong>：摘要壓縮、簡化說明    </li>
+<li><strong>產出</strong>：一頁式摘要、報告概述    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="以下是一份港口自動化專案報告（共10頁），請將其摘要為一頁重點摘要，條列五大成果與兩項建議。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>以下是一份港口自動化專案報告（共10頁），請將其摘要為一頁重點摘要，條列五大成果與兩項建議。</code></pre></div>
+
+
+<h3>10. 互動式 Vibe Coding 構想（如港區分析工具）</h3>
+<ul><li><strong>功能</strong>：程式輔助、應用構想    </li>
+<li><strong>產出</strong>：Python 程式草案、UI 概念說明    </li>
+<li><strong>提示詞</strong>：    </li>
+
+</ul><div class="code-block"><div class="code-header"><span class="language-label">prompt</span><button class="code-copy-btn" data-code="請幫我設計一個使用 Streamlit + Pandas 製作的互動式應用介面，用來顯示港區各碼頭近五年貨櫃量變化，並可篩選年份與碼頭別。" onclick="copyCodeBlock(this)">複製代碼</button></div><pre><code>請幫我設計一個使用 Streamlit + Pandas 製作的互動式應用介面，用來顯示港區各碼頭近五年貨櫃量變化，並可篩選年份與碼頭別。</code></pre></div>
+
+</div><script>var currentFontScale=1,minFontScale=.5,maxFontScale=2,fontStep=.1;function toggleNavigation(){var e=document.querySelector(".hamburger-menu"),t=document.querySelector(".navigation-overlay"),n=document.querySelector(".navigation-panel");e.classList.toggle("active"),t.classList.toggle("active"),n.classList.toggle("active")}function closeNavigation(){var e=document.querySelector(".hamburger-menu"),t=document.querySelector(".navigation-overlay"),n=document.querySelector(".navigation-panel");e.classList.remove("active"),t.classList.remove("active"),n.classList.remove("active")}function increaseFontSize(){currentFontScale<maxFontScale&&(currentFontScale+=fontStep,applyFontSize())}function decreaseFontSize(){currentFontScale>minFontScale&&(currentFontScale-=fontStep,applyFontSize())}function applyFontSize(){var e=document.getElementById("contentArea");if(e){e.style.fontSize=100*currentFontScale+"%";var t=document.getElementById("fontSizeDisplay");t&&(t.textContent=Math.round(100*currentFontScale)+"%")}}function copyCodeBlock(e){var t=e.getAttribute("data-code"),n=document.createElement("textarea");n.innerHTML=t;var o=n.value;navigator.clipboard?navigator.clipboard.writeText(o).then(function(){alert("程式碼已複製！")}):(n=document.createElement("textarea")).value=o,document.body.appendChild(n),n.select(),document.execCommand("copy"),document.body.removeChild(n),alert("程式碼已複製！")}document.addEventListener("click",function(e){if(e.target.matches(".nav-link")){e.preventDefault();var t=e.target.getAttribute("href").substring(1),n=document.getElementById(t);n&&(n.scrollIntoView({behavior:"smooth"}),closeNavigation())}});</script></body></html>
