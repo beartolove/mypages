@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球國際港口智慧化與AI化應用深度分析</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700;900&family=Inter:wght@300;400;600;700;800&display=swap');
+
+  :root {
+    --navy:    #1a2332;
+    --navy-mid:#1e2d42;
+    --teal:    #2d8b8b;
+    --teal-lt: #3aabab;
+    --seafoam: #a8dadc;
+    --cream:   #f1faee;
+    --accent:  #00c8c8;
+    --gold:    #f4d03f;
+    --danger:  #e74c3c;
+    --success: #27ae60;
+    --text:    #e8f4f8;
+    --muted:   #8ab4c0;
+  }
+
+  * { margin:0; padding:0; box-sizing:border-box; }
+
+  body {
+    font-family: 'Noto Sans TC', 'Inter', sans-serif;
+    background: var(--navy);
+    color: var(--text);
+    line-height: 1.7;
+  }
+
+  /* ── HERO ── */
+  .hero {
+    position: relative;
+    background: linear-gradient(135deg, #0d1b2a 0%, #1a2e45 40%, #1e3a3a 100%);
+    padding: 80px 40px 60px;
+    text-align: center;
+    overflow: hidden;
+  }
+  .hero::before {
+    content:'';
+    position:absolute; inset:0;
+    background: radial-gradient(ellipse 80% 60% at 50% 0%, rgba(45,139,139,.25) 0%, transparent 70%);
+  }
+  .hero-badge {
+    display:inline-block;
+    background: rgba(45,139,139,.25);
+    border: 1px solid var(--teal);
+    border-radius: 20px;
+    padding: 5px 18px;
+    font-size: .78rem;
+    letter-spacing: .12em;
+    color: var(--seafoam);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .hero h1 {
+    font-size: clamp(1.9rem,4vw,3.2rem);
+    font-weight: 900;
+    color: var(--cream);
+    letter-spacing: -.01em;
+    line-height: 1.25;
+    margin-bottom: 16px;
+  }
+  .hero h1 span { color: var(--accent); }
+  .hero p {
+    max-width: 680px;
+    margin: 0 auto 36px;
+    color: var(--muted);
+    font-size: 1.05rem;
+  }
+  .hero-stats {
+    display: flex;
+    justify-content: center;
+    flex-wrap: wrap;
+    gap: 28px;
+    position: relative;
+  }
+  .stat-card {
+    background: rgba(255,255,255,.06);
+    border: 1px solid rgba(168,218,220,.2);
+    border-radius: 14px;
+    padding: 18px 26px;
+    min-width: 150px;
+  }
+  .stat-card .num {
+    font-size: 2rem;
+    font-weight: 800;
+    color: var(--accent);
+    display: block;
+  }
+  .stat-card .label {
+    font-size: .78rem;
+    color: var(--muted);
+    margin-top: 2px;
+  }
+
+  /* ── NAV ── */
+  nav {
+    background: rgba(26,35,50,.92);
+    backdrop-filter: blur(12px);
+    border-bottom: 1px solid rgba(45,139,139,.3);
+    padding: 0 40px;
+    display: flex;
+    gap: 4px;
+    overflow-x: auto;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+  }
+  nav a {
+    color: var(--muted);
+    text-decoration: none;
+    font-size: .82rem;
+    font-weight: 500;
+    padding: 14px 14px;
+    white-space: nowrap;
+    border-bottom: 2px solid transparent;
+    transition: .2s;
+  }
+  nav a:hover { color: var(--accent); border-color: var(--accent); }
+
+  /* ── WRAPPER ── */
+  .wrapper { max-width: 1140px; margin: 0 auto; padding: 0 28px; }
+
+  /* ── SECTION ── */
+  section { padding: 70px 0; }
+  section:nth-child(even) { background: rgba(255,255,255,.025); }
+
+  .section-tag {
+    display: inline-block;
+    font-size: .72rem;
+    font-weight: 700;
+    letter-spacing: .14em;
+    text-transform: uppercase;
+    color: var(--teal);
+    margin-bottom: 10px;
+  }
+  .section-title {
+    font-size: clamp(1.4rem,2.5vw,2rem);
+    font-weight: 800;
+    color: var(--cream);
+    margin-bottom: 10px;
+  }
+  .section-title span { color: var(--accent); }
+  .section-lead {
+    color: var(--muted);
+    max-width: 680px;
+    margin-bottom: 44px;
+    font-size: .97rem;
+  }
+
+  /* ── TECH GRID ── */
+  .tech-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(220px,1fr));
+    gap: 20px;
+  }
+  .tech-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(45,139,139,.25);
+    border-radius: 16px;
+    padding: 26px 22px;
+    transition: transform .2s, border-color .2s;
+  }
+  .tech-card:hover { transform: translateY(-4px); border-color: var(--teal); }
+  .tech-icon { font-size: 2rem; margin-bottom: 12px; }
+  .tech-card h3 { font-size: 1rem; font-weight: 700; color: var(--cream); margin-bottom: 8px; }
+  .tech-card p { font-size: .85rem; color: var(--muted); line-height: 1.6; }
+
+  /* ── PORT CARDS ── */
+  .port-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(330px,1fr));
+    gap: 24px;
+  }
+  .port-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(45,139,139,.2);
+    border-radius: 18px;
+    overflow: hidden;
+    transition: transform .2s, box-shadow .2s;
+  }
+  .port-card:hover { transform: translateY(-5px); box-shadow: 0 16px 40px rgba(0,0,0,.4); }
+  .port-header {
+    padding: 22px 24px 16px;
+    border-bottom: 1px solid rgba(255,255,255,.07);
+    display: flex;
+    align-items: center;
+    gap: 14px;
+  }
+  .port-flag { font-size: 2rem; }
+  .port-header-text { flex:1; }
+  .port-name { font-size: 1.1rem; font-weight: 800; color: var(--cream); }
+  .port-sub { font-size: .78rem; color: var(--teal-lt); }
+  .port-body { padding: 18px 24px; }
+  .challenge-box {
+    background: rgba(231,76,60,.1);
+    border-left: 3px solid var(--danger);
+    border-radius: 0 8px 8px 0;
+    padding: 10px 14px;
+    font-size: .82rem;
+    color: #f0a090;
+    margin-bottom: 14px;
+  }
+  .challenge-box strong { color: var(--danger); font-size: .72rem; text-transform: uppercase; letter-spacing: .08em; display: block; margin-bottom: 3px; }
+  .solution-list { list-style: none; margin-bottom: 14px; }
+  .solution-list li {
+    font-size: .84rem;
+    color: var(--text);
+    padding: 5px 0 5px 20px;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,.05);
+  }
+  .solution-list li::before { content:'⚡'; position:absolute; left:0; font-size:.75rem; }
+  .kpi-row { display:flex; flex-wrap:wrap; gap:8px; margin-top:14px; }
+  .kpi-badge {
+    background: rgba(45,139,139,.2);
+    border: 1px solid rgba(45,139,139,.4);
+    border-radius: 20px;
+    padding: 4px 12px;
+    font-size: .75rem;
+    color: var(--seafoam);
+    font-weight: 600;
+  }
+
+  /* ── COMPARISON TABLE ── */
+  .table-wrap { overflow-x: auto; border-radius: 16px; border: 1px solid rgba(45,139,139,.2); }
+  table { width:100%; border-collapse: collapse; font-size: .85rem; }
+  thead th {
+    background: rgba(45,139,139,.2);
+    color: var(--seafoam);
+    font-weight: 700;
+    text-align: left;
+    padding: 14px 16px;
+    white-space: nowrap;
+    border-bottom: 1px solid rgba(45,139,139,.3);
+  }
+  tbody tr { border-bottom: 1px solid rgba(255,255,255,.06); transition: background .15s; }
+  tbody tr:hover { background: rgba(45,139,139,.08); }
+  tbody td { padding: 13px 16px; color: var(--text); vertical-align: top; }
+  tbody td:first-child { font-weight: 700; color: var(--cream); white-space: nowrap; }
+
+  /* ── FLOW DIAGRAM ── */
+  .flow-wrap {
+    display: flex;
+    align-items: flex-start;
+    gap: 0;
+    flex-wrap: wrap;
+    justify-content: center;
+  }
+  .flow-step {
+    background: var(--navy-mid);
+    border: 1px solid rgba(45,139,139,.3);
+    border-radius: 14px;
+    padding: 18px 18px;
+    width: 170px;
+    text-align: center;
+    position: relative;
+    flex-shrink: 0;
+  }
+  .flow-step .step-num {
+    width: 30px; height: 30px;
+    background: var(--teal);
+    border-radius: 50%;
+    display: flex; align-items:center; justify-content:center;
+    font-size: .8rem; font-weight: 700;
+    margin: 0 auto 10px;
+    color: #fff;
+  }
+  .flow-step h4 { font-size: .85rem; color: var(--cream); font-weight: 700; margin-bottom: 6px; }
+  .flow-step p { font-size: .75rem; color: var(--muted); }
+  .flow-arrow {
+    font-size: 1.4rem;
+    color: var(--teal);
+    align-self: center;
+    padding: 0 6px;
+    flex-shrink: 0;
+  }
+
+  /* ── GENAI SECTION ── */
+  .genai-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(260px,1fr));
+    gap: 20px;
+  }
+  .genai-card {
+    background: linear-gradient(135deg, rgba(0,200,200,.08), rgba(26,35,50,.8));
+    border: 1px solid rgba(0,200,200,.2);
+    border-radius: 14px;
+    padding: 22px 20px;
+  }
+  .genai-card h3 { font-size: .95rem; font-weight: 700; color: var(--accent); margin-bottom: 8px; }
+  .genai-card p { font-size: .84rem; color: var(--muted); }
+  .genai-card .metric { font-size: 1.6rem; font-weight: 800; color: var(--accent); margin: 10px 0 4px; }
+
+  /* ── LABOR SECTION ── */
+  .labor-grid { display:grid; grid-template-columns: 1fr 1fr; gap: 24px; }
+  @media(max-width:640px){ .labor-grid { grid-template-columns:1fr; } }
+  .labor-card {
+    border-radius: 14px;
+    padding: 24px;
+  }
+  .labor-card.challenge {
+    background: rgba(231,76,60,.08);
+    border: 1px solid rgba(231,76,60,.25);
+  }
+  .labor-card.solution {
+    background: rgba(39,174,96,.08);
+    border: 1px solid rgba(39,174,96,.25);
+  }
+  .labor-card h3 { font-size: 1rem; font-weight: 700; margin-bottom: 14px; }
+  .labor-card.challenge h3 { color: #e74c3c; }
+  .labor-card.solution h3 { color: #27ae60; }
+  .labor-list { list-style:none; }
+  .labor-list li { padding: 6px 0 6px 20px; position:relative; font-size:.85rem; color:var(--text); border-bottom:1px solid rgba(255,255,255,.05); }
+  .labor-list li::before { position:absolute; left:0; }
+  .labor-card.challenge .labor-list li::before { content:'⚠'; }
+  .labor-card.solution .labor-list li::before { content:'✅'; }
+
+  /* ── CSF SECTION ── */
+  .csf-grid { display:grid; grid-template-columns: repeat(auto-fit, minmax(260px,1fr)); gap:20px; }
+  .csf-card {
+    background: var(--navy-mid);
+    border: 1px solid rgba(168,218,220,.15);
+    border-radius: 16px;
+    padding: 24px 22px;
+    border-top: 3px solid var(--teal);
+  }
+  .csf-num { font-size: .72rem; font-weight: 700; color: var(--teal); letter-spacing: .1em; text-transform: uppercase; margin-bottom: 8px; }
+  .csf-card h3 { font-size: .98rem; font-weight: 700; color: var(--cream); margin-bottom: 10px; }
+  .csf-card p { font-size: .83rem; color: var(--muted); }
+
+  /* ── FOOTER ── */
+  footer {
+    background: #0d1520;
+    border-top: 1px solid rgba(45,139,139,.2);
+    padding: 36px 40px;
+    text-align: center;
+    font-size: .8rem;
+    color: var(--muted);
+  }
+
+  /* ── HIGHLIGHT QUOTE ── */
+  .highlight-quote {
+    background: linear-gradient(135deg, rgba(45,139,139,.15), rgba(0,200,200,.05));
+    border-left: 4px solid var(--accent);
+    border-radius: 0 12px 12px 0;
+    padding: 20px 24px;
+    margin: 30px 0;
+    font-size: 1.05rem;
+    color: var(--cream);
+    font-style: italic;
+  }
+
+  /* ── PILL ROW ── */
+  .pill-row { display:flex; flex-wrap:wrap; gap:10px; margin-top: 20px; }
+  .pill {
+    background: rgba(45,139,139,.15);
+    border: 1px solid rgba(45,139,139,.35);
+    border-radius: 30px;
+    padding: 6px 16px;
+    font-size: .8rem;
+    color: var(--seafoam);
+  }
+
+  @media(max-width:600px){
+    .hero { padding: 50px 20px 40px; }
+    nav { padding: 0 16px; }
+    .wrapper { padding: 0 16px; }
+    .flow-step { width: 140px; }
+    .port-grid { grid-template-columns: 1fr; }
+  }
+</style>
+</head>
+<body>
+
+<!-- HERO -->
+<div class="hero">
+  <div class="hero-badge">🌊 深度分析報告 2025</div>
+  <h1>全球國際港口<span>智慧化與AI化</span><br>應用實例分析</h1>
+  <p>剖析鹿特丹、新加坡、漢堡、上海、高雄等標竿港口如何透過人工智慧、5G、數位分身與區塊鏈，重塑全球海運物流典範</p>
+  <div class="hero-stats">
+    <div class="stat-card">
+      <span class="num">80%+</span>
+      <span class="label">全球貿易量<br>依賴海運</span>
+    </div>
+    <div class="stat-card">
+      <span class="num">$21.91兆</span>
+      <span class="label">2033年全球<br>物流市場規模</span>
+    </div>
+    <div class="stat-card">
+      <span class="num">5大</span>
+      <span class="label">標竿港口<br>深度案例剖析</span>
+    </div>
+    <div class="stat-card">
+      <span class="num">2050</span>
+      <span class="label">IMO 淨零<br>碳排目標年</span>
+    </div>
+  </div>
+</div>
+
+<!-- NAV -->
+<nav>
+  <a href="#tech">核心技術</a>
+  <a href="#ports">標竿港口</a>
+  <a href="#comparison">效益比較</a>
+  <a href="#flow">協同流程</a>
+  <a href="#blockchain">區塊鏈</a>
+  <a href="#genai">生成式AI</a>
+  <a href="#labor">勞動轉型</a>
+  <a href="#csf">成功關鍵</a>
+</nav>
+
+<!-- SECTION 1: 核心技術 -->
+<section id="tech">
+  <div class="wrapper">
+    <div class="section-tag">智慧港口技術基石</div>
+    <h2 class="section-title">五大<span>核心驅動技術</span></h2>
+    <p class="section-lead">智慧港口圍繞「自動化」、「永續性」、「協同合作」三大主軸，由以下技術深度融合交互驅動。</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon">🤖</div>
+        <h3>人工智慧與機器學習</h3>
+        <p>涵蓋預測性維護、機器視覺辨識、動態排程最佳化，處理IoT海量數據、預測設備故障並精估船舶抵達時間（ETA）。</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">📡</div>
+        <h3>5G 網路切片技術</h3>
+        <p>高頻寬超低延遲（URLLC）與大規模機器通訊（mMTC）特性，為萬台AGV與遠端起重機提供毫秒級通訊保障。</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🌐</div>
+        <h3>數位分身</h3>
+        <p>將實體港口幾何結構、水文氣象與即時動態映射至虛擬空間，在零風險環境中進行全港沙盤推演與決策模擬。</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🔗</div>
+        <h3>區塊鏈技術</h3>
+        <p>分散式帳本確保提單與報關文件不可篡改，解決航運業長期的信任赤字與資料孤島問題，保障跨機構協作。</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">✨</div>
+        <h3>生成式 AI（GenAI）</h3>
+        <p>大型語言模型（LLM）自動化處理提單、原產地證明等繁雜文書，並進行船舶行為與真實世界交叉驗證。</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🌡️</div>
+        <h3>IoT 物聯網感測網絡</h3>
+        <p>部署水位、鹽度、風速、氣體偵測等海量感測器，收集即時環境數據，支撐預測性維護與環境永續目標。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: 標竿港口 -->
+<section id="ports">
+  <div class="wrapper">
+    <div class="section-tag">全球案例剖析</div>
+    <h2 class="section-title">六大<span>標竿港口</span>深度解析</h2>
+    <p class="section-lead">鹿特丹、新加坡、漢堡、上海、高雄、安特衛普各以不同戰略路徑，領跑全球智慧化轉型。</p>
+    <div class="port-grid">
+
+      <!-- Rotterdam -->
+      <div class="port-card">
+        <div class="port-header">
+          <div class="port-flag">🇳🇱</div>
+          <div class="port-header-text">
+            <div class="port-name">荷蘭鹿特丹港</div>
+            <div class="port-sub">Port of Rotterdam｜歐洲最大港</div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="challenge-box">
+            <strong>核心痛點</strong>
+            跨機構資訊不對稱 → 船舶錨地等待過久；碳排壓力龐大
+          </div>
+          <ul class="solution-list">
+            <li>AI靠港最佳化系統 Pronto（輸入12,000筆歷史數據自我訓練）</li>
+            <li>PortXchange 即時排放追蹤平台</li>
+            <li>覆蓋全港42公里的IoT雲端數位分身</li>
+            <li>AI虛擬能源系統（綠氫基礎設施模擬）</li>
+          </ul>
+          <div class="kpi-row">
+            <span class="kpi-badge">🎯 ETA精確至20分鐘</span>
+            <span class="kpi-badge">⏱ 等待時間↓20%</span>
+            <span class="kpi-badge">👥 關聯就業38.5萬</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Singapore -->
+      <div class="port-card">
+        <div class="port-header">
+          <div class="port-flag">🇸🇬</div>
+          <div class="port-header-text">
+            <div class="port-name">新加坡大士超級港</div>
+            <div class="port-sub">Tuas Mega Port｜全球最大全自動化碼頭</div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="challenge-box">
+            <strong>核心痛點</strong>
+            勞動力短缺；市區港口運能飽和；氣候變遷威脅
+          </div>
+          <ul class="solution-list">
+            <li>純電AGV車隊（RFID地下應答器通訊，充電20分鐘運行6小時）</li>
+            <li>事件驅動架構（EDA）保障訊息順序傳遞</li>
+            <li>新一代AI船舶交通管理系統</li>
+            <li>digitalPORT@SG 加速船舶周轉平台</li>
+          </ul>
+          <div class="kpi-row">
+            <span class="kpi-badge">♻ 碳排↓50%（vs柴油）</span>
+            <span class="kpi-badge">💼 500+高價值新職缺</span>
+            <span class="kpi-badge">📦 設計運能6,500萬TEU</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Hamburg -->
+      <div class="port-card">
+        <div class="port-header">
+          <div class="port-flag">🇩🇪</div>
+          <div class="port-header-text">
+            <div class="port-name">德國漢堡港</div>
+            <div class="port-sub">Port of Hamburg｜smartPORT戰略</div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="challenge-box">
+            <strong>核心痛點</strong>
+            腹地狹小致聯外交通嚴重壅塞；基礎設施維護成本高
+          </div>
+          <ul class="solution-list">
+            <li>5G網路切片URLLC切片控制交通號誌（雙連結技術）</li>
+            <li>mMTC大規模物聯網（計畫10萬個感測器）</li>
+            <li>移動駁船CO₂與船舶廢氣IoT即時監控</li>
+            <li>橋梁、水閘、鐵路道岔預測性維護感測</li>
+          </ul>
+          <div class="kpi-row">
+            <span class="kpi-badge">⚡ 延遲&lt;10ms（邊緣運算）</span>
+            <span class="kpi-badge">📊 每日40,000趟卡車最佳化</span>
+            <span class="kpi-badge">🔧 感測器壽命10年+</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Shanghai -->
+      <div class="port-card">
+        <div class="port-header">
+          <div class="port-flag">🇨🇳</div>
+          <div class="port-header-text">
+            <div class="port-name">中國上海港（洋山四期）</div>
+            <div class="port-sub">Port of Shanghai｜全球吞吐量No.1</div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="challenge-box">
+            <strong>核心痛點</strong>
+            龐大吞吐量引發作業瓶頸；海關人工查驗耗時費力
+          </div>
+          <ul class="solution-list">
+            <li>5.8GHz eLTE-U工業無線網路（同時60輛AGV低延遲控制）</li>
+            <li>H986大型X光掃描AI影像分析（5秒完成風險研判）</li>
+            <li>ITOS/NEO-TOS自動化作業系統（24小時無人化）</li>
+            <li>貨櫃運輸MaaS海鐵聯運平台（連結九省四十市）</li>
+          </ul>
+          <div class="kpi-row">
+            <span class="kpi-badge">👷 現場人力↓70%</span>
+            <span class="kpi-badge">📈 裝卸效率↑30%</span>
+            <span class="kpi-badge">🛃 AI判讀僅需5秒</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Kaohsiung -->
+      <div class="port-card">
+        <div class="port-header">
+          <div class="port-flag">🇹🇼</div>
+          <div class="port-header-text">
+            <div class="port-name">台灣高雄港（第七貨櫃中心）</div>
+            <div class="port-sub">Port of Kaohsiung｜Trans-SMART 2.0+</div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="challenge-box">
+            <strong>核心痛點</strong>
+            釜山、上海強烈轉運競爭；傳統碼頭勞動力不足且易受天候影響
+          </div>
+          <ul class="solution-list">
+            <li>5G AIoT專網 + 台灣首批25排遠端控制無人橋式機</li>
+            <li>長榮海運智慧TOS系統精準協調前後線機具</li>
+            <li>無人水面載具（ASV）油汙偵測與海面垃圾清理</li>
+            <li>44.69億預算升級第三、第五貨櫃中心 + 岸電系統</li>
+          </ul>
+          <div class="kpi-row">
+            <span class="kpi-badge">🚢 同停4艘24,000 TEU巨輪</span>
+            <span class="kpi-badge">🌊 水深18公尺深水泊位</span>
+            <span class="kpi-badge">🎯 目標年吞吐650萬TEU</span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Antwerp -->
+      <div class="port-card">
+        <div class="port-header">
+          <div class="port-flag">🇧🇪</div>
+          <div class="port-header-text">
+            <div class="port-name">比利時安特衛普-布魯日港</div>
+            <div class="port-sub">Port of Antwerp-Bruges｜APICA數位分身</div>
+          </div>
+        </div>
+        <div class="port-body">
+          <div class="challenge-box">
+            <strong>核心痛點</strong>
+            大型複雜港區的全面即時態勢感知；工業有害氣體安全風險
+          </div>
+          <ul class="solution-list">
+            <li>APICA數位分身平台整合千個IoT感測器與460個AI智慧攝影機</li>
+            <li>「iNoses」數位嗅覺感測器即時偵測有害氣體外洩</li>
+            <li>AI預測交通壅塞與潛在安全危害</li>
+            <li>去中心化智慧決策支援，呼應SDG 9、SDG 13</li>
+          </ul>
+          <div class="kpi-row">
+            <span class="kpi-badge">📹 460台AI視覺攝影機</span>
+            <span class="kpi-badge">👃 iNoses有害氣體預警</span>
+            <span class="kpi-badge">🌱 聯合國SDG認證</span>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: 比較表 -->
+<section id="comparison">
+  <div class="wrapper">
+    <div class="section-tag">綜合效益比較</div>
+    <h2 class="section-title">標竿港口<span>KPI 對照表</span></h2>
+    <p class="section-lead">各港口在不同痛點情境下，導入AI與智慧化方案後的具體量化成效。</p>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr>
+            <th>港口</th>
+            <th>核心挑戰</th>
+            <th>主要技術方案</th>
+            <th>量化成效 KPI</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🇳🇱 鹿特丹</td>
+            <td>跨機構資訊不對稱、碳排壓力</td>
+            <td>AI靠港最佳化(Pronto)、虛擬能源系統、全港IoT數位分身</td>
+            <td>等待時間↓20%、ETA精確至20分鐘、關聯就業38.5萬人</td>
+          </tr>
+          <tr>
+            <td>🇸🇬 新加坡大士</td>
+            <td>勞動力短缺、運能飽和</td>
+            <td>全電AGV、事件驅動架構(EDA)、AI船舶交管</td>
+            <td>碳排↓50%、500+數位職缺、設計6,500萬TEU</td>
+          </tr>
+          <tr>
+            <td>🇩🇪 漢堡</td>
+            <td>腹地交通壅塞、維護成本高</td>
+            <td>5G網路切片(URLLC/mMTC)、大規模IoT</td>
+            <td>延遲&lt;10ms、規劃10萬感測器、極端天候預警</td>
+          </tr>
+          <tr>
+            <td>🇨🇳 上海洋山四期</td>
+            <td>龐大吞吐瓶頸、海關效率低</td>
+            <td>eLTE-U工業無線、AI海關影像(H986)、ITOS</td>
+            <td>人力↓70%、效率↑30%、AI判讀5秒</td>
+          </tr>
+          <tr>
+            <td>🇹🇼 高雄</td>
+            <td>轉運競爭激烈、勞力短缺</td>
+            <td>5G AIoT專網、無人橋式機、無人水面載具</td>
+            <td>停靠4艘24K TEU、目標650萬TEU/年</td>
+          </tr>
+          <tr>
+            <td>🇧🇪 安特衛普-布魯日</td>
+            <td>態勢感知不足、有害氣體風險</td>
+            <td>APICA數位分身、iNoses嗅覺感測、AI視覺監控</td>
+            <td>460台AI攝影機、即時有害氣體預警、SDG認證</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: 協同流程 -->
+<section id="flow">
+  <div class="wrapper">
+    <div class="section-tag">利害關係人協同</div>
+    <h2 class="section-title">AI賦能<span>港口社群系統</span>協同流程</h2>
+    <p class="section-lead">新一代港口社群系統（PCS）整合AI與微服務架構，實現跨機構動態預測與自動化決策。</p>
+
+    <div class="flow-wrap">
+      <div class="flow-step">
+        <div class="step-num">1</div>
+        <h4>船舶ETA預測</h4>
+        <p>AI模型整合即時海象、歷史航行數據，自動修正抵達時間</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">2</div>
+        <h4>泊位資源預配</h4>
+        <p>碼頭依ETA精準預排起重機與堆場，避免資源閒置</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">3</div>
+        <h4>海事服務調度</h4>
+        <p>引水人、拖船、燃料補給由AI排程無縫安插靠港空檔</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">4</div>
+        <h4>閘口AI辨識</h4>
+        <p>影像辨識自動讀取貨櫃號碼與車牌，縮短卡車排隊</p>
+      </div>
+      <div class="flow-arrow">→</div>
+      <div class="flow-step">
+        <div class="step-num">5</div>
+        <h4>海鐵聯運整合</h4>
+        <p>連結內陸鐵路網絡，實現端到端無縫貨物移轉</p>
+      </div>
+    </div>
+
+    <div class="highlight-quote">
+      「數據交換的最大障礙往往不在於技術，而在於『信任』。不同機構涉及商業機密，導致利害關係人不願分享核心數據，這種資料孤島現象嚴重限制了AI進行整體供應鏈能見度分析的潛力。」
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: 區塊鏈 -->
+<section id="blockchain">
+  <div class="wrapper">
+    <div class="section-tag">跨機構信任機制</div>
+    <h2 class="section-title">GSBN<span>區塊鏈</span>解決信任赤字</h2>
+    <p class="section-lead">全球航運商業網絡（GSBN）由中遠海運、達飛、長榮、陽明等主要航商與碼頭營運商共同組建，以區塊鏈徹底重塑跨機構協作信任基礎。</p>
+    <div class="tech-grid">
+      <div class="tech-card">
+        <div class="tech-icon">📄</div>
+        <h3>電子貨物放行</h3>
+        <p>過去紙本提單須跑多個實體節點耗時數天；導入GSBN智能合約後，貨物放行<strong style="color:var(--accent)">從數天縮短至數小時</strong>，全程無紙化。</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">☢️</div>
+        <h3>危險化學品安全認證</h3>
+        <p>與上海化工研究院（SICIT）合作，在鏈上溯源「安全運輸認證」真實性，從源頭防範偽造標籤引發的港口工安意外。</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🔒</div>
+        <h3>商業機密保護</h3>
+        <p>採用分散式架構確保商業數據在競爭成員間安全共享，只有獲授權方才能解密讀取，消除同業疑慮。</p>
+      </div>
+      <div class="tech-card">
+        <div class="tech-icon">🌏</div>
+        <h3>跨境數據互聯</h3>
+        <p>聯邦學習（Federated Learning）等隱私強化技術，讓競爭同業在不洩露商業機密前提下共享預測數據，實現供應鏈整體最佳化。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: GenAI -->
+<section id="genai">
+  <div class="wrapper">
+    <div class="section-tag">軟體行政革命</div>
+    <h2 class="section-title">生成式AI<span>顛覆文書自動化</span></h2>
+    <p class="section-lead">全球供應鏈每年需處理數百億份提單、原產地證明、海關申報單等文件。生成式AI（LLM）正掀起港口物流業的文書行政革命。</p>
+    <div class="genai-grid">
+      <div class="genai-card">
+        <h3>📋 文件智慧擷取</h3>
+        <div class="metric">99%</div>
+        <p>Metro Shipping導入生成式ML平台後，非標準化格式文件數據處理準確率達99%，通關速度提升40%。</p>
+      </div>
+      <div class="genai-card">
+        <h3>🤖 例行文書自動化</h3>
+        <div class="metric">80%</div>
+        <p>Flexport目標2025年前將海關申報、航線規劃等例行文書的AI自動化比例提升至80%。</p>
+      </div>
+      <div class="genai-card">
+        <h3>⚠️ AI文件驗證與合規</h3>
+        <div class="metric">即時</div>
+        <p>Windward系統將提單內容與真實AIS航跡交叉比對，自動偵測制裁海域異常行為（Dark Activity），即時發出合規警報。</p>
+      </div>
+      <div class="genai-card">
+        <h3>🔍 風險管理升級</h3>
+        <div class="metric">自動化</div>
+        <p>AI將審核人員從繁瑣比對中解放，使其專注高價值異常調查，同時將企業面臨監管裁罰的風險降至最低。</p>
+      </div>
+    </div>
+    <div class="pill-row">
+      <span class="pill">提單（BOL）自動化</span>
+      <span class="pill">原產地證明辨識</span>
+      <span class="pill">海關申報自動填報</span>
+      <span class="pill">AIS船隻行為比對</span>
+      <span class="pill">制裁合規稽核</span>
+      <span class="pill">非結構化文件理解</span>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: 勞動轉型 -->
+<section id="labor">
+  <div class="wrapper">
+    <div class="section-tag">社會議題</div>
+    <h2 class="section-title">自動化對<span>勞動市場</span>的衝擊與轉型</h2>
+    <p class="section-lead">技術躍進引發資本與勞工的結構性摩擦。智慧港口的核心挑戰不只是技術落地，更是產業升級與社會責任的雙贏。</p>
+    <div class="labor-grid">
+      <div class="labor-card challenge">
+        <h3>⚠️ 面臨的衝擊與挑戰</h3>
+        <ul class="labor-list">
+          <li>美國ILA工會2024-25年強烈反對終端設備自動化</li>
+          <li>資方承諾六年加薪62%，仍無法消除工會疑慮</li>
+          <li>棕地半自動化轉型可能導致4,859個職缺淨流失</li>
+          <li>安特衛普、鹿特丹工會要求效率提升與工作保障取得平衡</li>
+          <li>起重機操作員、牽引車司機、理貨員直接受到衝擊</li>
+        </ul>
+      </div>
+      <div class="labor-card solution">
+        <h3>✅ 轉型機遇與對策</h3>
+        <ul class="labor-list">
+          <li>新加坡大士港創造500+控制中心、AI排程管理等高薪職缺</li>
+          <li>新加坡成立Maritime Energy Training Facility提供再培訓</li>
+          <li>利用AI模擬器讓資深藍領無痛轉型為自動化系統監控員</li>
+          <li>提前透明協商，與工會建立互信對話機制</li>
+          <li>自動化紅利提撥為「員工再培訓（Upskilling & Reskilling）」專項基金</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 8: CSF -->
+<section id="csf">
+  <div class="wrapper">
+    <div class="section-tag">戰略借鑑</div>
+    <h2 class="section-title">四大<span>關鍵成功因素</span></h2>
+    <p class="section-lead">基於Fuzzy DEMATEL嚴謹量化分析與國際案例萃取，推動智慧綠色港口轉型的核心戰略方向。</p>
+    <div class="csf-grid">
+      <div class="csf-card">
+        <div class="csf-num">CSF 01</div>
+        <h3>數位轉型與綠色轉型深度綁定</h3>
+        <p>AI排程、IoT監控與淨零碳排目標直接連結，仿效鹿特丹港將智慧調度與岸電使用率掛鉤，以數位分身即時計算每TEU碳足跡，將環境永續內化為底層邏輯。</p>
+      </div>
+      <div class="csf-card">
+        <div class="csf-num">CSF 02</div>
+        <h3>打破資料孤島，建構中立PCS生態系</h3>
+        <p>港務局承擔「生態系協調者」角色，推動資料格式與API標準化。借鑑GSBN區塊鏈或聯邦學習技術，確保競爭同業願在不洩露商業機密前提下共享預測數據。</p>
+      </div>
+      <div class="csf-card">
+        <div class="csf-num">CSF 03</div>
+        <h3>確保通訊韌性與網路安全防護</h3>
+        <p>仿效漢堡港5G網路切片隔離關鍵控制訊號，與新加坡EDA訊息緩衝機制。IoT設備與遠端控制系統的網路安全必須提升至國家基礎設施防護等級。</p>
+      </div>
+      <div class="csf-card">
+        <div class="csf-num">CSF 04</div>
+        <h3>前瞻法規框架與人本勞動轉型計畫</h3>
+        <p>政府提供稅賦優惠鼓勵投資；引進新技術前預先與勞工組織透明協商，規劃完善的從業人員轉型路徑，確保科技進步與社會福祉齊頭並進。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- FOOTER -->
+<footer>
+  <div style="font-size:1.6rem; margin-bottom:12px;">⚓</div>
+  <p style="color:var(--cream); font-weight:600; margin-bottom:6px;">全球國際港口智慧化與AI化應用深度分析</p>
+  <p>資料來源：鹿特丹港務局、MPA新加坡、漢堡港務局、上海港務集團、台灣港務公司、GSBN、Windward、Flexport等</p>
+  <p style="margin-top:8px; font-size:.74rem;">本報告彙整至2025年｜Ocean Depths Theme</p>
+</footer>
+
+</body>
+</html>
