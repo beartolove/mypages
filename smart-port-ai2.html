@@ -1,0 +1,1095 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>全球國際港口智慧化與AI化應用深度分析 | SaaS Modern UI</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap');
+
+  :root {
+    /* SaaS Dark Theme Palette */
+    --bg-base: #09090b;
+    --bg-surface: #18181b;
+    --bg-surface-hover: #27272a;
+    --border-light: rgba(255, 255, 255, 0.08);
+    --border-hover: rgba(255, 255, 255, 0.15);
+    
+    /* Typography */
+    --text-primary: #fafafa;
+    --text-secondary: #a1a1aa;
+    --text-tertiary: #71717a;
+    
+    /* Accents (Cyan to Blue gradient vibe) */
+    --accent-glow: rgba(6, 182, 212, 0.15);
+    --accent-color: #06b6d4;
+    --accent-blue: #3b82f6;
+    
+    /* Status Colors */
+    --danger-bg: rgba(239, 68, 68, 0.1);
+    --danger-text: #f87171;
+    --success-bg: rgba(34, 197, 94, 0.1);
+    --success-text: #4ade80;
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: 'Inter', 'Noto Sans TC', sans-serif;
+    background-color: var(--bg-base);
+    color: var(--text-primary);
+    line-height: 1.6;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  /* ── 共通樣式與佈局 ── */
+  .wrapper {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 24px;
+    position: relative;
+    z-index: 10;
+  }
+
+  section {
+    padding: 120px 0;
+    position: relative;
+  }
+
+  /* 背景環境光 (Ambient Glow) */
+  .glow-bg {
+    position: absolute;
+    width: 600px;
+    height: 600px;
+    background: radial-gradient(circle, var(--accent-glow) 0%, transparent 70%);
+    top: -100px;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 0;
+    pointer-events: none;
+    filter: blur(60px);
+  }
+
+  /* 文字漸層工具 */
+  .text-gradient {
+    background: linear-gradient(135deg, #00f0ff 0%, #0080ff 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  /* ── 標題與標籤 (Visual Hierarchy) ── */
+  .section-tag {
+    display: inline-flex;
+    align-items: center;
+    padding: 6px 12px;
+    background: rgba(255, 255, 255, 0.03);
+    border: 1px solid var(--border-light);
+    border-radius: 99px;
+    font-size: 0.75rem;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    color: var(--accent-color);
+    margin-bottom: 24px;
+    backdrop-filter: blur(8px);
+  }
+
+  .section-title {
+    font-size: clamp(2rem, 4vw, 3rem);
+    font-weight: 800;
+    letter-spacing: -0.02em;
+    margin-bottom: 24px;
+    line-height: 1.2;
+  }
+
+  .section-lead {
+    font-size: 1.125rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin-bottom: 64px;
+    line-height: 1.8;
+  }
+
+  /* ── HERO SECTION ── */
+  .hero {
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    padding: 160px 20px 100px;
+    position: relative;
+    overflow: hidden;
+  }
+
+  .hero .glow-bg {
+    width: 800px;
+    height: 800px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.15) 0%, transparent 60%);
+    top: 50%;
+    transform: translate(-50%, -50%);
+  }
+
+  .hero h1 {
+    font-size: clamp(2.5rem, 6vw, 4.5rem);
+    font-weight: 900;
+    letter-spacing: -0.03em;
+    line-height: 1.1;
+    margin-bottom: 32px;
+    z-index: 1;
+  }
+
+  .hero p {
+    font-size: clamp(1.1rem, 2vw, 1.25rem);
+    color: var(--text-secondary);
+    max-width: 800px;
+    margin: 0 auto 64px;
+    z-index: 1;
+  }
+
+  /* Hero Stats (SaaS Data Bar) */
+  .hero-stats {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 16px;
+    z-index: 1;
+    background: rgba(24, 24, 27, 0.6);
+    backdrop-filter: blur(20px);
+    border: 1px solid var(--border-light);
+    border-radius: 24px;
+    padding: 24px 40px;
+    box-shadow: 0 20px 40px rgba(0,0,0,0.4);
+  }
+
+  .stat-item {
+    padding: 0 24px;
+    position: relative;
+  }
+  .stat-item:not(:last-child)::after {
+    content: '';
+    position: absolute;
+    right: -8px;
+    top: 50%;
+    transform: translateY(-50%);
+    height: 40px;
+    width: 1px;
+    background: var(--border-light);
+  }
+
+  .stat-num {
+    display: block;
+    font-size: 2rem;
+    font-weight: 800;
+    color: #fff;
+    margin-bottom: 4px;
+    font-family: 'Inter', sans-serif;
+  }
+
+  .stat-label {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    font-weight: 500;
+  }
+
+  /* ── 導覽列 (Floating Pill Nav) ── */
+  nav {
+    position: fixed;
+    top: 24px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: rgba(24, 24, 27, 0.8);
+    backdrop-filter: blur(16px);
+    border: 1px solid var(--border-light);
+    border-radius: 99px;
+    padding: 8px 16px;
+    display: flex;
+    gap: 8px;
+    z-index: 1000;
+    box-shadow: 0 4px 24px rgba(0,0,0,0.4);
+    transition: all 0.3s ease;
+  }
+  
+  /* 讓導覽列在手機上可滑動 */
+  @media(max-width: 768px) {
+    nav {
+      width: 90%;
+      overflow-x: auto;
+      justify-content: flex-start;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none; /* Firefox */
+    }
+    nav::-webkit-scrollbar { display: none; } /* Safari and Chrome */
+  }
+
+  nav a {
+    color: var(--text-secondary);
+    text-decoration: none;
+    font-size: 0.875rem;
+    font-weight: 500;
+    padding: 8px 16px;
+    border-radius: 99px;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  nav a:hover, nav a.active {
+    background: rgba(255, 255, 255, 0.1);
+    color: #fff;
+  }
+
+  /* ── 通用卡片設計 (Glassmorphism & Gradients) ── */
+  .grid-layout {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
+    gap: 24px;
+  }
+
+  .saas-card {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 20px;
+    padding: 32px;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+  }
+
+  .saas-card::before {
+    content: '';
+    position: absolute;
+    top: 0; left: 0; right: 0; height: 1px;
+    background: linear-gradient(90deg, transparent, rgba(255,255,255,0.2), transparent);
+    opacity: 0;
+    transition: opacity 0.3s;
+  }
+
+  .saas-card:hover {
+    transform: translateY(-4px);
+    border-color: var(--border-hover);
+    box-shadow: 0 20px 40px rgba(0,0,0,0.5);
+    background: rgba(39, 39, 42, 0.8);
+  }
+
+  .saas-card:hover::before { opacity: 1; }
+
+  /* ── 核心技術 (TECH) ── */
+  .tech-icon {
+    width: 48px;
+    height: 48px;
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-light);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 1.5rem;
+    margin-bottom: 24px;
+  }
+
+  .saas-card h3 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    margin-bottom: 12px;
+    color: #fff;
+  }
+
+  .saas-card p {
+    color: var(--text-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+  }
+
+  /* ── 標竿港口 (PORTS) ── */
+  .port-header {
+    display: flex;
+    align-items: center;
+    gap: 16px;
+    margin-bottom: 24px;
+  }
+
+  .port-flag {
+    font-size: 2rem;
+    filter: drop-shadow(0 4px 8px rgba(0,0,0,0.3));
+  }
+
+  .port-name {
+    font-size: 1.25rem;
+    font-weight: 800;
+    color: #fff;
+    line-height: 1.2;
+  }
+
+  .port-sub {
+    font-size: 0.875rem;
+    color: var(--text-tertiary);
+    margin-top: 4px;
+  }
+
+  .alert-box {
+    background: var(--danger-bg);
+    border-left: 3px solid var(--danger-text);
+    border-radius: 0 8px 8px 0;
+    padding: 12px 16px;
+    margin-bottom: 24px;
+  }
+
+  .alert-box strong {
+    display: block;
+    color: var(--danger-text);
+    font-size: 0.75rem;
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+  }
+
+  .alert-box p {
+    color: #fca5a5;
+    font-size: 0.875rem;
+    margin: 0;
+  }
+
+  .feature-list {
+    list-style: none;
+    margin-bottom: 24px;
+  }
+
+  .feature-list li {
+    font-size: 0.9rem;
+    color: var(--text-secondary);
+    padding: 8px 0 8px 28px;
+    position: relative;
+    border-bottom: 1px solid rgba(255,255,255,0.03);
+  }
+
+  .feature-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--accent-color);
+    font-weight: bold;
+  }
+
+  .metric-pills {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: auto;
+  }
+
+  .metric-pill {
+    background: rgba(255,255,255,0.05);
+    border: 1px solid var(--border-light);
+    padding: 6px 12px;
+    border-radius: 6px;
+    font-size: 0.8rem;
+    font-weight: 600;
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  
+  .metric-pill span { color: var(--accent-color); }
+
+  /* ── 比較表 (TABLE - Data Grid Style) ── */
+  .table-container {
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    overflow-x: auto;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+  }
+
+  table {
+    width: 100%;
+    border-collapse: collapse;
+    min-width: 800px;
+  }
+
+  th, td {
+    padding: 20px 24px;
+    text-align: left;
+    border-bottom: 1px solid var(--border-light);
+  }
+
+  th {
+    background: rgba(255,255,255,0.02);
+    font-size: 0.875rem;
+    font-weight: 600;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+  }
+
+  td {
+    font-size: 0.95rem;
+    color: var(--text-primary);
+    vertical-align: top;
+  }
+
+  td:first-child {
+    font-weight: 700;
+    white-space: nowrap;
+  }
+
+  tr:last-child td { border-bottom: none; }
+  tr:hover td { background: rgba(255,255,255,0.02); }
+
+  /* ── 協同流程 (PIPELINE FLOW) ── */
+  .pipeline-flow {
+    display: flex;
+    align-items: stretch;
+    justify-content: space-between;
+    gap: 16px;
+    overflow-x: auto;
+    padding-bottom: 24px;
+  }
+
+  .pipeline-step {
+    flex: 1;
+    min-width: 200px;
+    background: var(--bg-surface);
+    border: 1px solid var(--border-light);
+    border-radius: 16px;
+    padding: 24px;
+    position: relative;
+    transition: all 0.3s;
+  }
+
+  .pipeline-step:hover {
+    border-color: var(--accent-color);
+    background: rgba(6, 182, 212, 0.05);
+  }
+
+  .step-number {
+    width: 32px; height: 32px;
+    background: rgba(255,255,255,0.1);
+    border-radius: 8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--accent-color);
+    margin-bottom: 16px;
+  }
+
+  .pipeline-step h4 {
+    font-size: 1.1rem;
+    margin-bottom: 8px;
+    color: #fff;
+  }
+
+  .pipeline-step p {
+    font-size: 0.875rem;
+    color: var(--text-secondary);
+    line-height: 1.5;
+  }
+
+  .pipeline-connector {
+    display: flex;
+    align-items: center;
+    color: var(--border-hover);
+    font-size: 1.5rem;
+  }
+
+  .highlight-quote {
+    margin-top: 48px;
+    padding: 32px;
+    background: linear-gradient(to right, rgba(6,182,212,0.1), transparent);
+    border-left: 4px solid var(--accent-color);
+    border-radius: 0 16px 16px 0;
+    font-size: 1.25rem;
+    color: #fff;
+    font-style: normal;
+    font-weight: 300;
+    line-height: 1.6;
+  }
+
+  /* ── 生成式 AI (GENAI BIG METRICS) ── */
+  .metric-card {
+    text-align: center;
+    padding: 48px 24px;
+  }
+  
+  .metric-card .huge-num {
+    font-size: 4rem;
+    font-weight: 900;
+    line-height: 1;
+    margin-bottom: 16px;
+    background: linear-gradient(135deg, #fff 0%, #a1a1aa 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+  }
+
+  /* ── 勞動轉型 (LABOR SPLIT) ── */
+  .split-grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 32px;
+  }
+  @media(max-width: 800px) { .split-grid { grid-template-columns: 1fr; } }
+
+  .status-card {
+    border-radius: 20px;
+    padding: 40px;
+  }
+
+  .status-card.warning {
+    background: linear-gradient(180deg, rgba(239,68,68,0.05) 0%, rgba(24,24,27,0.5) 100%);
+    border: 1px solid rgba(239,68,68,0.2);
+  }
+
+  .status-card.success {
+    background: linear-gradient(180deg, rgba(34,197,94,0.05) 0%, rgba(24,24,27,0.5) 100%);
+    border: 1px solid rgba(34,197,94,0.2);
+  }
+
+  .status-header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    font-size: 1.5rem;
+    font-weight: 700;
+  }
+
+  .warning .status-header { color: var(--danger-text); }
+  .success .status-header { color: var(--success-text); }
+
+  /* ── CSF (SUCCESS FACTORS) ── */
+  .csf-card {
+    border-top: 4px solid var(--border-light);
+  }
+  .csf-card:hover { border-top-color: var(--accent-color); }
+  
+  .csf-num {
+    font-family: 'Inter', sans-serif;
+    font-size: 0.875rem;
+    font-weight: 700;
+    color: var(--text-tertiary);
+    margin-bottom: 12px;
+    letter-spacing: 0.1em;
+  }
+
+  /* ── FOOTER ── */
+  footer {
+    border-top: 1px solid var(--border-light);
+    padding: 64px 20px;
+    text-align: center;
+    background: #000;
+  }
+
+  footer .logo { font-size: 2rem; margin-bottom: 16px; display: inline-block; }
+  footer h4 { color: #fff; margin-bottom: 8px; font-weight: 600; }
+  footer p { color: var(--text-tertiary); font-size: 0.875rem; }
+
+  /* ── 動畫設定 (Scroll Animations) ── */
+  .fade-up {
+    opacity: 0;
+    transform: translateY(30px);
+    transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+  }
+  .fade-up.visible {
+    opacity: 1;
+    transform: translateY(0);
+  }
+  
+  /* 延遲類別 */
+  .delay-100 { transition-delay: 100ms; }
+  .delay-200 { transition-delay: 200ms; }
+  .delay-300 { transition-delay: 300ms; }
+</style>
+</head>
+<body>
+
+<!-- 導覽列 -->
+<nav id="navbar">
+  <a href="#tech" class="active">核心技術</a>
+  <a href="#ports">標竿港口</a>
+  <a href="#comparison">效益比較</a>
+  <a href="#flow">協同流程</a>
+  <a href="#genai">生成式 AI</a>
+  <a href="#labor">勞動轉型</a>
+</nav>
+
+<!-- 英雄區塊 (Hero) -->
+<div class="hero">
+  <div class="glow-bg"></div>
+  <div class="wrapper" style="text-align: center;">
+    <div class="section-tag fade-up">INDUSTRY REPORT 2025</div>
+    <h1 class="fade-up delay-100">全球國際港口<br><span class="text-gradient">智慧化與 AI 化</span> 應用分析</h1>
+    <p class="fade-up delay-200">剖析鹿特丹、新加坡、漢堡、上海、高雄等標竿港口，如何透過人工智慧、5G、數位分身與區塊鏈，重塑全球海運物流典範。</p>
+    
+    <div class="hero-stats fade-up delay-300">
+      <div class="stat-item">
+        <span class="stat-num">80%<span style="color:var(--accent-color)">+</span></span>
+        <span class="stat-label">全球貿易依賴海運</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">$21.9T</span>
+        <span class="stat-label">2033 物流市場規模</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">6 大</span>
+        <span class="stat-label">標竿港口深度剖析</span>
+      </div>
+      <div class="stat-item">
+        <span class="stat-num">2050</span>
+        <span class="stat-label">IMO 淨零碳排目標</span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- SECTION 1: 核心技術 -->
+<section id="tech">
+  <div class="glow-bg" style="top: 20%; right: -20%; left: auto;"></div>
+  <div class="wrapper">
+    <div class="section-tag fade-up">Technology Foundation</div>
+    <h2 class="section-title fade-up">驅動轉型的<span class="text-gradient">五大核心技術</span></h2>
+    <p class="section-lead fade-up">智慧港口圍繞「自動化」、「永續性」、「協同合作」三大主軸，由以下前沿技術深度融合交互驅動，建構次世代物流生態系。</p>
+    
+    <div class="grid-layout">
+      <div class="saas-card fade-up">
+        <div class="tech-icon">🧠</div>
+        <h3>人工智慧與機器學習</h3>
+        <p>涵蓋預測性維護、機器視覺辨識、動態排程最佳化，處理 IoT 海量數據、預測設備故障並精估船舶抵達時間 (ETA)。</p>
+      </div>
+      <div class="saas-card fade-up delay-100">
+        <div class="tech-icon">⚡</div>
+        <h3>5G 網路切片技術</h3>
+        <p>高頻寬超低延遲 (URLLC) 與大規模機器通訊 (mMTC) 特性，為萬台 AGV 與遠端起重機提供毫秒級通訊保障。</p>
+      </div>
+      <div class="saas-card fade-up delay-200">
+        <div class="tech-icon">🌐</div>
+        <h3>數位分身 (Digital Twin)</h3>
+        <p>將實體港口幾何結構、水文氣象與即時動態映射至虛擬空間，在零風險環境中進行全港沙盤推演與決策模擬。</p>
+      </div>
+      <div class="saas-card fade-up">
+        <div class="tech-icon">🔗</div>
+        <h3>區塊鏈技術</h3>
+        <p>分散式帳本確保提單與報關文件不可篡改，解決航運業長期的信任赤字與資料孤島問題，保障跨機構協作。</p>
+      </div>
+      <div class="saas-card fade-up delay-100">
+        <div class="tech-icon">✨</div>
+        <h3>生成式 AI (GenAI)</h3>
+        <p>大型語言模型自動化處理提單、原產地證明等繁雜文書，並進行船舶行為與真實世界交叉驗證，顛覆行政效率。</p>
+      </div>
+      <div class="saas-card fade-up delay-200">
+        <div class="tech-icon">📡</div>
+        <h3>IoT 邊緣運算網路</h3>
+        <p>部署水位、鹽度、風速、氣體偵測等海量感測器，收集即時環境數據，支撐預測性維護與環境永續 ESG 目標。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 2: 標竿港口 -->
+<section id="ports" style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--border-light); border-bottom: 1px solid var(--border-light);">
+  <div class="wrapper">
+    <div class="section-tag fade-up">Global Benchmarks</div>
+    <h2 class="section-title fade-up">六大<span class="text-gradient">標竿港口</span>深度解析</h2>
+    <p class="section-lead fade-up">鹿特丹、新加坡、漢堡、上海、高雄、安特衛普各以不同戰略路徑，領跑全球智慧化轉型。</p>
+    
+    <div class="grid-layout">
+      <!-- Rotterdam -->
+      <div class="saas-card fade-up">
+        <div class="port-header">
+          <div class="port-flag">🇳🇱</div>
+          <div>
+            <div class="port-name">鹿特丹港</div>
+            <div class="port-sub">Port of Rotterdam · 歐洲最大港</div>
+          </div>
+        </div>
+        <div class="alert-box">
+          <strong>核心痛點</strong>
+          <p>跨機構資訊不對稱導致船舶等待過久；碳排壓力龐大。</p>
+        </div>
+        <ul class="feature-list">
+          <li>AI 靠港最佳化系統 Pronto (1.2萬筆數據訓練)</li>
+          <li>PortXchange 即時排放追蹤平台</li>
+          <li>覆蓋全港 42 公里的 IoT 雲端數位分身</li>
+        </ul>
+        <div class="metric-pills">
+          <div class="metric-pill"><span>🎯</span> ETA精確至20分</div>
+          <div class="metric-pill"><span>⏱</span> 等待時間↓20%</div>
+        </div>
+      </div>
+
+      <!-- Singapore -->
+      <div class="saas-card fade-up delay-100">
+        <div class="port-header">
+          <div class="port-flag">🇸🇬</div>
+          <div>
+            <div class="port-name">大士超級港</div>
+            <div class="port-sub">Tuas Mega Port · 全球最大自動化碼頭</div>
+          </div>
+        </div>
+        <div class="alert-box">
+          <strong>核心痛點</strong>
+          <p>勞動力短缺；市區港口運能飽和；氣候變遷威脅。</p>
+        </div>
+        <ul class="feature-list">
+          <li>純電 AGV 車隊 (RFID 地下通訊，充20分行6時)</li>
+          <li>事件驅動架構 (EDA) 保障訊息順序傳遞</li>
+          <li>新一代 AI 船舶交通管理系統</li>
+        </ul>
+        <div class="metric-pills">
+          <div class="metric-pill"><span>♻</span> 碳排↓50%</div>
+          <div class="metric-pill"><span>📦</span> 運能65M TEU</div>
+        </div>
+      </div>
+
+      <!-- Hamburg -->
+      <div class="saas-card fade-up delay-200">
+        <div class="port-header">
+          <div class="port-flag">🇩🇪</div>
+          <div>
+            <div class="port-name">漢堡港</div>
+            <div class="port-sub">Port of Hamburg · smartPORT 戰略</div>
+          </div>
+        </div>
+        <div class="alert-box">
+          <strong>核心痛點</strong>
+          <p>腹地狹小致聯外交通壅塞；基礎設施維護成本高。</p>
+        </div>
+        <ul class="feature-list">
+          <li>5G 網路 URLLC 切片控制交通號誌</li>
+          <li>mMTC 大規模物聯網 (計畫 10 萬個感測器)</li>
+          <li>基礎設施 (橋梁/水閘) 預測性維護感測</li>
+        </ul>
+        <div class="metric-pills">
+          <div class="metric-pill"><span>⚡</span> 延遲&lt;10ms</div>
+          <div class="metric-pill"><span>📊</span> 日配4萬趟卡車</div>
+        </div>
+      </div>
+
+      <!-- Shanghai -->
+      <div class="saas-card fade-up">
+        <div class="port-header">
+          <div class="port-flag">🇨🇳</div>
+          <div>
+            <div class="port-name">上海港 (洋山四期)</div>
+            <div class="port-sub">Port of Shanghai · 吞吐量 No.1</div>
+          </div>
+        </div>
+        <div class="alert-box">
+          <strong>核心痛點</strong>
+          <p>龐大吞吐量引發作業瓶頸；海關人工查驗耗時。</p>
+        </div>
+        <ul class="feature-list">
+          <li>5.8GHz eLTE-U 控制 60 輛 AGV 陣列</li>
+          <li>H986 大型 X 光掃描 AI 影像 5 秒風險研判</li>
+          <li>ITOS 全自動化作業系統 (24H無人化)</li>
+        </ul>
+        <div class="metric-pills">
+          <div class="metric-pill"><span>👷</span> 現場人力↓70%</div>
+          <div class="metric-pill"><span>📈</span> 裝卸效率↑30%</div>
+        </div>
+      </div>
+
+      <!-- Kaohsiung -->
+      <div class="saas-card fade-up delay-100">
+        <div class="port-header">
+          <div class="port-flag">🇹🇼</div>
+          <div>
+            <div class="port-name">高雄港 (第七貨櫃)</div>
+            <div class="port-sub">Port of Kaohsiung · Trans-SMART 2.0+</div>
+          </div>
+        </div>
+        <div class="alert-box">
+          <strong>核心痛點</strong>
+          <p>鄰近港口強烈轉運競爭；傳統碼頭勞動力不足。</p>
+        </div>
+        <ul class="feature-list">
+          <li>5G AIoT 專網 + 25排遠端控制無人橋式機</li>
+          <li>智慧 TOS 系統精準協調前後線機具</li>
+          <li>無人水面載具 (ASV) 偵測油汙與清理</li>
+        </ul>
+        <div class="metric-pills">
+          <div class="metric-pill"><span>🚢</span> 泊4艘 24K TEU</div>
+          <div class="metric-pill"><span>🎯</span> 6.5M TEU/年</div>
+        </div>
+      </div>
+
+      <!-- Antwerp -->
+      <div class="saas-card fade-up delay-200">
+        <div class="port-header">
+          <div class="port-flag">🇧🇪</div>
+          <div>
+            <div class="port-name">安特衛普-布魯日港</div>
+            <div class="port-sub">Port of Antwerp-Bruges · APICA</div>
+          </div>
+        </div>
+        <div class="alert-box">
+          <strong>核心痛點</strong>
+          <p>複雜港區的全面即時態勢感知；工業氣體風險。</p>
+        </div>
+        <ul class="feature-list">
+          <li>APICA 數位分身整合 460 個 AI 攝影機</li>
+          <li>「iNoses」數位嗅覺即時偵測氣體外洩</li>
+          <li>去中心化決策支援，呼應聯合國 SDG 目標</li>
+        </ul>
+        <div class="metric-pills">
+          <div class="metric-pill"><span>📹</span> 460台 AI 視覺</div>
+          <div class="metric-pill"><span>👃</span> iNoses 氣體預警</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 3: 比較表 -->
+<section id="comparison">
+  <div class="wrapper">
+    <div class="section-tag fade-up">Data Grid</div>
+    <h2 class="section-title fade-up">跨港口效益 <span class="text-gradient">KPI 對照表</span></h2>
+    <p class="section-lead fade-up">各港口在不同痛點情境下，導入自動化基礎設施與軟體服務後的具體量化成效。</p>
+    
+    <div class="table-container fade-up delay-100">
+      <table>
+        <thead>
+          <tr>
+            <th>標竿港口</th>
+            <th>核心挑戰</th>
+            <th>主要 SaaS/硬體技術方案</th>
+            <th>量化成效指標 (KPI)</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td>🇳🇱 鹿特丹</td>
+            <td>跨機構資訊不對稱、碳排壓力</td>
+            <td>AI 靠港平台 (Pronto)、全港數位分身</td>
+            <td>等待時間降 20%、ETA 誤差 &lt;20分</td>
+          </tr>
+          <tr>
+            <td>🇸🇬 新加坡大士</td>
+            <td>勞動力短缺、運能極限</td>
+            <td>全電 AGV、EDA 架構、AI 交管</td>
+            <td>碳排降 50%、釋出 500+ 數位職缺</td>
+          </tr>
+          <tr>
+            <td>🇩🇪 漢堡</td>
+            <td>腹地壅塞、維護成本高昂</td>
+            <td>5G URLLC 切片、大規模邊緣 IoT</td>
+            <td>通訊延遲 &lt;10ms、極端天候即時預警</td>
+          </tr>
+          <tr>
+            <td>🇨🇳 上海洋山</td>
+            <td>吞吐量引發瓶頸、查驗費時</td>
+            <td>eLTE-U 工業無線、AI 影像分析</td>
+            <td>現場人力降 70%、裝卸效率升 30%</td>
+          </tr>
+          <tr>
+            <td>🇹🇼 高雄</td>
+            <td>強烈轉運競爭、天候影響作業</td>
+            <td>5G AIoT 專網、長榮智慧 TOS 系統</td>
+            <td>深水泊位同停 4 艘巨輪、穩健轉運量</td>
+          </tr>
+          <tr>
+            <td>🇧🇪 安特衛普</td>
+            <td>工安態勢感知不足</td>
+            <td>APICA 數位分身、iNoses 嗅覺感測</td>
+            <td>秒級氣體預警、獲聯合國 SDG 永續認證</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 4: 協同流程 -->
+<section id="flow" style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--border-light);">
+  <div class="wrapper">
+    <div class="section-tag fade-up">Workflow Automation</div>
+    <h2 class="section-title fade-up">社群系統 <span class="text-gradient">自動化協同流程</span></h2>
+    <p class="section-lead fade-up">新一代港口社群系統 (PCS) 整合 AI 微服務，實現無縫的跨節點動態預測與資源分派。</p>
+
+    <div class="pipeline-flow fade-up delay-100">
+      <div class="pipeline-step">
+        <div class="step-number">1</div>
+        <h4>ETA 預測模型</h4>
+        <p>AI 整合海象與 AIS 歷史數據，動態修正船舶抵達時間。</p>
+      </div>
+      <div class="pipeline-connector">→</div>
+      <div class="pipeline-step">
+        <div class="step-number">2</div>
+        <h4>泊位資源預配</h4>
+        <p>碼頭終端作業系統依據 ETA 精準調度起重機與堆場空位。</p>
+      </div>
+      <div class="pipeline-connector">→</div>
+      <div class="pipeline-step">
+        <div class="step-number">3</div>
+        <h4>海事服務調度</h4>
+        <p>自動推播 API 通知引水人、拖船與燃料船無縫安插靠港空檔。</p>
+      </div>
+      <div class="pipeline-connector">→</div>
+      <div class="pipeline-step">
+        <div class="step-number">4</div>
+        <h4>閘口視覺辨識</h4>
+        <p>Edge AI 即時讀取貨櫃號碼，啟動電子放行，消滅卡車車龍。</p>
+      </div>
+    </div>
+
+    <div class="highlight-quote fade-up delay-200">
+      「數據交換的最大障礙往往不在技術，而在『信任』。GSBN 等區塊鏈網路正透過隱私強化技術，打破競爭者間的資料孤島，解鎖 AI 供應鏈分析的真正潛力。」
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 5: GenAI -->
+<section id="genai">
+  <div class="glow-bg" style="top: 50%; left: 10%;"></div>
+  <div class="wrapper">
+    <div class="section-tag fade-up">AI Revolution</div>
+    <h2 class="section-title fade-up">GenAI <span class="text-gradient">顛覆文件處理與合規</span></h2>
+    <p class="section-lead fade-up">大型語言模型 (LLM) 具備強大的非結構化資料理解力，正掀起物流業每年數百億份報關文書的自動化革命。</p>
+
+    <div class="grid-layout">
+      <div class="saas-card metric-card fade-up">
+        <div class="huge-num">99<span style="font-size: 2rem;">%</span></div>
+        <h3>文件智慧擷取準確率</h3>
+        <p style="margin-top: 12px;">處理非標準化提單與原產地證明，通關速度提升 40%。</p>
+      </div>
+      <div class="saas-card metric-card fade-up delay-100">
+        <div class="huge-num">80<span style="font-size: 2rem;">%</span></div>
+        <h3>例行文書自動化目標</h3>
+        <p style="margin-top: 12px;">Flexport 目標 2025 年將海關申報與航線規劃高度 AI 化。</p>
+      </div>
+      <div class="saas-card metric-card fade-up delay-200">
+        <div class="huge-num">0<span style="font-size: 2rem;">s</span></div>
+        <h3>零延遲風險阻斷</h3>
+        <p style="margin-top: 12px;">Windward 系統交叉比對真實 AIS 航跡，即時攔截異常制裁風險。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 6: 勞動轉型 -->
+<section id="labor" style="background: rgba(255,255,255,0.01); border-top: 1px solid var(--border-light);">
+  <div class="wrapper">
+    <div class="section-tag fade-up">Social Impact</div>
+    <h2 class="section-title fade-up">自動化對 <span class="text-gradient">勞動市場</span> 的摩擦與解方</h2>
+    <p class="section-lead fade-up">技術躍進無可避免地引發資本與勞工的結構性摩擦。真正的智慧港口需具備完善的人本轉型計畫。</p>
+
+    <div class="split-grid">
+      <div class="status-card warning fade-up">
+        <div class="status-header">
+          <span>⚠️</span> 面臨的衝擊與阻力
+        </div>
+        <ul class="feature-list" style="margin: 0;">
+          <li>美國 ILA 工會 2024-25 強烈抵制終端設備自動化。</li>
+          <li>資方承諾高額加薪，仍難以消除底層「被取代」恐慌。</li>
+          <li>棕地 (現有碼頭) 轉型預估導致數千個藍領職缺淨流失。</li>
+          <li>傳統起重機操作員、牽引車司機首當其衝面臨裁員風險。</li>
+        </ul>
+      </div>
+      
+      <div class="status-card success fade-up delay-100">
+        <div class="status-header">
+          <span>✅</span> 轉型機遇與緩解策略
+        </div>
+        <ul class="feature-list" style="margin: 0;">
+          <li>將硬體自動化紅利提撥為「員工再培訓 (Reskilling)」基金。</li>
+          <li>新設控制中心、AI 系統監控員等高價值、高安全性白領職缺。</li>
+          <li>導入 VR 訓練模擬器，協助資深操作員無痛轉移至遠端控制台。</li>
+          <li>建立勞資透明協商機制，如新加坡成立海事能源訓練設施。</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SECTION 7: CSF -->
+<section id="csf">
+  <div class="wrapper">
+    <div class="section-tag fade-up">Strategic Blueprint</div>
+    <h2 class="section-title fade-up">推動轉型的 <span class="text-gradient">四大成功關鍵 (CSF)</span></h2>
+    <div class="grid-layout" style="margin-top: 48px;">
+      <div class="saas-card csf-card fade-up">
+        <div class="csf-num">CSF 01</div>
+        <h3>數位與綠色雙軌並進</h3>
+        <p>將 AI 排程與淨零碳排 KPI 直接掛鉤，利用平台即時計算每 TEU 碳足跡，將永續內化為演算法底層邏輯。</p>
+      </div>
+      <div class="saas-card csf-card fade-up delay-100">
+        <div class="csf-num">CSF 02</div>
+        <h3>建構中立 PCS 生態系</h3>
+        <p>港務單位應作為協調者，推動 API 標準化，並運用區塊鏈或聯邦學習打破商業數據互不信任的藩籬。</p>
+      </div>
+      <div class="saas-card csf-card fade-up delay-200">
+        <div class="csf-num">CSF 03</div>
+        <h3>零信任網路安全防護</h3>
+        <p>隨著邊緣設備暴增，必須導入 5G 專網切片技術隔離控制訊號，將資安提升至國家關鍵基礎設施防護等級。</p>
+      </div>
+      <div class="saas-card csf-card fade-up delay-300">
+        <div class="csf-num">CSF 04</div>
+        <h3>人本導向的轉型法規</h3>
+        <p>政府應在引進全自動設備前介入勞資協商，設計完善的從業人員職能轉型路徑，確保科技與社會共好。</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- Footer -->
+<footer>
+  <div class="wrapper fade-up">
+    <div class="logo">⚓</div>
+    <h4>智慧港口轉型洞察報告 2025</h4>
+    <p>Powered by Modern SaaS UI Design System</p>
+    <p style="margin-top: 16px; opacity: 0.5;">資料整合自：鹿特丹港務局、MPA 新加坡、漢堡港務局、GSBN 等公開文獻。</p>
+  </div>
+</footer>
+
+<script>
+  // 1. 處理 Scroll 觸發的漸顯動畫 (Fade Up)
+  const observerOptions = {
+    root: null,
+    rootMargin: '0px',
+    threshold: 0.15
+  };
+
+  const observer = new IntersectionObserver((entries, observer) => {
+    entries.forEach(entry => {
+      if (entry.isIntersecting) {
+        entry.target.classList.add('visible');
+        // 可選：若希望動畫只觸發一次，取消以下註解
+        // observer.unobserve(entry.target);
+      }
+    });
+  }, observerOptions);
+
+  document.querySelectorAll('.fade-up').forEach(element => {
+    observer.observe(element);
+  });
+
+  // 2. 處理導覽列動態 Active 狀態
+  const sections = document.querySelectorAll('section');
+  const navLinks = document.querySelectorAll('#navbar a');
+
+  window.addEventListener('scroll', () => {
+    let current = '';
+    
+    sections.forEach(section => {
+      const sectionTop = section.offsetTop;
+      const sectionHeight = section.clientHeight;
+      if (scrollY >= (sectionTop - 200)) {
+        current = section.getAttribute('id');
+      }
+    });
+
+    navLinks.forEach(link => {
+      link.classList.remove('active');
+      if (link.getAttribute('href').includes(current)) {
+        link.classList.add('active');
+      }
+    });
+  });
+</script>
+
+</body>
+</html>
