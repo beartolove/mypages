@@ -1,0 +1,530 @@
+<!DOCTYPE html>
+<html lang="zh-TW" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2026 美伊戰事對全球海空運鏈的衝擊與臺灣港口韌性重塑策略</title>
+    <!-- Google Fonts: Inter & Noto Sans TC -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+    
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', '"Noto Sans TC"', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9', // 現代 SaaS 亮藍色
+                            600: '#0284c7',
+                            900: '#0c4a6e',
+                        },
+                        slate: {
+                            850: '#152033', // 深邃背景色
+                            900: '#0f172a',
+                        },
+                        alert: '#f97316', // 警示橘
+                    },
+                    boxShadow: {
+                        'glow': '0 0 20px rgba(14, 165, 233, 0.5)',
+                        'card-hover': '0 20px 40px -15px rgba(0,0,0,0.05)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* 隱藏/顯示動畫的基礎設定 */
+        .reveal-element {
+            opacity: 0;
+            transform: translateY(24px) scale(0.98);
+            transition: all 0.7s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .reveal-element.is-visible {
+            opacity: 1;
+            transform: translateY(0) scale(1);
+        }
+        
+        /* 導覽列毛玻璃效果 */
+        .glass-nav {
+            background: rgba(15, 23, 42, 0.7);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        /* SaaS 常見背景網格 */
+        .bg-grid-pattern {
+            background-image: 
+                linear-gradient(to right, rgba(255,255,255,0.05) 1px, transparent 1px),
+                linear-gradient(to bottom, rgba(255,255,255,0.05) 1px, transparent 1px);
+            background-size: 40px 40px;
+        }
+
+        /* 漸層文字輔助 */
+        .text-gradient {
+            background-clip: text;
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+    </style>
+</head>
+<body class="font-sans text-slate-600 bg-slate-50 antialiased selection:bg-brand-500 selection:text-white">
+
+    <!-- 導覽列 (SaaS Style Navbar) -->
+    <nav id="navbar" class="fixed w-full z-50 transition-all duration-300 py-4">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex justify-between items-center bg-slate-900/40 backdrop-blur-md border border-white/10 rounded-full px-6 py-3 shadow-lg">
+                <div class="flex-shrink-0 flex items-center gap-2 cursor-pointer" onclick="window.scrollTo(0,0)">
+                    <div class="w-8 h-8 rounded-lg bg-gradient-to-br from-brand-500 to-blue-600 flex items-center justify-center shadow-glow">
+                        <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <span class="text-white font-bold text-lg tracking-wide">美伊戰爭影響評估(20260309)</span>
+                </div>
+                
+                <!-- 桌面版選單 -->
+                <div class="hidden md:flex items-center space-x-1">
+                    <a href="#crisis" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-all">危機現況</a>
+                    <a href="#ports" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-all">港口衝擊</a>
+                    <a href="#taiwan" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-all">臺灣影響</a>
+                    <a href="#strategy" class="px-4 py-2 text-sm font-medium text-slate-300 hover:text-white hover:bg-white/10 rounded-full transition-all">戰略轉型</a>
+                </div>
+
+                <!-- 下載按鈕 -->
+                <div class="hidden md:flex">
+                    <a href="#cta" class="px-5 py-2 text-sm font-medium text-white bg-brand-500 hover:bg-brand-400 rounded-full transition-all shadow-glow">
+                        下載完整報告
+                    </a>
+                </div>
+
+                <!-- 手機版選單按鈕 -->
+                <div class="md:hidden flex items-center">
+                    <button id="mobile-menu-btn" class="text-slate-300 hover:text-white focus:outline-none p-2">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16"></path></svg>
+                    </button>
+                </div>
+            </div>
+        </div>
+        
+        <!-- 手機版選單展開 -->
+        <div id="mobile-menu" class="hidden md:hidden absolute w-full left-0 top-full mt-2 px-4">
+            <div class="bg-slate-900 border border-slate-800 rounded-2xl p-4 shadow-2xl space-y-2">
+                <a href="#crisis" class="mobile-nav-link block px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 rounded-xl">危機現況</a>
+                <a href="#ports" class="mobile-nav-link block px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 rounded-xl">港口衝擊</a>
+                <a href="#taiwan" class="mobile-nav-link block px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 rounded-xl">臺灣影響</a>
+                <a href="#strategy" class="mobile-nav-link block px-4 py-3 text-sm font-medium text-slate-300 hover:bg-slate-800 rounded-xl">戰略轉型</a>
+            </div>
+        </div>
+    </nav>
+
+    <!-- 區塊 1: 首頁 (SaaS Hero Section) -->
+    <section id="home" class="relative bg-slate-900 pt-48 pb-40 overflow-hidden min-h-screen flex items-center">
+        <!-- 背景裝飾 -->
+        <div class="absolute inset-0 bg-grid-pattern opacity-20"></div>
+        <div class="absolute top-1/4 left-1/2 -translate-x-1/2 w-[800px] h-[500px] bg-brand-500/20 rounded-full blur-[120px] pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 w-full text-center">
+            <div class="reveal-element">
+                <!-- SaaS 常見的 Pill Badge -->
+                <div class="inline-flex items-center gap-2 px-3 py-1.5 rounded-full bg-brand-500/10 border border-brand-500/20 text-brand-400 text-sm font-medium mb-8">
+                    <span class="relative flex h-2 w-2">
+                      <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-brand-400 opacity-75"></span>
+                      <span class="relative inline-flex rounded-full h-2 w-2 bg-brand-500"></span>
+                    </span>
+                    2026 最新地緣政治特別報告
+                </div>
+                
+                <h1 class="text-5xl md:text-7xl font-extrabold text-white tracking-tight leading-[1.1] mb-8 max-w-4xl mx-auto">
+                    黑天鵝降臨：<br>
+                    <span class="bg-gradient-to-r from-brand-400 via-blue-400 to-indigo-400 text-gradient">美伊戰事對全球海空運鏈的衝擊</span>
+                </h1>
+                
+                <p class="text-lg md:text-xl text-slate-400 mb-12 font-medium leading-relaxed max-w-2xl mx-auto">
+                    2026年2月底爆發的衝突導致荷姆茲海峽實質封閉，觸發自1970年代以來最嚴重的供應鏈危機。臺灣港口必須重新定義競爭地位，重塑系統韌性。
+                </p>
+                
+                <div class="flex flex-col sm:flex-row justify-center items-center gap-4">
+                    <a href="#strategy" class="w-full sm:w-auto px-10 py-4 bg-white text-slate-900 font-bold rounded-xl hover:bg-slate-100 transition-all duration-300 hover:shadow-[0_0_30px_rgba(255,255,255,0.3)] hover:-translate-y-1 text-lg">
+                        探索轉型方案
+                    </a>
+                    <a href="#crisis" class="w-full sm:w-auto px-10 py-4 bg-slate-800 text-white font-semibold rounded-xl border border-slate-700 hover:bg-slate-700 transition-all duration-300 text-lg">
+                        檢視危機數據
+                    </a>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 區塊 2: 危機現況 (Bento Box Layout) -->
+    <section id="crisis" class="py-32 bg-slate-50 relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-16 reveal-element">
+                <h2 class="text-brand-600 font-bold tracking-wider text-sm uppercase mb-3">Global Disruption</h2>
+                <h3 class="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">全球海空運鏈崩解現況</h3>
+                <p class="mt-4 text-lg text-slate-500 max-w-2xl">荷姆茲海峽的實質閉鎖，觸發了保險撤銷與系統性航運癱瘓，各項指標顯示危機正迅速擴散。</p>
+            </div>
+
+            <!-- Bento Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+                <!-- 數據卡 1 -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-card-hover hover:border-alert/30 transition-all duration-300 reveal-element">
+                    <div class="w-12 h-12 bg-orange-50 text-alert rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16V6a1 1 0 00-1-1H4a1 1 0 00-1 1v10a1 1 0 001 1h1m8-1a1 1 0 01-1 1H9m4-1V8a1 1 0 011-1h2.586a1 1 0 01.707.293l3.414 3.414a1 1 0 01.293.707V16a1 1 0 01-1 1h-1m-6-1a1 1 0 001 1h1"></path></svg>
+                    </div>
+                    <div class="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight">170<span class="text-xl text-slate-400 font-medium ml-1">艘</span></div>
+                    <h5 class="text-lg font-bold text-slate-800 mb-2">海運癱瘓受困</h5>
+                    <p class="text-slate-500 text-sm leading-relaxed">總運力約 45 萬 TEU 的貨櫃船受困於海峽內部無法撤離，佔全球船隊 1.4%。</p>
+                </div>
+
+                <!-- 數據卡 2 -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-card-hover hover:border-brand-300 transition-all duration-300 reveal-element" style="transition-delay: 100ms;">
+                    <div class="w-12 h-12 bg-blue-50 text-brand-500 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3.055 11H5a2 2 0 012 2v1a2 2 0 002 2 2 2 0 012 2v2.945M8 3.935V5.5A2.5 2.5 0 0010.5 8h.5a2 2 0 012 2 2 2 0 104 0 2 2 0 012-2h1.064M15 20.488V18a2 2 0 012-2h3.064"></path></svg>
+                    </div>
+                    <div class="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight">2.5<span class="text-xl text-slate-400 font-medium ml-1">M TEU</span></div>
+                    <h5 class="text-lg font-bold text-slate-800 mb-2">航線繞道蒸發</h5>
+                    <p class="text-slate-500 text-sm leading-relaxed">迫使全球船隊長期繞行好望角，蒸發大量運力，單趟航程增加 10 至 14 天。</p>
+                </div>
+
+                <!-- 數據卡 3 -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-card-hover hover:border-indigo-300 transition-all duration-300 reveal-element" style="transition-delay: 200ms;">
+                    <div class="w-12 h-12 bg-indigo-50 text-indigo-500 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8"></path></svg>
+                    </div>
+                    <div class="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight">+40<span class="text-xl text-slate-400 font-medium ml-1">%</span></div>
+                    <h5 class="text-lg font-bold text-slate-800 mb-2">空運艙位緊繃</h5>
+                    <p class="text-slate-500 text-sm leading-relaxed">亞歐走廊中斷，海轉空 (Sea-to-Air) 緊急需求爆發，嚴重擠壓有限的貨機艙位。</p>
+                </div>
+
+                <!-- 數據卡 4 -->
+                <div class="bg-white rounded-3xl p-8 border border-slate-200 shadow-sm hover:shadow-card-hover hover:border-alert/30 transition-all duration-300 reveal-element" style="transition-delay: 300ms;">
+                    <div class="w-12 h-12 bg-red-50 text-red-500 rounded-2xl flex items-center justify-center mb-6">
+                        <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6"></path></svg>
+                    </div>
+                    <div class="text-5xl font-extrabold text-slate-900 mb-2 tracking-tight">$101<span class="text-xl text-slate-400 font-medium ml-1">/桶</span></div>
+                    <h5 class="text-lg font-bold text-slate-800 mb-2">能源暴漲危機</h5>
+                    <p class="text-slate-500 text-sm leading-relaxed">布蘭特原油跳漲突破三位數，航空燃油漲幅高達 80%，全面推升通膨預期。</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 區塊 3: 港口營運 (Timeline Style) -->
+    <section id="ports" class="py-32 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="mb-20 text-center reveal-element">
+                <h2 class="text-brand-600 font-bold tracking-wider text-sm uppercase mb-3">Chain Reaction</h2>
+                <h3 class="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight">港口營運的骨牌效應</h3>
+            </div>
+
+            <div class="max-w-4xl mx-auto relative">
+                <!-- 垂直連接線 -->
+                <div class="absolute left-8 top-10 bottom-10 w-0.5 bg-slate-100 md:left-1/2 md:-ml-0.5"></div>
+
+                <div class="space-y-12">
+                    <!-- 步驟 1 -->
+                    <div class="relative flex flex-col md:flex-row items-start md:items-center justify-between group reveal-element">
+                        <div class="hidden md:block w-5/12 text-right pr-8">
+                            <h4 class="text-2xl font-bold text-slate-900 mb-2">「航次終結」宣告</h4>
+                            <p class="text-slate-500 text-sm font-semibold tracking-widest uppercase">End of Voyage</p>
+                        </div>
+                        <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-slate-100 rounded-2xl shadow-sm flex items-center justify-center group-hover:border-brand-500 group-hover:scale-110 transition-all duration-300 z-10">
+                            <span class="text-xl font-bold text-slate-400 group-hover:text-brand-500">1</span>
+                        </div>
+                        <div class="ml-24 md:ml-0 w-full md:w-5/12 pl-0 md:pl-8">
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:shadow-lg transition-shadow">
+                                <h4 class="text-xl font-bold text-slate-900 mb-2 md:hidden">「航次終結」宣告</h4>
+                                <p class="text-slate-600 leading-relaxed text-sm">MSC 等航運巨頭正式宣告針對波斯灣貨物實施強制卸載。貨物被丟包在「安全港口」，由貨主自行承擔後續風險與轉運費用。</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 步驟 2 -->
+                    <div class="relative flex flex-col md:flex-row items-start md:items-center justify-between group reveal-element">
+                        <div class="ml-24 md:ml-0 w-full md:w-5/12 pr-0 md:pr-8 md:text-right order-2 md:order-1">
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:shadow-lg transition-shadow">
+                                <h4 class="text-xl font-bold text-slate-900 mb-2 md:hidden">樞紐壅塞</h4>
+                                <p class="text-slate-600 leading-relaxed text-sm">新加坡與丹絨帕拉帕斯港成為臨時終點站，貨櫃大量堆積，堆場利用率逼近極限，預計數週內演變成全面壅塞。</p>
+                            </div>
+                        </div>
+                        <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-slate-100 rounded-2xl shadow-sm flex items-center justify-center group-hover:border-alert group-hover:scale-110 transition-all duration-300 z-10 order-1 md:order-2">
+                            <span class="text-xl font-bold text-slate-400 group-hover:text-alert">2</span>
+                        </div>
+                        <div class="hidden md:block w-5/12 pl-8 order-3">
+                            <h4 class="text-2xl font-bold text-slate-900 mb-2">轉運樞紐壓力劇增</h4>
+                            <p class="text-slate-500 text-sm font-semibold tracking-widest uppercase">Hub Congestion</p>
+                        </div>
+                    </div>
+
+                    <!-- 步驟 3 -->
+                    <div class="relative flex flex-col md:flex-row items-start md:items-center justify-between group reveal-element">
+                        <div class="hidden md:block w-5/12 text-right pr-8">
+                            <h4 class="text-2xl font-bold text-slate-900 mb-2">長期復甦考驗</h4>
+                            <p class="text-slate-500 text-sm font-semibold tracking-widest uppercase">Prolonged Recovery</p>
+                        </div>
+                        <div class="absolute left-8 md:left-1/2 -translate-x-1/2 w-16 h-16 bg-white border-4 border-slate-100 rounded-2xl shadow-sm flex items-center justify-center group-hover:border-slate-800 group-hover:scale-110 transition-all duration-300 z-10">
+                            <span class="text-xl font-bold text-slate-400 group-hover:text-slate-800">3</span>
+                        </div>
+                        <div class="ml-24 md:ml-0 w-full md:w-5/12 pl-0 md:pl-8">
+                            <div class="bg-slate-50 p-6 rounded-2xl border border-slate-100 hover:shadow-lg transition-shadow">
+                                <h4 class="text-xl font-bold text-slate-900 mb-2 md:hidden">長期復甦考驗</h4>
+                                <p class="text-slate-600 leading-relaxed text-sm">韓國釜山港已啟動緊急工作組。專家警告，即使戰火明日止息，全球物流網絡排解壅塞、重回常態，也至少需長達六個月。</p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 區塊 4: 臺灣影響 (Dark Mode Highlight) -->
+    <section id="taiwan" class="py-32 bg-slate-900 text-white relative overflow-hidden">
+        <!-- 裝飾 -->
+        <div class="absolute right-0 top-0 w-1/3 h-full bg-gradient-to-l from-alert/10 to-transparent pointer-events-none"></div>
+
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <div class="mb-16 reveal-element">
+                <h2 class="text-alert font-bold tracking-wider text-sm uppercase mb-3">Threat to Taiwan</h2>
+                <h3 class="text-3xl md:text-5xl font-extrabold tracking-tight mb-4">對臺灣的急迫威脅</h3>
+                <p class="text-lg text-slate-400 max-w-2xl">高度仰賴貿易與能源進口的臺灣，正面臨能源脆斷風險與外銷成本激增的雙重風暴。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                <!-- 影響卡片 1 -->
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-3xl p-8 hover:bg-slate-800 transition-colors reveal-element">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-12 h-12 bg-alert/20 text-alert rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                        </div>
+                        <span class="px-3 py-1 bg-alert/20 text-alert text-xs font-bold rounded-full border border-alert/30">高風險</span>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4 text-white">能源脆弱性</h4>
+                    <ul class="space-y-3 text-slate-300 text-sm leading-relaxed">
+                        <li class="flex items-start gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-alert mt-1.5 shrink-0"></div>
+                            臺灣約 80% 原油來自中東，受衝擊劇烈。
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-alert mt-1.5 shrink-0"></div>
+                            <span class="text-white font-semibold">天然氣(LNG)安全存量僅約11天</span>，卡達實施不可抗力，面臨重大電力缺口。
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 影響卡片 2 -->
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-3xl p-8 hover:bg-slate-800 transition-colors reveal-element" style="transition-delay: 100ms;">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-12 h-12 bg-brand-500/20 text-brand-400 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4 text-white">外銷物流成本激增</h4>
+                    <ul class="space-y-3 text-slate-300 text-sm leading-relaxed">
+                        <li class="flex items-start gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-brand-500 mt-1.5 shrink-0"></div>
+                            臺灣至歐洲空運貨費已暴漲約 40%。
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-brand-500 mt-1.5 shrink-0"></div>
+                            極緊急半導體與電子零組件訂單，運費報價達 <span class="text-white font-semibold mx-1">7 - 10 美元/公斤</span>。
+                        </li>
+                    </ul>
+                </div>
+
+                <!-- 影響卡片 3 -->
+                <div class="bg-slate-800/50 backdrop-blur-md border border-slate-700/50 rounded-3xl p-8 hover:bg-slate-800 transition-colors reveal-element" style="transition-delay: 200ms;">
+                    <div class="flex items-center justify-between mb-6">
+                        <div class="w-12 h-12 bg-indigo-500/20 text-indigo-400 rounded-xl flex items-center justify-center">
+                            <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                        </div>
+                    </div>
+                    <h4 class="text-2xl font-bold mb-4 text-white">產業雙重夾擊</h4>
+                    <ul class="space-y-3 text-slate-300 text-sm leading-relaxed">
+                        <li class="flex items-start gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 shrink-0"></div>
+                            石化業面臨石腦油供應斷裂（東北亞逾 60% 依賴中東），下游生產成本劇增。
+                        </li>
+                        <li class="flex items-start gap-2">
+                            <div class="w-1.5 h-1.5 rounded-full bg-indigo-400 mt-1.5 shrink-0"></div>
+                            建築與採礦業等能源密集型建材價格出現顯著波動。
+                        </li>
+                    </ul>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 區塊 5: 戰略轉型 (Feature Grid) -->
+    <section id="strategy" class="py-32 bg-white relative">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center max-w-3xl mx-auto mb-24 reveal-element">
+                <h2 class="text-brand-600 font-bold tracking-wider text-sm uppercase mb-3">Opportunities & Strategy</h2>
+                <h3 class="text-3xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-6">臺灣港口韌性重塑策略</h3>
+                <p class="text-lg text-slate-500">不應停留在防禦狀態，必須建立整合性應對機制，透過數位化與能源佈局將危機轉化為戰略契機。</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-16 lg:gap-x-20">
+                <!-- 策略 1 -->
+                <div class="flex gap-6 reveal-element">
+                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-brand-50 border border-brand-100 flex items-center justify-center text-brand-600 shadow-sm">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold text-slate-900 mb-4">區域韌性轉運中心</h4>
+                        <p class="text-slate-600 mb-5 text-sm leading-relaxed">當東南亞港口發生嚴重壅塞時，臺灣可藉機吸引東北亞/北美航線貨物。</p>
+                        <ul class="space-y-3 text-sm text-slate-700 font-medium">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-brand-500"></div> 動態堆場配置，提前預留轉口貨暫存區</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-brand-500"></div> 靈活班表調度，為繞行延遲船隻提供優先靠泊</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 策略 2 -->
+                <div class="flex gap-6 reveal-element" style="transition-delay: 100ms;">
+                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-indigo-50 border border-indigo-100 flex items-center justify-center text-indigo-600 shadow-sm">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold text-slate-900 mb-4">智慧港口一體化 (港Port雲)</h4>
+                        <p class="text-slate-600 mb-5 text-sm leading-relaxed">推動基於 AI 與大數據的智慧方案，實現決策領先與自動化調度。</p>
+                        <ul class="space-y-3 text-sm text-slate-700 font-medium">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div> 導入數位孿生 (Digital Twin) 模擬港口負荷</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-indigo-500"></div> 邊緣計算確保戰時高強度網攻下通訊不中斷</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 策略 3 -->
+                <div class="flex gap-6 reveal-element" style="transition-delay: 200ms;">
+                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-amber-50 border border-amber-100 flex items-center justify-center text-amber-600 shadow-sm">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold text-slate-900 mb-4">能源輸入港的戰略轉型</h4>
+                        <p class="text-slate-600 mb-5 text-sm leading-relaxed">因應天然氣儲備不足威脅，從單純裝卸轉化為能源儲存與緩衝中心。</p>
+                        <ul class="space-y-3 text-sm text-slate-700 font-medium">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div> 加速擴建 LNG 接收站與儲槽 (國安層級)</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-amber-500"></div> 鼓勵多元能源輸入路徑，減少單一依賴</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- 策略 4 -->
+                <div class="flex gap-6 reveal-element" style="transition-delay: 300ms;">
+                    <div class="flex-shrink-0 w-14 h-14 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 shadow-sm">
+                        <svg class="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <div>
+                        <h4 class="text-2xl font-bold text-slate-900 mb-4">綠能樞紐與政經物流人才</h4>
+                        <p class="text-slate-600 mb-5 text-sm leading-relaxed">減少化石燃料依賴，加速本土再生能源發展與「開路先鋒」人才培育。</p>
+                        <ul class="space-y-3 text-sm text-slate-700 font-medium">
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> 轉型離岸風電運維樞紐，建立港口微電網</li>
+                            <li class="flex items-center gap-2"><div class="w-1.5 h-1.5 rounded-full bg-emerald-500"></div> 培育具備跨域整合與低碳判斷力的領袖人才</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- 區塊 6: 行動呼籲 (SaaS CTA) -->
+    <section id="cta" class="py-32 relative overflow-hidden">
+        <div class="absolute inset-0 bg-slate-900"></div>
+        <div class="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl h-full bg-brand-600/20 blur-[100px] pointer-events-none"></div>
+        
+        <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8 text-center relative z-10 reveal-element">
+            <h2 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-8">動盪中的韌性是唯一的競爭力</h2>
+            <p class="text-lg text-slate-300 mb-12 leading-relaxed max-w-2xl mx-auto">
+                在這場2026年的大考中，唯有具備<span class="text-white font-bold mx-1">戰略判斷力</span>、<span class="text-white font-bold mx-1">技術賦能</span>與<span class="text-white font-bold mx-1">能源自給能力</span>的港口，才能在戰火燃盡後，成為全球貿易新秩序的領航者。
+            </p>
+            <div class="flex justify-center">
+                <a href="2026war_effect.pdf" target="_blank" class="inline-flex px-12 py-5 bg-brand-500 text-white font-bold rounded-xl hover:bg-brand-400 transition-all duration-300 shadow-glow hover:-translate-y-1 text-lg">
+                    下載完整研究報告 (PDF)
+                </a>
+            </div>
+        </div>
+    </section>
+
+    <!-- 頁尾 -->
+    <footer class="bg-slate-950 text-slate-400 py-16 border-t border-slate-800">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex flex-col md:flex-row justify-between items-center gap-8">
+                <div class="flex items-center gap-2">
+                    <div class="w-8 h-8 rounded-lg bg-slate-800 flex items-center justify-center">
+                        <svg class="w-4 h-4 text-slate-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M13 10V3L4 14h7v7l9-11h-7z"></path></svg>
+                    </div>
+                    <span class="font-bold tracking-wider text-slate-200 text-base">美伊戰爭影響評估</span>
+                </div>
+                <div class="flex flex-wrap justify-center gap-8 text-sm font-medium">
+                    <a href="#crisis" class="hover:text-white transition-colors">報告數據</a>
+                    <a href="#ports" class="hover:text-white transition-colors">衝擊分析</a>
+                    <a href="#taiwan" class="hover:text-white transition-colors">臺灣情勢</a>
+                    <a href="#strategy" class="hover:text-white transition-colors">韌性策略</a>
+                </div>
+                <div class="text-sm">
+                    &copy; 2026 港口韌性智庫. 僅供研究與展示使用.
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <!-- 互動邏輯腳本 -->
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // 手機選單切換
+            const mobileBtn = document.getElementById('mobile-menu-btn');
+            const mobileMenu = document.getElementById('mobile-menu');
+            const mobileLinks = document.querySelectorAll('.mobile-nav-link');
+
+            mobileBtn.addEventListener('click', () => {
+                mobileMenu.classList.toggle('hidden');
+            });
+
+            mobileLinks.forEach(link => {
+                link.addEventListener('click', () => {
+                    mobileMenu.classList.add('hidden');
+                });
+            });
+
+            // 導覽列毛玻璃與邊框切換 (Scroll effect)
+            const navbar = document.getElementById('navbar');
+            const navInner = navbar.querySelector('div > div');
+            
+            window.addEventListener('scroll', () => {
+                if (window.scrollY > 20) {
+                    navInner.classList.add('glass-nav');
+                    navInner.classList.remove('bg-slate-900/40', 'border-white/10');
+                } else {
+                    navInner.classList.remove('glass-nav');
+                    navInner.classList.add('bg-slate-900/40', 'border-white/10');
+                }
+            });
+
+            // 滾動浮現動畫 (Intersection Observer)
+            const revealElements = document.querySelectorAll('.reveal-element');
+            const revealOptions = {
+                threshold: 0.1,
+                rootMargin: "0px 0px -50px 0px" 
+            };
+
+            const revealOnScroll = new IntersectionObserver(function(entries, observer) {
+                entries.forEach(entry => {
+                    if (entry.isIntersecting) {
+                        entry.target.classList.add('is-visible');
+                        observer.unobserve(entry.target);
+                    }
+                });
+            }, revealOptions);
+
+            revealElements.forEach(el => revealOnScroll.observe(el));
+        });
+    </script>
+</body>
+</html>
