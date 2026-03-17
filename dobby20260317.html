@@ -1,0 +1,275 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dobby AI — GTC Day 1 觀點</title>
+    <style>
+:root {
+    --electric-blue: #0066ff;
+    --neon-cyan: #00ffff;
+    --dark-gray: #1e1e1e;
+    --white: #ffffff;
+    --bg-gradient: linear-gradient(135deg, #121212 0%, #1e1e1e 100%);
+    --card-bg: rgba(30, 30, 30, 0.8);
+    --card-border: rgba(0, 102, 255, 0.3);
+}
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'DejaVu Sans', 'Arial', sans-serif;
+    background: var(--dark-gray);
+    background-image: var(--bg-gradient);
+    color: var(--white);
+    line-height: 1.6;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.container {
+    max-width: 800px;
+    margin: 0 auto;
+    padding: 0 20px;
+}
+
+.hero {
+    background: linear-gradient(to right, rgba(0,102,255,0.1), rgba(0,255,255,0.05));
+    border-bottom: 2px solid var(--electric-blue);
+    padding: 60px 0;
+    text-align: center;
+    position: relative;
+    overflow: hidden;
+}
+
+.hero::before {
+    content: '';
+    position: absolute;
+    top: -50%; left: -50%; width: 200%; height: 200%;
+    background: radial-gradient(circle, rgba(0,255,255,0.05) 0%, transparent 50%);
+    animation: rotate 20s linear infinite;
+    z-index: 0;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.hero .container {
+    position: relative;
+    z-index: 1;
+}
+
+.hero-title {
+    font-family: 'DejaVu Sans Bold', 'Arial', sans-serif;
+    font-size: 3.5rem;
+    color: var(--neon-cyan);
+    margin-bottom: 10px;
+    text-transform: uppercase;
+    letter-spacing: 2px;
+    text-shadow: 0 0 10px rgba(0, 255, 255, 0.5);
+}
+
+.hero-subtitle {
+    font-size: 1.5rem;
+    color: #ccc;
+    font-weight: normal;
+}
+
+main {
+    flex: 1;
+    padding: 40px 0;
+}
+
+.card {
+    background: var(--card-bg);
+    border: 1px solid var(--card-border);
+    border-radius: 12px;
+    padding: 30px;
+    margin-bottom: 30px;
+    box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+    backdrop-filter: blur(10px);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 12px 40px rgba(0, 102, 255, 0.2);
+    border-color: var(--electric-blue);
+}
+
+.card p {
+    margin-bottom: 15px;
+    font-size: 1.1rem;
+    color: #e0e0e0;
+}
+
+.highlight {
+    font-size: 1.3rem;
+    color: var(--neon-cyan);
+    font-weight: bold;
+}
+
+.takeaway {
+    background: rgba(0, 102, 255, 0.1);
+    border-left: 4px solid var(--neon-cyan);
+    padding: 20px;
+    margin-top: 25px;
+    border-radius: 0 8px 8px 0;
+    font-size: 1.2rem;
+}
+
+.takeaway strong {
+    color: var(--neon-cyan);
+    display: block;
+    margin-top: 10px;
+    font-size: 1.3rem;
+}
+
+.dobby-vision {
+    border-color: var(--electric-blue);
+    background: linear-gradient(135deg, rgba(30,30,30,0.9) 0%, rgba(0,102,255,0.1) 100%);
+}
+
+.dobby-vision h3 {
+    font-family: 'DejaVu Sans Bold', 'Arial', sans-serif;
+    color: var(--electric-blue);
+    font-size: 1.6rem;
+    margin-bottom: 20px;
+}
+
+.feature-list {
+    list-style: none;
+    margin: 20px 0;
+}
+
+.feature-list li {
+    position: relative;
+    padding-left: 30px;
+    margin-bottom: 15px;
+    font-size: 1.15rem;
+    color: #fff;
+}
+
+.feature-list li::before {
+    content: '→';
+    position: absolute;
+    left: 0;
+    color: var(--neon-cyan);
+    font-weight: bold;
+}
+
+.conclusion {
+    margin-top: 30px !important;
+    text-align: center;
+    font-size: 1.2rem !important;
+}
+
+.conclusion strong {
+    color: var(--neon-cyan);
+    font-size: 1.5rem;
+    display: block;
+    margin-top: 5px;
+}
+
+footer {
+    background: #111;
+    border-top: 1px solid #333;
+    padding: 30px 0;
+    margin-top: 40px;
+}
+
+.tags {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+
+.tag {
+    background: rgba(0, 102, 255, 0.15);
+    color: var(--electric-blue);
+    padding: 6px 14px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    border: 1px solid rgba(0, 102, 255, 0.3);
+    transition: all 0.3s ease;
+}
+
+.tag:hover {
+    background: var(--electric-blue);
+    color: var(--white);
+    border-color: var(--electric-blue);
+    box-shadow: 0 0 10px rgba(0, 102, 255, 0.5);
+}
+
+.text-center {
+    text-align: center;
+}
+
+footer p {
+    color: #666;
+    font-size: 0.9rem;
+}
+    </style>
+</head>
+<body>
+    <header class="hero">
+        <div class="container">
+            <h1 class="hero-title">Dobby AI</h1>
+            <h2 class="hero-subtitle">GTC Day 1 觀點｜（中文版）</h2>
+        </div>
+    </header>
+
+    <main class="container">
+        <section class="card">
+            <p class="highlight">這次在 NVIDIA GTC，有一個觀察讓我印象很深。</p>
+            <p>Jensen Huang 的 keynote 裡，花了不少篇幅談 Agent——不是模型本身多厲害，而是怎麼讓 Agent 在企業環境裡安全地跑起來。他發布的 OpenShell，本質上是一個讓自主 Agent 更可控的 runtime。</p>
+            <div class="takeaway">
+                這件事背後的意思蠻值得想的：<br>
+                <strong>產業的重心正在從「模型能力」移向「平台與治理」。</strong>
+            </div>
+        </section>
+
+        <section class="card">
+            <p>同時，reasoning model 的發展也帶出一個我覺得很關鍵的變化。</p>
+            <p>過去我們談 AI 的信任，多半在講「答案準不準」。但當模型開始展示推理過程，信任的定義也跟著變了——不只是結果，而是你能不能理解它怎麼得出這個結果。</p>
+            <p>對很多重視資安跟合規的企業來說，這其實是好消息。因為「可解釋」跟「可追溯」，一直是他們最在意的事。</p>
+        </section>
+
+        <section class="card dobby-vision">
+            <h3>這些趨勢跟我們在 Dobby AI 做的方向蠻一致的。</h3>
+            <p>我們是地端部署的 Agentic RAG 平台，核心在做三件事：</p>
+            <ul class="feature-list">
+                <li>讓企業的資料留在自己手上</li>
+                <li>讓推理過程看得見</li>
+                <li>用輕量 GPU 降低導入門檻</li>
+            </ul>
+            <p class="conclusion">不是每家企業都需要最大的模型。<br>
+               <strong>但每家企業都需要一個值得信任的平台。</strong></p>
+            <p>我們繼續往這個方向走。</p>
+        </section>
+    </main>
+
+    <footer>
+        <div class="container text-center">
+            <div class="tags">
+                <span class="tag">#DobbyAI</span>
+                <span class="tag">#NVIDIAGTC</span>
+                <span class="tag">#AgenticRAG</span>
+                <span class="tag">#EnterpriseAI</span>
+                <span class="tag">#OnPremiseAI</span>
+                <span class="tag">#台灣AI</span>
+            </div>
+            <p>&copy; 2026 Dobby AI. All rights reserved.</p>
+        </div>
+    </footer>
+</body>
+</html>
