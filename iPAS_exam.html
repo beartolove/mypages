@@ -357,16 +357,24 @@
             const cardInner = document.getElementById('card-inner');
             const actionButtons = document.getElementById('action-buttons');
 
+            // --- 修正: 統計數字更新邏輯移到最外層，確保在所有狀態下都會更新 ---
+            document.getElementById('count-again').innerText = state.stats.again;
+            document.getElementById('count-hard').innerText = state.stats.hard;
+            document.getElementById('count-good').innerText = state.stats.good;
+            document.getElementById('count-easy').innerText = state.stats.easy;
+
             if (state.allCards.length === 0) {
                 viewEmpty.classList.remove('hidden');
                 viewQuiz.classList.add('hidden');
                 viewResult.classList.add('hidden');
                 document.getElementById('stat-count').innerText = `剩餘題數: 0/0`;
+                document.getElementById('progress-bar').style.width = `0%`;
             } else if (state.queue.length === 0) {
                 viewEmpty.classList.add('hidden');
                 viewQuiz.classList.add('hidden');
                 viewResult.classList.remove('hidden');
                 document.getElementById('stat-count').innerText = `全部完成!`;
+                document.getElementById('progress-bar').style.width = `100%`;
             } else {
                 viewEmpty.classList.add('hidden');
                 viewQuiz.classList.remove('hidden');
@@ -393,10 +401,6 @@
                 document.getElementById('card-image').src = `https://loremflickr.com/800/400/ai,technology,code?lock=${currentCard.id}`;
 
                 document.getElementById('stat-count').innerText = `剩餘題數: ${state.queue.length}/${state.originalTotal}`;
-                document.getElementById('count-again').innerText = state.stats.again;
-                document.getElementById('count-hard').innerText = state.stats.hard;
-                document.getElementById('count-good').innerText = state.stats.good;
-                document.getElementById('count-easy').innerText = state.stats.easy;
 
                 const progress = ((state.originalTotal - state.queue.length) / state.originalTotal) * 100;
                 document.getElementById('progress-bar').style.width = `${progress}%`;
