@@ -61,9 +61,15 @@
                     <i data-lucide="upload" class="w-4 h-4"></i> 上傳 CSV
                 </button>
                 <input type="file" id="csv-upload" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
-                <button onclick="toggleInfo()" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
-                    <i data-lucide="info" class="w-6 h-6"></i>
-                </button>
+                
+                <div class="flex items-center border-l border-slate-200 ml-2 pl-2 gap-1">
+                    <button onclick="confirmClearProgress()" title="清除進度與資料" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
+                        <i data-lucide="trash-2" class="w-5 h-5"></i>
+                    </button>
+                    <button onclick="toggleInfo()" title="使用說明" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+                        <i data-lucide="info" class="w-6 h-6"></i>
+                    </button>
+                </div>
             </div>
         </header>
 
@@ -199,6 +205,21 @@
                     </div>
                 </div>
                 <button onclick="toggleInfo()" class="mt-8 w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors">我知道了</button>
+            </div>
+        </div>
+
+        <!-- 清除確認 Modal -->
+        <div id="modal-confirm" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" onclick="toggleConfirmModal()">
+            <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center" onclick="event.stopPropagation()">
+                <div class="text-red-500 mb-4 inline-flex p-4 bg-red-50 rounded-full">
+                    <i data-lucide="alert-triangle" class="w-10 h-10"></i>
+                </div>
+                <h3 class="text-xl font-bold mb-2">確定要清除嗎？</h3>
+                <p class="text-slate-500 text-sm mb-8">這將會移除目前所有的題目、統計數據與學習進度，且無法復原。</p>
+                <div class="flex gap-3">
+                    <button onclick="toggleConfirmModal()" class="flex-1 bg-slate-100 text-slate-600 py-3 rounded-xl font-bold hover:bg-slate-200 transition-colors">取消</button>
+                    <button onclick="clearAllData()" class="flex-1 bg-red-500 text-white py-3 rounded-xl font-bold hover:bg-red-600 transition-colors shadow-lg shadow-red-100">確定清除</button>
+                </div>
             </div>
         </div>
     </div>
@@ -340,6 +361,7 @@
                 viewEmpty.classList.remove('hidden');
                 viewQuiz.classList.add('hidden');
                 viewResult.classList.add('hidden');
+                document.getElementById('stat-count').innerText = `剩餘題數: 0/0`;
             } else if (state.queue.length === 0) {
                 viewEmpty.classList.add('hidden');
                 viewQuiz.classList.add('hidden');
@@ -439,6 +461,30 @@
 
         function toggleInfo() {
             document.getElementById('modal-info').classList.toggle('hidden');
+        }
+
+        function toggleConfirmModal() {
+            document.getElementById('modal-confirm').classList.toggle('hidden');
+        }
+
+        function confirmClearProgress() {
+            if (state.allCards.length === 0) return; // 沒題目不用清
+            toggleConfirmModal();
+        }
+
+        function clearAllData() {
+            window.speechSynthesis.cancel();
+            localStorage.removeItem(STORAGE_KEY);
+            state = {
+                allCards: [],      
+                queue: [],         
+                stats: { again: 0, hard: 0, good: 0, easy: 0 },
+                isFlipped: false,
+                originalTotal: 0,
+                preloadedImages: {}
+            };
+            toggleConfirmModal();
+            updateUI();
         }
 
         function restartSession() {
