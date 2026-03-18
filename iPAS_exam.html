@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>iPAS 模擬考 互動學習系統</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Lucide Icons -->
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <!-- PapaParse for CSV -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/PapaParse/5.4.1/papaparse.min.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&display=swap');
+        body { font-family: 'Inter', 'PingFang TC', 'Microsoft JhengHei', sans-serif; }
+        .card-flip { perspective: 1000px; }
+        .card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        .is-flipped { transform: rotateY(180deg); }
+        .card-face {
+            backface-visibility: hidden;
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+        }
+        .card-back { transform: rotateY(180deg); }
+        .progress-bar { transition: width 0.3s ease; }
+        
+        /* 自定義捲軸 */
+        .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+        .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+        .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-white min-h-screen text-slate-800">
+
+    <div id="app" class="max-w-4xl mx-auto px-4 py-2 flex flex-col min-h-screen">
+        <!-- 頂部導航欄 -->
+        <header class="bg-white rounded-2xl shadow-sm border border-slate-200 p-4 mb-4 flex flex-col md:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-4 w-full md:w-auto">
+                <div class="bg-indigo-600 p-2 rounded-lg text-white">
+                    <i data-lucide="brain-circuit"></i>
+                </div>
+                <div>
+                    <h1 class="font-bold text-lg leading-none">iPAS 模擬考</h1>
+                    <p class="text-xs text-slate-500 mt-1" id="stat-count">剩餘題數: 0/0</p>
+                </div>
+            </div>
+
+            <!-- 進度統計 -->
+            <div class="flex items-center gap-3 text-xs font-semibold">
+                <span class="flex items-center gap-1 text-red-500"><span id="count-again">0</span> Again</span>
+                <span class="flex items-center gap-1 text-orange-500"><span id="count-hard">0</span> Hard</span>
+                <span class="flex items-center gap-1 text-green-500"><span id="count-good">0</span> Good</span>
+                <span class="flex items-center gap-1 text-blue-500"><span id="count-easy">0</span> Easy</span>
+            </div>
+
+            <div class="flex items-center gap-2">
+                <button onclick="document.getElementById('csv-upload').click()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-xl text-sm transition-all">
+                    <i data-lucide="upload" class="w-4 h-4"></i> 上傳 CSV
+                </button>
+                <input type="file" id="csv-upload" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
+                <button onclick="toggleInfo()" class="p-2 text-slate-400 hover:text-indigo-600 transition-colors">
+                    <i data-lucide="info" class="w-6 h-6"></i>
+                </button>
+            </div>
+        </header>
+
+        <!-- 進度條 -->
+        <div class="w-full bg-slate-100 h-1.5 rounded-full mb-6 overflow-hidden">
+            <div id="progress-bar" class="bg-indigo-500 h-full w-0 progress-bar"></div>
+        </div>
+
+        <!-- 主視圖區域 -->
+        <main id="main-content" class="flex-grow flex flex-col items-center py-2">
+            <!-- 初始上傳提示 -->
+            <div id="view-empty" class="text-center py-20">
+                <div class="mb-6 inline-flex p-6 bg-indigo-50 rounded-full text-indigo-400">
+                    <i data-lucide="file-text" class="w-16 h-16"></i>
+                </div>
+                <h2 class="text-2xl font-bold mb-2">準備好開始複習了嗎？</h2>
+                <p class="text-slate-500 mb-8 max-w-md mx-auto">請上傳包含「題目、答案詳解、難度」三個欄位的 CSV 檔案，系統將自動啟動互動練習。</p>
+                <button onclick="document.getElementById('csv-upload').click()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold shadow-lg shadow-indigo-200 transition-all scale-110">
+                    立刻匯入資料庫
+                </button>
+            </div>
+
+            <!-- 卡片區域 -->
+            <div id="view-quiz" class="hidden w-full max-w-4xl">
+                <div class="card-flip h-[416px] w-full cursor-pointer group" id="card-element" onclick="flipCard()">
+                    <div id="card-inner" class="card-inner relative w-full h-full">
+                        <!-- 正面 -->
+                        <div class="card-face bg-white border border-slate-200 rounded-3xl shadow-xl pt-12 pb-6 px-8 flex flex-col overflow-hidden">
+                            <span id="card-diff-tag" class="absolute top-5 left-8 px-4 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">難度: 普通</span>
+                            <button id="btn-speak-front" onclick="event.stopPropagation(); speakText('front')" class="absolute top-5 right-8 p-2 rounded-full hover:bg-slate-100 transition-colors z-20">
+                                <i data-lucide="volume-2" class="w-6 h-6 text-indigo-500"></i>
+                            </button>
+                            
+                            <div class="flex-grow flex flex-col justify-start items-start mt-2 custom-scrollbar overflow-y-auto w-full">
+                                <h3 id="card-question" class="text-xl md:text-2xl font-bold leading-relaxed text-slate-800 w-full mb-3">題目載入中...</h3>
+                                <div id="card-options" class="w-full space-y-1 text-slate-600 text-base md:text-lg">
+                                    <!-- 選項 -->
+                                </div>
+                            </div>
+                            
+                            <p class="mt-2 text-slate-300 text-xs text-center animate-pulse">點擊卡片或按「空白鍵」翻看詳解</p>
+                        </div>
+                        <!-- 背面 -->
+                        <div class="card-face card-back bg-white border border-slate-200 rounded-3xl shadow-xl overflow-hidden flex flex-col">
+                            <div class="h-32 bg-slate-100 relative overflow-hidden flex-shrink-0">
+                                <img id="card-image" src="" alt="輔助圖片" class="w-full h-full object-cover">
+                                <div class="absolute inset-0 bg-gradient-to-t from-white via-transparent opacity-40"></div>
+                            </div>
+                            <div class="p-8 flex-grow overflow-y-auto custom-scrollbar">
+                                <div class="flex justify-between items-start mb-4">
+                                    <h4 class="text-indigo-600 font-bold text-sm uppercase tracking-wider">正確答案與詳解</h4>
+                                    <button onclick="event.stopPropagation(); speakText('back')" class="p-2.5 rounded-full hover:bg-slate-100 transition-colors">
+                                        <i data-lucide="volume-2" class="w-6 h-6 text-indigo-500"></i>
+                                    </button>
+                                </div>
+                                <div id="card-answer" class="text-lg leading-relaxed text-slate-700 whitespace-pre-wrap">詳解載入中...</div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 評分按鈕 -->
+                <div id="action-buttons" class="mt-8 grid grid-cols-4 gap-4 invisible">
+                    <button onclick="rateCard(1)" class="group transition-transform active:scale-95">
+                        <div class="bg-red-50 group-hover:bg-red-500 group-hover:text-white text-red-600 py-3 rounded-2xl border border-red-200 flex flex-col items-center transition-all shadow-sm">
+                            <span class="font-bold text-sm opacity-70">Again</span>
+                            <span class="text-[20px] font-bold">非常不熟 (1)</span>
+                        </div>
+                    </button>
+                    <button onclick="rateCard(2)" class="group transition-transform active:scale-95">
+                        <div class="bg-orange-50 group-hover:bg-orange-500 group-hover:text-white text-orange-600 py-3 rounded-2xl border border-orange-200 flex flex-col items-center transition-all shadow-sm">
+                            <span class="font-bold text-sm opacity-70">Hard</span>
+                            <span class="text-[20px] font-bold">要再練練 (2)</span>
+                        </div>
+                    </button>
+                    <button onclick="rateCard(3)" class="group transition-transform active:scale-95">
+                        <div class="bg-green-50 group-hover:bg-green-500 group-hover:text-white text-green-600 py-3 rounded-2xl border border-green-200 flex flex-col items-center transition-all shadow-sm">
+                            <span class="font-bold text-sm opacity-70">Good</span>
+                            <span class="text-[20px] font-bold">還算記得 (3)</span>
+                        </div>
+                    </button>
+                    <button onclick="rateCard(4)" class="group transition-transform active:scale-95">
+                        <div class="bg-blue-50 group-hover:bg-blue-500 group-hover:text-white text-blue-600 py-3 rounded-2xl border border-blue-200 flex flex-col items-center transition-all shadow-sm">
+                            <span class="font-bold text-sm opacity-70">Easy</span>
+                            <span class="text-[20px] font-bold">啊簡單啦 (4)</span>
+                        </div>
+                    </button>
+                </div>
+            </div>
+
+            <!-- 結算視圖 -->
+            <div id="view-result" class="hidden text-center py-20">
+                <div class="mb-6 inline-flex p-6 bg-green-50 rounded-full text-green-500">
+                    <i data-lucide="party-popper" class="w-16 h-16"></i>
+                </div>
+                <h2 class="text-3xl font-bold mb-2">恭喜完成練習！</h2>
+                <p class="text-slate-500 mb-8">您已經完成了本次所有的卡片複習。</p>
+                <div class="flex gap-4 justify-center">
+                    <button onclick="restartSession()" class="bg-indigo-600 hover:bg-indigo-700 text-white px-8 py-3 rounded-2xl font-bold transition-all shadow-lg shadow-indigo-200">
+                        重新開始
+                    </button>
+                    <button onclick="document.getElementById('csv-upload').click()" class="bg-white border border-slate-200 hover:bg-slate-50 px-8 py-3 rounded-2xl font-bold transition-all shadow-sm">
+                        上傳新題庫
+                    </button>
+                </div>
+            </div>
+        </main>
+
+        <!-- 說明 Modal -->
+        <div id="modal-info" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" onclick="toggleInfo()">
+            <div class="bg-white rounded-3xl p-8 max-w-lg w-full shadow-2xl" onclick="event.stopPropagation()">
+                <div class="flex justify-between items-center mb-4">
+                    <h3 class="text-xl font-bold">使用說明與系統資訊</h3>
+                    <span class="text-xs text-slate-400">作者：林熊熊</span>
+                </div>
+                <div class="space-y-4 text-slate-600 text-sm leading-relaxed">
+                    <p><strong>1. 資料準備:</strong> 準備一個 CSV 檔案，包含「題目、詳解、難度」三個欄位。Excel 存檔請選 CSV UTF-8。</p>
+                    <p><strong>2. 間隔重複系統 (SRS):</strong> 
+                        本網頁採用類 Anki 的演算法，根據您的熟練度動態調整複習頻率：
+                        <br>• <span class="text-red-500 font-bold">Again</span>: 非常不熟，下一題過後馬上回來。
+                        <br>• <span class="text-orange-500 font-bold">Hard</span>: 要再練練，插入剩餘題目的中間。
+                        <br>• <span class="text-green-500 font-bold">Good</span>: 還算記得，移到題庫最後。
+                        <br>• <span class="text-blue-500 font-bold">Easy</span>: 啊簡單啦，本次複習不再出現。
+                    </p>
+                    <p><strong>3. 快捷鍵:</strong>
+                        <br>• <code>[Space]</code>: 翻轉卡片
+                        <br>• <code>[1] [2] [3] [4]</code>: 對應評分按鈕
+                    </p>
+                    <div class="pt-4 border-t border-slate-100">
+                        <p class="text-xs text-slate-400">參考來源：
+                            <a href="https://youtu.be/QEzuRApO6fA" target="_blank" class="text-indigo-600 underline hover:text-indigo-800 transition-colors">https://youtu.be/QEzuRApO6fA</a>
+                        </p>
+                    </div>
+                </div>
+                <button onclick="toggleInfo()" class="mt-8 w-full bg-slate-900 text-white py-3 rounded-xl font-bold hover:bg-slate-800 transition-colors">我知道了</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // --- 初始化狀態 ---
+        let state = {
+            allCards: [],      
+            queue: [],         
+            stats: { again: 0, hard: 0, good: 0, easy: 0 },
+            isFlipped: false,
+            originalTotal: 0,
+            preloadedImages: {}
+        };
+
+        const STORAGE_KEY = 'ipas_exam_state_v11';
+
+        // --- 初始化頁面 ---
+        document.addEventListener('DOMContentLoaded', () => {
+            lucide.createIcons();
+            loadFromLocalStorage();
+            updateUI();
+            
+            document.addEventListener('keydown', (e) => {
+                if (e.code === 'Space') {
+                    if (state.queue.length > 0) {
+                        e.preventDefault();
+                        flipCard();
+                    }
+                } else if (['1', '2', '3', '4'].includes(e.key) && state.isFlipped) {
+                    rateCard(parseInt(e.key));
+                }
+            });
+        });
+
+        function handleFileUpload(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                let content = e.target.result;
+                if (content.charCodeAt(0) === 0xFEFF) content = content.substr(1);
+
+                Papa.parse(content, {
+                    header: false,
+                    skipEmptyLines: 'greedy',
+                    complete: function(results) {
+                        let data = results.data;
+                        if (!data || data.length === 0) return alert('CSV 內容為空');
+
+                        const firstRow = data[0].join('');
+                        if (firstRow.includes('題目') || firstRow.includes('答案') || firstRow.includes('Question')) {
+                            data = data.slice(1);
+                        }
+
+                        if (data.length === 0) return alert('沒有題目資料');
+
+                        state.allCards = data.map((row, idx) => ({
+                            id: idx,
+                            question: (row[0] || '').trim(),
+                            answer: (row[1] || '').trim(),
+                            difficulty: (row[2] || '一般').trim()
+                        }));
+
+                        state.queue = state.allCards.map((_, i) => i);
+                        state.originalTotal = state.queue.length;
+                        state.stats = { again: 0, hard: 0, good: 0, easy: 0 };
+                        state.isFlipped = false;
+                        
+                        saveToLocalStorage();
+                        updateUI();
+                        preloadNextImages();
+                    }
+                });
+            };
+            reader.readAsText(file);
+        }
+
+        function parseQuestion(fullText) {
+            let cleanedText = fullText.replace(/^Q[:：.\s\n]*/i, '').trim();
+            const optionRegex = /(\([A-Z0-9]\)|[A-Z0-9]\.|[A-Z0-9]、)/g;
+            const match = optionRegex.exec(cleanedText);
+            
+            if (!match) {
+                return { title: cleanedText, options: [] };
+            }
+
+            const title = cleanedText.substring(0, match.index).trim();
+            const optionsPart = cleanedText.substring(match.index);
+            const options = optionsPart.split(/(?=\([A-Z0-9]\)|[A-Z0-9]\.|[A-Z0-9]、)/g)
+                                     .map(opt => opt.trim())
+                                     .filter(opt => opt.length > 0);
+
+            return { title, options };
+        }
+
+        function rateCard(rating) {
+            if (!state.isFlipped || state.queue.length === 0) return;
+            const cardIndex = state.queue.shift();
+            switch (rating) {
+                case 1: 
+                    state.stats.again++;
+                    if (state.queue.length >= 1) state.queue.splice(1, 0, cardIndex);
+                    else state.queue.push(cardIndex);
+                    break;
+                case 2: 
+                    state.stats.hard++;
+                    state.queue.splice(Math.floor(state.queue.length / 2), 0, cardIndex);
+                    break;
+                case 3: 
+                    state.stats.good++;
+                    state.queue.push(cardIndex);
+                    break;
+                case 4: 
+                    state.stats.easy++;
+                    break;
+            }
+            state.isFlipped = false;
+            saveToLocalStorage();
+            updateUI();
+            preloadNextImages();
+        }
+
+        function flipCard() {
+            if (state.queue.length === 0) return;
+            state.isFlipped = !state.isFlipped;
+            updateUI();
+        }
+
+        function updateUI() {
+            const viewEmpty = document.getElementById('view-empty');
+            const viewQuiz = document.getElementById('view-quiz');
+            const viewResult = document.getElementById('view-result');
+            const cardInner = document.getElementById('card-inner');
+            const actionButtons = document.getElementById('action-buttons');
+
+            if (state.allCards.length === 0) {
+                viewEmpty.classList.remove('hidden');
+                viewQuiz.classList.add('hidden');
+                viewResult.classList.add('hidden');
+            } else if (state.queue.length === 0) {
+                viewEmpty.classList.add('hidden');
+                viewQuiz.classList.add('hidden');
+                viewResult.classList.remove('hidden');
+                document.getElementById('stat-count').innerText = `全部完成!`;
+            } else {
+                viewEmpty.classList.add('hidden');
+                viewQuiz.classList.remove('hidden');
+                viewResult.classList.add('hidden');
+
+                const currentCard = state.allCards[state.queue[0]];
+                
+                const parsed = parseQuestion(currentCard.question);
+                document.getElementById('card-question').innerText = parsed.title;
+                
+                const optionsContainer = document.getElementById('card-options');
+                optionsContainer.innerHTML = '';
+                parsed.options.forEach(opt => {
+                    const div = document.createElement('div');
+                    div.className = 'py-1 px-3 rounded-xl border border-transparent hover:border-slate-100 hover:bg-slate-50 transition-all';
+                    div.innerText = opt;
+                    optionsContainer.appendChild(div);
+                });
+
+                const formattedAnswer = currentCard.answer.replace(/解析[:：]/g, '\n解析：').trim();
+                document.getElementById('card-answer').innerText = formattedAnswer;
+                
+                document.getElementById('card-diff-tag').innerText = `難度: ${currentCard.difficulty}`;
+                document.getElementById('card-image').src = `https://loremflickr.com/800/400/ai,technology,code?lock=${currentCard.id}`;
+
+                document.getElementById('stat-count').innerText = `剩餘題數: ${state.queue.length}/${state.originalTotal}`;
+                document.getElementById('count-again').innerText = state.stats.again;
+                document.getElementById('count-hard').innerText = state.stats.hard;
+                document.getElementById('count-good').innerText = state.stats.good;
+                document.getElementById('count-easy').innerText = state.stats.easy;
+
+                const progress = ((state.originalTotal - state.queue.length) / state.originalTotal) * 100;
+                document.getElementById('progress-bar').style.width = `${progress}%`;
+            }
+
+            if (state.isFlipped) {
+                cardInner.classList.add('is-flipped');
+                actionButtons.classList.remove('invisible');
+            } else {
+                cardInner.classList.remove('is-flipped');
+                actionButtons.classList.add('invisible');
+            }
+            lucide.createIcons();
+        }
+
+        function speakText(side) {
+            if (state.queue.length === 0) return;
+            if (window.speechSynthesis.speaking) {
+                window.speechSynthesis.cancel();
+                return;
+            }
+            const currentCard = state.allCards[state.queue[0]];
+            const text = side === 'front' ? currentCard.question : currentCard.answer;
+            const utterance = new SpeechSynthesisUtterance(text.replace(/[\r\n]/g, " "));
+            utterance.lang = /[\u4e00-\u9fa5]/.test(text) ? 'zh-TW' : 'en-US';
+            utterance.rate = 1.1;
+            window.speechSynthesis.speak(utterance);
+        }
+
+        function preloadNextImages() {
+            state.queue.slice(1, 4).forEach(idx => {
+                const cardId = state.allCards[idx].id;
+                if (!state.preloadedImages[cardId]) {
+                    const img = new Image();
+                    img.src = `https://loremflickr.com/800/400/ai,technology,code?lock=${cardId}`;
+                    state.preloadedImages[cardId] = true;
+                }
+            });
+        }
+
+        function saveToLocalStorage() {
+            localStorage.setItem(STORAGE_KEY, JSON.stringify({
+                allCards: state.allCards,
+                queue: state.queue,
+                stats: state.stats,
+                originalTotal: state.originalTotal
+            }));
+        }
+
+        function loadFromLocalStorage() {
+            const saved = localStorage.getItem(STORAGE_KEY);
+            if (saved) {
+                try {
+                    const data = JSON.parse(saved);
+                    state.allCards = data.allCards || [];
+                    state.queue = data.queue || [];
+                    state.stats = data.stats || { again: 0, hard: 0, good: 0, easy: 0 };
+                    state.originalTotal = data.originalTotal || 0;
+                } catch(e) {}
+            }
+        }
+
+        function toggleInfo() {
+            document.getElementById('modal-info').classList.toggle('hidden');
+        }
+
+        function restartSession() {
+            if (state.allCards.length === 0) return;
+            window.speechSynthesis.cancel();
+            state.queue = state.allCards.map((_, i) => i);
+            state.stats = { again: 0, hard: 0, good: 0, easy: 0 };
+            state.isFlipped = false;
+            saveToLocalStorage();
+            updateUI();
+        }
+    </script>
+</body>
+</html>
