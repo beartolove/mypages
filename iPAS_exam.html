@@ -31,6 +31,14 @@
         .custom-scrollbar::-webkit-scrollbar { width: 4px; }
         .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
         .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+
+        /* 錯題標記動畫 */
+        .heart-pop { animation: pop 0.3s ease-out; }
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.4); }
+            100% { transform: scale(1); }
+        }
     </style>
 </head>
 <body class="bg-white min-h-screen text-slate-800">
@@ -57,11 +65,15 @@
             </div>
 
             <div class="flex items-center gap-2">
-                <button onclick="document.getElementById('csv-upload').click()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-4 py-2 rounded-xl text-sm transition-all">
-                    <i data-lucide="upload" class="w-4 h-4"></i> 上傳 CSV
+                <button onclick="document.getElementById('csv-upload').click()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl text-sm transition-all" title="上傳 CSV">
+                    <i data-lucide="upload" class="w-4 h-4"></i> 上傳
                 </button>
                 <input type="file" id="csv-upload" accept=".csv" class="hidden" onchange="handleFileUpload(event)">
                 
+                <button id="btn-export-mistakes" onclick="exportMistakesToCSV()" class="flex items-center gap-2 bg-slate-100 hover:bg-slate-200 px-3 py-2 rounded-xl text-sm transition-all hidden" title="匯出售錯題目">
+                    <i data-lucide="download-cloud" class="w-4 h-4 text-red-500"></i> 匯出錯題 (<span id="mistake-badge">0</span>)
+                </button>
+
                 <div class="flex items-center border-l border-slate-200 ml-2 pl-2 gap-1">
                     <button onclick="confirmClearProgress()" title="清除進度與資料" class="p-2 text-slate-400 hover:text-red-500 transition-colors">
                         <i data-lucide="trash-2" class="w-5 h-5"></i>
@@ -99,9 +111,16 @@
                         <!-- 正面 -->
                         <div class="card-face bg-white border border-slate-200 rounded-3xl shadow-xl pt-12 pb-6 px-8 flex flex-col overflow-hidden">
                             <span id="card-diff-tag" class="absolute top-5 left-8 px-4 py-1 rounded-full text-xs font-bold bg-indigo-50 text-indigo-600 border border-indigo-100">難度: 普通</span>
-                            <button id="btn-speak-front" onclick="event.stopPropagation(); speakText('front')" class="absolute top-5 right-8 p-2 rounded-full hover:bg-slate-100 transition-colors z-20">
-                                <i data-lucide="volume-2" class="w-6 h-6 text-indigo-500"></i>
-                            </button>
+                            
+                            <div class="absolute top-5 right-8 flex gap-2 z-20">
+                                <!-- 錯題標記按鈕 -->
+                                <button onclick="event.stopPropagation(); toggleMistake()" class="p-2 rounded-full hover:bg-red-50 transition-colors group/heart">
+                                    <i data-lucide="heart" id="icon-mistake-front" class="w-6 h-6 text-slate-300 transition-all group-hover/heart:text-red-400"></i>
+                                </button>
+                                <button onclick="event.stopPropagation(); speakText('front')" class="p-2 rounded-full hover:bg-slate-100 transition-colors">
+                                    <i data-lucide="volume-2" class="w-6 h-6 text-indigo-500"></i>
+                                </button>
+                            </div>
                             
                             <div class="flex-grow flex flex-col justify-start items-start mt-2 custom-scrollbar overflow-y-auto w-full">
                                 <h3 id="card-question" class="text-xl md:text-2xl font-bold leading-relaxed text-slate-800 w-full mb-3">題目載入中...</h3>
@@ -121,9 +140,14 @@
                             <div class="p-8 flex-grow overflow-y-auto custom-scrollbar">
                                 <div class="flex justify-between items-start mb-4">
                                     <h4 class="text-indigo-600 font-bold text-sm uppercase tracking-wider">正確答案與詳解</h4>
-                                    <button onclick="event.stopPropagation(); speakText('back')" class="p-2.5 rounded-full hover:bg-slate-100 transition-colors">
-                                        <i data-lucide="volume-2" class="w-6 h-6 text-indigo-500"></i>
-                                    </button>
+                                    <div class="flex gap-2">
+                                        <button onclick="event.stopPropagation(); toggleMistake()" class="p-2 rounded-full hover:bg-red-50 transition-colors group/heart">
+                                            <i data-lucide="heart" id="icon-mistake-back" class="w-6 h-6 text-slate-300 transition-all"></i>
+                                        </button>
+                                        <button onclick="event.stopPropagation(); speakText('back')" class="p-2.5 rounded-full hover:bg-slate-100 transition-colors">
+                                            <i data-lucide="volume-2" class="w-6 h-6 text-indigo-500"></i>
+                                        </button>
+                                    </div>
                                 </div>
                                 <div id="card-answer" class="text-lg leading-relaxed text-slate-700 whitespace-pre-wrap">詳解載入中...</div>
                             </div>
@@ -194,7 +218,10 @@
                         <br>• <span class="text-green-500 font-bold">Good</span>: 還算記得，移到題庫最後。
                         <br>• <span class="text-blue-500 font-bold">Easy</span>: 啊簡單啦，本次複習不再出現。
                     </p>
-                    <p><strong>3. 快捷鍵:</strong>
+                    <p><strong>3. 錯題集:</strong> 
+                        點擊卡片右上角的愛心，可將特定題目加入錯題清單。點擊導航欄的匯出按鈕可將其下載為包含表頭的 CSV 檔案。
+                    </p>
+                    <p><strong>4. 快捷鍵:</strong>
                         <br>• <code>[Space]</code>: 翻轉卡片
                         <br>• <code>[1] [2] [3] [4]</code>: 對應評分按鈕
                     </p>
@@ -210,7 +237,7 @@
 
         <!-- 清除確認 Modal -->
         <div id="modal-confirm" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm z-50 flex items-center justify-center p-4 hidden" onclick="toggleConfirmModal()">
-            <div class="bg-white rounded-3xl p-8 max-w-sm w-full shadow-2xl text-center" onclick="event.stopPropagation()">
+            <div class="bg-white rounded-3xl p-8 max-sm w-full shadow-2xl text-center" onclick="event.stopPropagation()">
                 <div class="text-red-500 mb-4 inline-flex p-4 bg-red-50 rounded-full">
                     <i data-lucide="alert-triangle" class="w-10 h-10"></i>
                 </div>
@@ -230,12 +257,13 @@
             allCards: [],      
             queue: [],         
             stats: { again: 0, hard: 0, good: 0, easy: 0 },
+            mistakes: [],      // 儲存錯題卡片的原始 ID
             isFlipped: false,
             originalTotal: 0,
             preloadedImages: {}
         };
 
-        const STORAGE_KEY = 'ipas_exam_state_v11';
+        const STORAGE_KEY = 'ipas_exam_state_v12';
 
         // --- 初始化頁面 ---
         document.addEventListener('DOMContentLoaded', () => {
@@ -288,6 +316,7 @@
                         state.queue = state.allCards.map((_, i) => i);
                         state.originalTotal = state.queue.length;
                         state.stats = { again: 0, hard: 0, good: 0, easy: 0 };
+                        state.mistakes = []; 
                         state.isFlipped = false;
                         
                         saveToLocalStorage();
@@ -300,7 +329,11 @@
         }
 
         function parseQuestion(fullText) {
-            let cleanedText = fullText.replace(/^Q[:：.\s\n]*/i, '').trim();
+            let cleanedText = fullText
+                .replace(/^Q[:：.\s\n]*/i, '')
+                .replace(/^\d+[:：.\s\n]*/, '')
+                .trim();
+
             const optionRegex = /(\([A-Z0-9]\)|[A-Z0-9]\.|[A-Z0-9]、)/g;
             const match = optionRegex.exec(cleanedText);
             
@@ -315,6 +348,50 @@
                                      .filter(opt => opt.length > 0);
 
             return { title, options };
+        }
+
+        // --- 錯題管理邏輯 ---
+        function toggleMistake() {
+            if (state.queue.length === 0) return;
+            const currentCardIndex = state.queue[0];
+            const cardId = state.allCards[currentCardIndex].id;
+            
+            const index = state.mistakes.indexOf(cardId);
+            if (index === -1) {
+                state.mistakes.push(cardId);
+            } else {
+                state.mistakes.splice(index, 1);
+            }
+            
+            saveToLocalStorage();
+            updateUI();
+        }
+
+        function exportMistakesToCSV() {
+            if (state.mistakes.length === 0) return;
+
+            // 建構包含表頭的資料陣列
+            const mistakeData = [
+                ["題目", "答案及詳解", "難度"], // 新增表頭
+                ...state.mistakes.map(id => {
+                    const card = state.allCards.find(c => c.id === id);
+                    return [card.question, card.answer, card.difficulty];
+                })
+            ];
+
+            // 使用 PapaParse 轉換為 CSV
+            const csv = Papa.unparse(mistakeData);
+            
+            // 下載檔案 (添加 BOM 以確保 Excel 開啟不掉字)
+            const blob = new Blob(["\ufeff" + csv], { type: 'text/csv;charset=utf-8;' });
+            const link = document.createElement("a");
+            const url = URL.createObjectURL(blob);
+            link.setAttribute("href", url);
+            link.setAttribute("download", "ipas_mistakes_" + new Date().toISOString().slice(0,10) + ".csv");
+            link.style.visibility = 'hidden';
+            document.body.appendChild(link);
+            link.click();
+            document.body.removeChild(link);
         }
 
         function rateCard(rating) {
@@ -356,12 +433,20 @@
             const viewResult = document.getElementById('view-result');
             const cardInner = document.getElementById('card-inner');
             const actionButtons = document.getElementById('action-buttons');
+            const exportBtn = document.getElementById('btn-export-mistakes');
 
-            // --- 修正: 統計數字更新邏輯移到最外層，確保在所有狀態下都會更新 ---
+            // 統計數字更新
             document.getElementById('count-again').innerText = state.stats.again;
             document.getElementById('count-hard').innerText = state.stats.hard;
             document.getElementById('count-good').innerText = state.stats.good;
             document.getElementById('count-easy').innerText = state.stats.easy;
+            document.getElementById('mistake-badge').innerText = state.mistakes.length;
+
+            if (state.mistakes.length > 0) {
+                exportBtn.classList.remove('hidden');
+            } else {
+                exportBtn.classList.add('hidden');
+            }
 
             if (state.allCards.length === 0) {
                 viewEmpty.classList.remove('hidden');
@@ -380,7 +465,8 @@
                 viewQuiz.classList.remove('hidden');
                 viewResult.classList.add('hidden');
 
-                const currentCard = state.allCards[state.queue[0]];
+                const currentCardIndex = state.queue[0];
+                const currentCard = state.allCards[currentCardIndex];
                 
                 const parsed = parseQuestion(currentCard.question);
                 document.getElementById('card-question').innerText = parsed.title;
@@ -401,6 +487,22 @@
                 document.getElementById('card-image').src = `https://loremflickr.com/800/400/ai,technology,code?lock=${currentCard.id}`;
 
                 document.getElementById('stat-count').innerText = `剩餘題數: ${state.queue.length}/${state.originalTotal}`;
+
+                const isMistake = state.mistakes.includes(currentCard.id);
+                const iconFront = document.getElementById('icon-mistake-front');
+                const iconBack = document.getElementById('icon-mistake-back');
+                
+                if (isMistake) {
+                    iconFront.classList.remove('text-slate-300');
+                    iconFront.classList.add('text-red-500', 'fill-red-500', 'heart-pop');
+                    iconBack.classList.remove('text-slate-300');
+                    iconBack.classList.add('text-red-500', 'fill-red-500', 'heart-pop');
+                } else {
+                    iconFront.classList.add('text-slate-300');
+                    iconFront.classList.remove('text-red-500', 'fill-red-500', 'heart-pop');
+                    iconBack.classList.add('text-slate-300');
+                    iconBack.classList.remove('text-red-500', 'fill-red-500', 'heart-pop');
+                }
 
                 const progress = ((state.originalTotal - state.queue.length) / state.originalTotal) * 100;
                 document.getElementById('progress-bar').style.width = `${progress}%`;
@@ -446,6 +548,7 @@
                 allCards: state.allCards,
                 queue: state.queue,
                 stats: state.stats,
+                mistakes: state.mistakes,
                 originalTotal: state.originalTotal
             }));
         }
@@ -458,6 +561,7 @@
                     state.allCards = data.allCards || [];
                     state.queue = data.queue || [];
                     state.stats = data.stats || { again: 0, hard: 0, good: 0, easy: 0 };
+                    state.mistakes = data.mistakes || [];
                     state.originalTotal = data.originalTotal || 0;
                 } catch(e) {}
             }
@@ -472,7 +576,7 @@
         }
 
         function confirmClearProgress() {
-            if (state.allCards.length === 0) return; // 沒題目不用清
+            if (state.allCards.length === 0) return; 
             toggleConfirmModal();
         }
 
@@ -483,6 +587,7 @@
                 allCards: [],      
                 queue: [],         
                 stats: { again: 0, hard: 0, good: 0, easy: 0 },
+                mistakes: [],
                 isFlipped: false,
                 originalTotal: 0,
                 preloadedImages: {}
