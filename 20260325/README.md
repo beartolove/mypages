@@ -5,7 +5,8 @@
   - 法規: 僅金管會境內限制
   - Why Google Gemini
   - why企業版:
-![[gemini1.jpg]]
+  - 
+![[https://github.com/beartolove/mypages/20260325/gemini1.png]]
 
 ---
 
@@ -13,4 +14,4 @@
 - 一次性
 - 定時
 - 重複使用的Gem / Skills
-![[gemini2.jpg]]
+![[gemini2.png]]
