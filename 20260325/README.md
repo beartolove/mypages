@@ -6,7 +6,7 @@
   - Why Google Gemini
   - why企業版:
 
-[Gemini企業版提供的資料保護](https://github.com/beartolove/mypages/20260325/gemini1.png)
+[Gemini企業版提供的資料保護](gemini1.png)
 
 ---
 
