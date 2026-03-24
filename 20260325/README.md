@@ -6,7 +6,7 @@
   - ⚠️Why Google Gemini
   - ⚠️Why企業版:
 
-[圖說: Gemini企業版提供的資料保護](gemini1.png)
+![圖說: Gemini企業版提供的資料保護](gemini1.png)
 
 ---
 
@@ -26,7 +26,7 @@
 
 - ⚠️ 重複使用的Gem / Skills
 
-[圖說: Agent Skills/Gemini Gem](gemini2.png)
+![圖說: Agent Skills/Gemini Gem](gemini2.png)
 
 
 ```
