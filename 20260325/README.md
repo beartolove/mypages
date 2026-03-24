@@ -5,13 +5,19 @@
   - 法規: 僅金管會境內限制
   - Why Google Gemini
   - why企業版:
-  - 
-![[https://github.com/beartolove/mypages/20260325/gemini1.png]]
+
+[Gemini企業版提供的資料保護](https://github.com/beartolove/mypages/20260325/gemini1.png)
 
 ---
 
 ## 二、Google Gemini技巧
 - 一次性
+```
+整理高雄港、基隆港、臺中港、花蓮港、安平港、布袋港、澎湖港(馬公)、蘇澳港、台北港各三則發佈日期2日內最新新聞，列成表格並顯示為正負面。表格欄位包括：港口名稱、新聞標題、內容摘要、正面／負面、發佈日期
+```
+
 - 定時
 - 重複使用的Gem / Skills
-![[gemini2.png]]
+
+
+[Agent Skills/Gemini Gem](https://github.com/beartolove/mypages/20260325/gemini2.png)
