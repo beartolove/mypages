@@ -48,3 +48,33 @@
 # 三、回信預擬(中文版)
 # 四、回信預擬(外文版)
 ```
+[外語秘書範例Gem](https://gemini.google.com/gem/1nDKhrShNrno-MvDaM0VHxiTVIsdPBGYM?usp=sharing)
+
+
+```
+Dear Lin,
+
+I hope this email finds you well.
+
+On behalf of the Singapore Tourism Bureau, I am writing to formally express our interest in establishing a strategic partnership with Port of Kaohsiung through a Memorandum of Understanding (MOU).
+
+As Singapore continues to strengthen its position as a global premier cruise and maritime hub, we recognize the pivotal role that [Port Name] plays in regional connectivity and tourism infrastructure. We believe that a formalized collaboration between our organizations would create significant synergies, particularly in the following areas:
+
+Cruise Tourism Development: Jointly promoting fly-cruise packages and enhancing the appeal of regional cruise itineraries.
+
+Infrastructure & Innovation: Sharing best practices in sustainable port operations and digitalizing the passenger experience.
+
+Marketing & Promotion: Co-branding initiatives to drive international visitor arrivals to both destinations.
+
+Knowledge Exchange: Facilitating professional workshops and talent development programs within the maritime tourism sector.
+
+We have prepared an initial draft framework for the MOU and would welcome the opportunity to discuss this proposal further via a virtual meeting or a formal visit. Please let us know your availability in the coming weeks for a preliminary discussion.
+
+Thank you for considering this proposal. We look forward to the possibility of working closely with your team to drive the future of maritime tourism.
+
+Warm regards,
+
+Wang
+Director
+Singapore Tourism Bureau
+```
