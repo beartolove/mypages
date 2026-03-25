@@ -78,3 +78,7 @@ Wang
 Director
 Singapore Tourism Bureau
 ```
+
+## NotebookLM + Gemini連續技查MITRE架構
+
+[MITRE範例及提示詞](https://docs.google.com/spreadsheets/d/1QSFkLpCMLKh6P3tPxtWVATNwbvHHyCUmBSOKqqRiAKE/edit?usp=drivesdk)
