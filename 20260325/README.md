@@ -48,7 +48,7 @@
 # 三、回信預擬(中文版)
 # 四、回信預擬(外文版)
 ```
-[外語秘書範例Gem](https://gemini.google.com/gem/1nDKhrShNrno-MvDaM0VHxiTVIsdPBGYM?usp=sharing)
+[外語秘書範例Gem](https://gemini.google.com/gem/1rmhlYabD7V6y9Hr6lriDSrZPyjbeBfKs?usp=sharing)
 
 
 ```
