@@ -1,0 +1,791 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>港口掛靠優化（PCO）指南 — 重點整理</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700&display=swap');
+
+  :root {
+    --charcoal: #36454f;
+    --slate: #708090;
+    --light-gray: #d3d3d3;
+    --off-white: #f5f5f5;
+    --white: #ffffff;
+    --accent: #4a5568;
+    --divider: #e2e2e2;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'Inter', sans-serif;
+    background: var(--off-white);
+    color: var(--charcoal);
+    line-height: 1.7;
+    font-size: 15px;
+  }
+
+  /* ── Hero ── */
+  .hero {
+    background: var(--charcoal);
+    color: var(--white);
+    padding: 56px 40px 48px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero::before {
+    content: '';
+    position: absolute;
+    top: -60px; right: -60px;
+    width: 280px; height: 280px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.04);
+  }
+  .hero::after {
+    content: '';
+    position: absolute;
+    bottom: -80px; left: -40px;
+    width: 200px; height: 200px;
+    border-radius: 50%;
+    background: rgba(255,255,255,0.03);
+  }
+  .hero-badge {
+    display: inline-block;
+    background: rgba(255,255,255,0.12);
+    color: var(--light-gray);
+    font-size: 11px;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    padding: 4px 12px;
+    border-radius: 20px;
+    margin-bottom: 18px;
+  }
+  .hero h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    letter-spacing: -0.5px;
+    margin-bottom: 10px;
+    line-height: 1.25;
+  }
+  .hero p {
+    color: var(--light-gray);
+    font-weight: 300;
+    font-size: 14px;
+    max-width: 540px;
+  }
+  .hero-meta {
+    margin-top: 24px;
+    display: flex;
+    gap: 24px;
+    flex-wrap: wrap;
+  }
+  .hero-meta span {
+    font-size: 12px;
+    color: var(--slate);
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+  .hero-meta span::before { content: '■'; color: var(--light-gray); font-size: 8px; }
+
+  /* ── Layout ── */
+  .container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 40px 24px 60px;
+  }
+
+  /* ── Section header ── */
+  .section-label {
+    font-size: 10px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    color: var(--slate);
+    font-weight: 600;
+    margin-bottom: 6px;
+  }
+  .section-title {
+    font-size: 1.35rem;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 20px;
+    padding-bottom: 10px;
+    border-bottom: 2px solid var(--charcoal);
+  }
+
+  /* ── Cards grid ── */
+  .card-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 16px;
+    margin-bottom: 40px;
+  }
+  .card {
+    background: var(--white);
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    padding: 22px 20px;
+    transition: box-shadow 0.2s;
+  }
+  .card:hover { box-shadow: 0 4px 16px rgba(54,69,79,0.10); }
+  .card-icon {
+    font-size: 22px;
+    margin-bottom: 10px;
+  }
+  .card h3 {
+    font-size: 14px;
+    font-weight: 700;
+    color: var(--charcoal);
+    margin-bottom: 8px;
+  }
+  .card p {
+    font-size: 13px;
+    color: var(--slate);
+    line-height: 1.6;
+  }
+
+  /* ── Timeline ── */
+  .timeline { margin-bottom: 40px; }
+  .tl-item {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 16px;
+    align-items: flex-start;
+  }
+  .tl-year {
+    min-width: 60px;
+    font-weight: 700;
+    font-size: 13px;
+    color: var(--charcoal);
+    padding-top: 2px;
+    text-align: right;
+  }
+  .tl-line {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 0;
+    padding-top: 6px;
+  }
+  .tl-dot {
+    width: 10px; height: 10px;
+    border-radius: 50%;
+    background: var(--charcoal);
+    flex-shrink: 0;
+  }
+  .tl-bar {
+    width: 2px;
+    flex: 1;
+    background: var(--light-gray);
+    min-height: 28px;
+  }
+  .tl-content {
+    background: var(--white);
+    border: 1px solid var(--divider);
+    border-radius: 6px;
+    padding: 12px 16px;
+    flex: 1;
+    font-size: 13px;
+    color: var(--charcoal);
+    line-height: 1.6;
+  }
+  .tl-content strong { color: var(--charcoal); }
+
+  /* ── Data flow ── */
+  .flow-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    flex-wrap: wrap;
+    margin-bottom: 12px;
+  }
+  .flow-box {
+    background: var(--white);
+    border: 1.5px solid var(--charcoal);
+    border-radius: 6px;
+    padding: 8px 14px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--charcoal);
+    text-align: center;
+    min-width: 80px;
+  }
+  .flow-box.muted {
+    border-color: var(--light-gray);
+    color: var(--slate);
+    font-weight: 400;
+  }
+  .flow-arrow {
+    font-size: 16px;
+    color: var(--slate);
+    font-weight: 300;
+  }
+
+  /* ── Scope table ── */
+  .scope-table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-bottom: 40px;
+    font-size: 13px;
+    background: var(--white);
+    border: 1px solid var(--divider);
+    border-radius: 8px;
+    overflow: hidden;
+  }
+  .scope-table th {
+    background: var(--charcoal);
+    color: var(--white);
+    padding: 12px 16px;
+    text-align: left;
+    font-weight: 600;
+    font-size: 12px;
+    letter-spacing: 0.5px;
+  }
+  .scope-table td {
+    padding: 10px 16px;
+    border-bottom: 1px solid var(--divider);
+    color: var(--charcoal);
+    vertical-align: top;
+  }
+  .scope-table tr:last-child td { border-bottom: none; }
+  .scope-table tr:nth-child(even) td { background: #fafafa; }
+
+  /* ── Tag chips ── */
+  .tags { display: flex; flex-wrap: wrap; gap: 8px; margin: 12px 0; }
+  .tag {
+    background: var(--charcoal);
+    color: var(--white);
+    padding: 3px 10px;
+    border-radius: 20px;
+    font-size: 11px;
+    font-weight: 600;
+    letter-spacing: 0.3px;
+  }
+  .tag.outline {
+    background: transparent;
+    border: 1.5px solid var(--charcoal);
+    color: var(--charcoal);
+  }
+
+  /* ── API snippet ── */
+  .api-block {
+    background: #1e2a32;
+    border-radius: 8px;
+    padding: 20px 22px;
+    margin-bottom: 16px;
+    overflow-x: auto;
+  }
+  .api-block pre {
+    font-family: 'Courier New', monospace;
+    font-size: 12px;
+    color: #c8d6e0;
+    line-height: 1.7;
+    white-space: pre;
+  }
+  .api-label {
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--slate);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+    font-weight: 600;
+  }
+  .api-key { color: #81a1c1; }
+  .api-str { color: #a3be8c; }
+  .api-num { color: #d08770; }
+
+  /* ── Steps list ── */
+  .steps { margin-bottom: 40px; }
+  .step {
+    display: flex;
+    gap: 16px;
+    margin-bottom: 14px;
+    align-items: flex-start;
+  }
+  .step-num {
+    width: 28px; height: 28px;
+    border-radius: 50%;
+    background: var(--charcoal);
+    color: var(--white);
+    font-size: 12px;
+    font-weight: 700;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+  .step-text {
+    font-size: 13px;
+    color: var(--charcoal);
+    line-height: 1.6;
+    flex: 1;
+  }
+  .step-text strong { font-weight: 700; }
+
+  /* ── Info box ── */
+  .info-box {
+    background: var(--white);
+    border-left: 4px solid var(--charcoal);
+    padding: 16px 20px;
+    border-radius: 0 6px 6px 0;
+    margin-bottom: 20px;
+    font-size: 13px;
+    color: var(--charcoal);
+    line-height: 1.7;
+  }
+  .info-box strong { font-weight: 700; }
+
+  /* ── Benefits pills ── */
+  .benefit-list { list-style: none; margin-bottom: 24px; }
+  .benefit-list li {
+    padding: 8px 0;
+    border-bottom: 1px solid var(--divider);
+    font-size: 13px;
+    color: var(--charcoal);
+    display: flex;
+    gap: 10px;
+    align-items: flex-start;
+  }
+  .benefit-list li::before {
+    content: '→';
+    color: var(--slate);
+    font-weight: 700;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    background: var(--charcoal);
+    color: var(--light-gray);
+    text-align: center;
+    padding: 24px;
+    font-size: 12px;
+    letter-spacing: 0.3px;
+  }
+
+  /* ── Section divider ── */
+  .section-sep { margin: 40px 0; border: none; border-top: 1px solid var(--divider); }
+
+  @media (max-width: 600px) {
+    .hero h1 { font-size: 1.5rem; }
+    .card-grid { grid-template-columns: 1fr; }
+    .flow-row { gap: 4px; }
+    .flow-box { font-size: 11px; padding: 6px 10px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Hero -->
+<div class="hero">
+  <div class="hero-badge">PCO Guide 2026 · 重點整理</div>
+  <h1>港口掛靠優化<br>（Port Call Optimization）指南</h1>
+  <p>由 IAPH × IHMA 聯合發布，統一航海與營運資料的電子交換標準，推動全球港口安全、永續與高效運作。</p>
+  <div class="hero-meta">
+    <span>版本：Concept V1</span>
+    <span>有效期：2026.04.01 — 2031.04.01</span>
+    <span>提交單位：IMO FAL 50</span>
+    <span>保管機構：IHMA</span>
+  </div>
+</div>
+
+<div class="container">
+
+  <!-- 1. 什麼是 PCO -->
+  <div class="section-label">Section 01</div>
+  <div class="section-title">什麼是港口掛靠優化（PCO）？</div>
+
+  <div class="info-box">
+    <strong>核心定義：</strong>港口掛靠（Port Call）是船舶在航行途中抵達並離開特定港口的過程，期間可能停靠一個或多個泊位。PCO 即是優化此全流程的系統性方法。
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">⚓</div>
+      <h3>安全性提升</h3>
+      <p>標準化、精確且即時的資訊，能提升港口掛靠的安全性與法規合規程度。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">🌿</div>
+      <h3>環境永續</h3>
+      <p>準時到港（JIT）大幅降低船舶在錨地等待時間，減少燃料消耗與溫室氣體排放。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">⚙️</div>
+      <h3>營運效率</h3>
+      <p>港口、航商、貨主及碼頭共享一致資料，優化人力、設備與資源調配。</p>
+    </div>
+    <div class="card">
+      <div class="card-icon">💰</div>
+      <h3>降低成本</h3>
+      <p>減少船舶閒置、泊位空等及相關服務延誤，降低全供應鏈的整體運營成本。</p>
+    </div>
+  </div>
+
+  <hr class="section-sep">
+
+  <!-- 2. 發展歷程 -->
+  <div class="section-label">Section 02</div>
+  <div class="section-title">重要里程碑</div>
+
+  <div class="timeline">
+    <div class="tl-item">
+      <div class="tl-year">2023</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+      <div class="tl-content"><strong>IMO FAL 47</strong> — 發布《營運資料指引》，建立結構化資料交換的基礎框架。</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2024</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+      <div class="tl-content"><strong>IMO FAL 48</strong> — 新加坡港與鹿特丹港示範航海及營運資料交換；各 PCO 倡議在綠色數位航運走廊框架下完成全球實施對接。</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2025</div>
+      <div class="tl-line"><div class="tl-dot"></div><div class="tl-bar"></div></div>
+      <div class="tl-content"><strong>IMO FAL 49</strong> — 提交《航海資料指引》資訊文件；巴倫西亞 PCO 網路會議確認最小資料範疇。</div>
+    </div>
+    <div class="tl-item">
+      <div class="tl-year">2026</div>
+      <div class="tl-line"><div class="tl-dot"></div></div>
+      <div class="tl-content"><strong>IMO FAL 50</strong> — 正式提交 PCO 指南；國際 API 測試台（IHO 托管於 GitHub）啟動，開放港口接入，有效期至 2031 年。</div>
+    </div>
+  </div>
+
+  <hr class="section-sep">
+
+  <!-- 3. 三類資料 -->
+  <div class="section-label">Section 03</div>
+  <div class="section-title">港口掛靠流程中的三類資料</div>
+
+  <table class="scope-table">
+    <thead>
+      <tr>
+        <th>資料類別</th>
+        <th>用途</th>
+        <th>範例</th>
+        <th>本指南範疇</th>
+      </tr>
+    </thead>
+    <tbody>
+      <tr>
+        <td><strong>🔵 航海資料</strong><br>Nautical Data</td>
+        <td>航行安全（SOLAS）、租船、港口規劃</td>
+        <td>碼頭 / 泊位位置、船舶限制尺寸、水深潮汐、VTS 通訊程序</td>
+        <td>✅ 納入（最小範疇）</td>
+      </tr>
+      <tr>
+        <td><strong>🟡 營運資料</strong><br>Operational Data</td>
+        <td>日常船舶、泊位及服務的排程規劃</td>
+        <td>抵港 / 離港計劃時間、貨物操作完成時間、燃油補給完成時間</td>
+        <td>✅ 納入（最小範疇）</td>
+      </tr>
+      <tr>
+        <td><strong>🟢 行政資料</strong><br>Administrative Data</td>
+        <td>向主管機關的法規申報</td>
+        <td>海關申報、移民通報、港口衛生申報</td>
+        <td>❌ 不納入（透過 MSW 處理）</td>
+      </tr>
+    </tbody>
+  </table>
+
+  <hr class="section-sep">
+
+  <!-- 4. 航海資料最小範疇 -->
+  <div class="section-label">Section 04</div>
+  <div class="section-title">航海資料 — 最小資料範疇</div>
+
+  <div class="info-box">
+    原則：<strong>「基礎與合規優先（Basics and Compliance First）」</strong> — 與 SOLAS 船舶設備最低配備要求同理，港口也需提供最小資料集。
+  </div>
+
+  <div class="card-grid">
+    <div class="card">
+      <div class="card-icon">🏭</div>
+      <h3>碼頭（Terminal）</h3>
+      <p>必要欄位：唯一識別碼（GLN）、名稱、地理座標（WGS84）、碼頭類型。</p>
+      <div class="tags" style="margin-top:10px">
+        <span class="tag">散貨</span>
+        <span class="tag">貨櫃</span>
+        <span class="tag">渡輪</span>
+        <span class="tag">油輪</span>
+        <span class="tag">Ro-Ro</span>
+        <span class="tag">旅客</span>
+      </div>
+    </div>
+    <div class="card">
+      <div class="card-icon">⛽</div>
+      <h3>泊位（Berth）</h3>
+      <p>必要欄位：唯一識別碼（GLN）、名稱、地理座標（防舷材線 A–B 兩端）、泊位類型。</p>
+      <div class="tags" style="margin-top:10px">
+        <span class="tag">碼頭 Quay</span>
+        <span class="tag">棧橋 Jetty</span>
+        <span class="tag">浮筒 MBM</span>
+        <span class="tag">錨泊</span>
+      </div>
+    </div>
+  </div>
+
+  <div class="info-box">
+    <strong>為何使用 GLN（全球位置號碼）？</strong><br>
+    GLN 是 ISO/IEC 6523 標準，已在全球供應鏈中使用逾 30 年，具備與 IHO 互通識別碼（Interoperability Identifier）及 ISO 19987 的相容性。與船舶 IMO 號碼配合，可確保穩健的「船－泊相容性」（Ship-Berth Compatibility）查核，避免因名稱更名或拼寫差異而造成資料不一致。
+  </div>
+
+  <div class="api-label">航海資料 API 回應範例</div>
+  <div class="api-block">
+    <pre>
+<span class="api-key">// 碼頭（Terminal）</span>
+{
+  <span class="api-key">"id"</span>: <span class="api-str">"8719331161350"</span>,
+  <span class="api-key">"name"</span>: <span class="api-str">"Rotterdam World Gateway"</span>,
+  <span class="api-key">"geographicalCoordinate"</span>: {
+    <span class="api-key">"latitude"</span>: <span class="api-num">51.95076</span>,
+    <span class="api-key">"longitude"</span>: <span class="api-num">3.984636</span>
+  },
+  <span class="api-key">"portFacilityNumber"</span>: <span class="api-str">"NLRTM-0467"</span>,
+  <span class="api-key">"terminalType"</span>: <span class="api-str">"ContainerTerminal"</span>
+}
+
+<span class="api-key">// 泊位（Berth）</span>
+{
+  <span class="api-key">"id"</span>: <span class="api-str">"8719331164764"</span>,
+  <span class="api-key">"name"</span>: <span class="api-str">"DS QUAY"</span>,
+  <span class="api-key">"berthType"</span>: <span class="api-str">"Quay"</span>,
+  <span class="api-key">"unloCode"</span>: <span class="api-str">"NLRTM"</span>,
+  <span class="api-key">"geographicalCoordinates"</span>: [
+    { <span class="api-key">"latitude"</span>: <span class="api-num">51.947823</span>, <span class="api-key">"longitude"</span>: <span class="api-num">3.986751</span> },
+    { <span class="api-key">"latitude"</span>: <span class="api-num">51.956442</span>, <span class="api-key">"longitude"</span>: <span class="api-num">3.995982</span> }
+  ]
+}
+    </pre>
+  </div>
+
+  <hr class="section-sep">
+
+  <!-- 5. 營運資料 -->
+  <div class="section-label">Section 05</div>
+  <div class="section-title">營運資料 — 最小資料範疇</div>
+
+  <div class="info-box">
+    <strong>兩個最關鍵的時間戳記：</strong><br>
+    ① <strong>計劃抵達引水員登船點時間（PTA PBP）</strong>—讓船舶可提前優化航速，避免在錨地等待。<br>
+    ② <strong>計劃離泊時間（PTD Berth）</strong>—讓船舶、航商、服務商均能提前規劃，降低閒置時間。
+  </div>
+
+  <div class="section-label" style="margin-top:20px">泊位規劃（到港）流程</div>
+  <div class="flow-row">
+    <div class="flow-box">ETA<br><small>泊位</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">RTA<br><small>泊位</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">PTA<br><small>泊位</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">ATA<br><small>泊位</small></div>
+  </div>
+  <div class="flow-row" style="font-size:11px; color:var(--slate); margin-top:-4px; margin-bottom:20px;">
+    <div style="min-width:80px; text-align:center">船舶管理人→泊位規劃者</div>
+    <div style="width:28px"></div>
+    <div style="min-width:80px; text-align:center">泊位規劃者→船舶管理人</div>
+    <div style="width:28px"></div>
+    <div style="min-width:80px; text-align:center">船舶管理人→泊位規劃者</div>
+    <div style="width:28px"></div>
+    <div style="min-width:80px; text-align:center">繫纜公司 / 碼頭</div>
+  </div>
+
+  <div class="section-label">港口規劃（到港）流程</div>
+  <div class="flow-row">
+    <div class="flow-box">PTA<br><small>泊位</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">RTA<br><small>引水員登船點</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">PTA<br><small>引水員登船點</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">ATA<br><small>引水員登船點</small></div>
+  </div>
+
+  <br>
+  <div class="section-label" style="margin-top:20px">全部 13 個內部資料元素</div>
+
+  <table class="scope-table">
+    <thead>
+      <tr><th>#</th><th>時間戳記</th><th>方向</th><th>說明</th></tr>
+    </thead>
+    <tbody>
+      <tr><td>1</td><td>ETA 泊位</td><td>船舶管理人 → 泊位規劃者</td><td>船舶預計抵泊時間</td></tr>
+      <tr><td>2</td><td>RTA 泊位</td><td>泊位規劃者 → 船舶管理人</td><td>泊位規劃者要求的抵泊時間</td></tr>
+      <tr><td>3</td><td>PTA 泊位</td><td>船舶管理人 → 泊位規劃者</td><td>確認後的計劃抵泊時間</td></tr>
+      <tr><td>4</td><td>RTA 引水員登船點</td><td>港口規劃者 → 船舶管理人</td><td>要求的引水員登船時間</td></tr>
+      <tr><td>5</td><td><strong>PTA 引水員登船點</strong></td><td>船舶管理人 → 港口規劃者</td><td>★ 對外 API 公開的關鍵時間</td></tr>
+      <tr><td>6</td><td>ATA 引水員登船點</td><td>AIS / VTS / 引水員</td><td>實際引水員登船時間</td></tr>
+      <tr><td>7</td><td>ATA 泊位</td><td>繫纜公司 / 碼頭</td><td>定義：第一根纜繩繫妥時刻</td></tr>
+      <tr><td>8</td><td>ETC 碼頭</td><td>貨物服務商 → 船舶管理人</td><td>貨物作業預計完成時間</td></tr>
+      <tr><td>9</td><td>ETC 燃油補給</td><td>船舶服務商 → 船舶管理人</td><td>燃油作業預計完成時間</td></tr>
+      <tr><td>10</td><td>ETD 泊位</td><td>船舶管理人 → 港口規劃者</td><td>預計離泊時間</td></tr>
+      <tr><td>11</td><td>RTD 泊位</td><td>港口規劃者 → 船舶管理人</td><td>要求的離泊時間</td></tr>
+      <tr><td>12</td><td><strong>PTD 泊位</strong></td><td>船舶管理人 → 港口規劃者</td><td>★ 對外 API 公開的關鍵時間</td></tr>
+      <tr><td>13</td><td>ATD 泊位</td><td>—</td><td>定義：最後一根纜繩解開時刻</td></tr>
+    </tbody>
+  </table>
+
+  <div class="api-label">營運資料 API 回應範例</div>
+  <div class="api-block">
+    <pre>
+<span class="api-key">// 港口到港（Port Arrival）</span>
+{
+  <span class="api-key">"shipIMONumber"</span>: <span class="api-str">"9123456"</span>,
+  <span class="api-key">"shipStayReferenceNumber"</span>: <span class="api-str">"abc123"</span>,
+  <span class="api-key">"shipReportingSystemEntryPortCode"</span>: <span class="api-str">"NLRTM"</span>,
+  <span class="api-key">"dateTimeArrivalPlanned"</span>: {
+    <span class="api-key">"pilotBoardingPlaceName"</span>: <span class="api-str">"MC"</span>,
+    <span class="api-key">"plannedTimeOfArrival"</span>: <span class="api-str">"2025-10-17T07:20:50.52Z"</span>
+  }
+}
+
+<span class="api-key">// 港口離港（Port Departure）</span>
+{
+  <span class="api-key">"shipIMONumber"</span>: <span class="api-str">"9123456"</span>,
+  <span class="api-key">"shipStayReferenceNumber"</span>: <span class="api-str">"abc123"</span>,
+  <span class="api-key">"shipReportingSystemEntryPortCode"</span>: <span class="api-str">"NLRTM"</span>,
+  <span class="api-key">"dateTimeDeparturePlanned"</span>: {
+    <span class="api-key">"berthName"</span>: <span class="api-str">"DS QUAY"</span>,
+    <span class="api-key">"plannedTimeOfDeparture"</span>: <span class="api-str">"2025-10-21T17:20:50.52Z"</span>
+  }
+}
+    </pre>
+  </div>
+
+  <hr class="section-sep">
+
+  <!-- 6. 主要效益 -->
+  <div class="section-label">Section 06</div>
+  <div class="section-title">主要效益</div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>🚢 航運公司 / 租船人</h3>
+      <ul class="benefit-list">
+        <li>早期獲得 PTA 引水員登船點，可提前優化航速及氣象航線規劃</li>
+        <li>減少在錨地漂泊或高速衝刺後等待（SFTW 現象）</li>
+        <li>降低燃油及潤滑油消耗，減少船體污損與被盜風險</li>
+        <li>提前知悉 PTD，可不脫班安排保養、燃補或換班</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🏗️ 碼頭 / 泊位規劃者</h3>
+      <ul class="benefit-list">
+        <li>更佳的泊位容量規劃</li>
+        <li>更精準的設備與人力資源調配</li>
+        <li>統一的國際時間戳記定義，減少溝通誤差</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>⚓ 港口規劃者</h3>
+      <ul class="benefit-list">
+        <li>優化港內航道使用，提升容量規劃精度</li>
+        <li>降低碰撞風險，提升整體安全性</li>
+        <li>減少港區內的廢氣排放</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>🗺️ 水文機構</h3>
+      <ul class="benefit-list">
+        <li>透過 API 自動取得最新碼頭/泊位資料，大幅縮短 ENC 更新週期</li>
+        <li>首次實施結果顯示：約 50% 碼頭的類型或名稱原本有誤</li>
+      </ul>
+    </div>
+  </div>
+
+  <hr class="section-sep">
+
+  <!-- 7. 加入 PCO 網路步驟 -->
+  <div class="section-label">Section 07</div>
+  <div class="section-title">如何加入 PCO 全球港口網路</div>
+
+  <div class="steps">
+    <div class="step">
+      <div class="step-num">1</div>
+      <div class="step-text"><strong>建立或整理資料來源</strong> — 確認碼頭與泊位資料（可來自 GIS 資料庫、客戶資料庫或 Excel 試算表）</div>
+    </div>
+    <div class="step">
+      <div class="step-num">2</div>
+      <div class="step-text"><strong>對應國際標準欄位</strong> — 依 IHO 概念登錄及 IMO 彙編，調整本地資料模型</div>
+    </div>
+    <div class="step">
+      <div class="step-num">3</div>
+      <div class="step-text"><strong>向 GS1 申請 GLN</strong> — 取得碼頭與泊位的全球唯一位置號碼</div>
+    </div>
+    <div class="step">
+      <div class="step-num">4</div>
+      <div class="step-text"><strong>建立符合標準的 API</strong> — 採用 JSON 格式、ISO 8601 時間、WGS84 座標，認證方式可用 API Subscription Key（航海資料）或 OAuth 2.0（營運資料）</div>
+    </div>
+    <div class="step">
+      <div class="step-num">5</div>
+      <div class="step-text"><strong>提交 API 至 IHO GitHub 測試台</strong> — 通過測試後，正式列為 PCO 網路港口（PCO Network Port）</div>
+    </div>
+    <div class="step">
+      <div class="step-num">6</div>
+      <div class="step-text"><strong>全球資料使用者接入</strong> — 租船人、船舶運營商、港口資料庫均可透過同一 API 即時取得資料</div>
+    </div>
+  </div>
+
+  <div class="flow-row" style="justify-content:center; gap:16px; margin-bottom:32px">
+    <div class="flow-box" style="background:var(--charcoal); color:var(--white)">港口 API</div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">API 測試台<br><small>IHO GitHub</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">PCO 網路港口<br><small>列名認證</small></div>
+    <div class="flow-arrow">→</div>
+    <div class="flow-box">租船人 ／ 航商<br><small>資料庫存取</small></div>
+  </div>
+
+  <hr class="section-sep">
+
+  <!-- 8. 重點摘要 -->
+  <div class="section-label">Section 08</div>
+  <div class="section-title">關鍵重點一覽</div>
+
+  <div class="card-grid">
+    <div class="card">
+      <h3>📌 最小航海資料</h3>
+      <p>碼頭與泊位的<strong>唯一識別（GLN）、名稱、座標、類型</strong>，僅限接待 SOLAS 船舶者須提供。</p>
+    </div>
+    <div class="card">
+      <h3>📌 最小營運資料</h3>
+      <p><strong>PTA 引水員登船點</strong> 與 <strong>PTD 泊位</strong> 是對外 API 公開的兩個核心時間戳記。</p>
+    </div>
+    <div class="card">
+      <h3>📌 標準堆疊</h3>
+      <p>GLN（ISO/IEC 6523）＋ WGS84 ＋ ISO 8601 ＋ UN/LOCODE ＋ IMO 船舶號碼，構成完整標準體系。</p>
+    </div>
+    <div class="card">
+      <h3>📌 資料所有權</h3>
+      <p>航海資料由港務長等公權力機關持有；營運資料由港口規劃者持有，泊位規劃者（碼頭）提供輸入。</p>
+    </div>
+    <div class="card">
+      <h3>📌 建議實施順序</h3>
+      <p>先從<strong>靜態的航海資料</strong>著手，再推進到動態的<strong>營運資料</strong>，循序漸進降低風險。</p>
+    </div>
+    <div class="card">
+      <h3>📌 法律框架</h3>
+      <p>資料共享可透過國家港口法令、盟約（Covenant）、港口規則或租地合約等多種方式正式化。</p>
+    </div>
+  </div>
+
+  <!-- 聯絡資訊 -->
+  <div class="info-box" style="margin-top:16px">
+    <strong>📧 諮詢聯絡：</strong> Scherpenzeel.ehmc@harbourmaster.org（IHMA 指南保管人）<br>
+    <strong>📄 引用方式：</strong> PCO Guide 2026<br>
+    <strong>🔗 參考網站：</strong> iaphworldports.org ｜ harbourmaster.org
+  </div>
+
+</div>
+
+<div class="footer">
+  PORT CALL OPTIMIZATION (PCO) GUIDE 2026 · IAPH × IHMA · 重點整理版
+</div>
+
+</body>
+</html>
