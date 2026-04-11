@@ -1,0 +1,577 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>運用 AI 學習新知識領域</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans TC", "Inter", sans-serif;
+      background: #F8F6F1;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slideshow {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 100px;
+      z-index: 1;
+    }
+
+    .slide.active { display: flex; }
+
+    .slide-content {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .nav-bar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: white;
+      border-radius: 50px;
+      padding: 10px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #2D2D2D;
+      cursor: pointer;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nav-btn:disabled { color: #ccc; cursor: default; }
+    .nav-btn:disabled:hover { background: none; }
+
+    .page-indicator {
+      font-size: 15px;
+      color: #666;
+      min-width: 72px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 2px 6px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .page-indicator:hover { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+
+    .page-jump-input {
+      width: 48px;
+      border: 2px solid #2CC5B5;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      text-align: center;
+      color: #2D2D2D;
+      background: white;
+      outline: none;
+      padding: 2px 4px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.15);
+      color: #F5A623;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .title-main {
+      font-size: clamp(36px, 5.5vw, 58px);
+      font-weight: 900;
+      color: #2D2D2D;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .title-accent { color: #2CC5B5; }
+
+    .icon-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px;
+    }
+    .icon-circle.teal { background: rgba(44,197,181,0.15); }
+    .icon-circle.orange { background: rgba(245,166,35,0.15); }
+    .icon-circle.red { background: rgba(229,57,53,0.15); }
+    .icon-circle.purple { background: rgba(139,92,246,0.15); }
+
+    .icon-square {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      color: white;
+      margin-bottom: 14px;
+    }
+    .icon-square.teal { background: #2CC5B5; }
+    .icon-square.orange { background: #F5A623; }
+    .icon-square.purple { background: #8B5CF6; }
+    .icon-square.red { background: #E53935; }
+
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .two-col { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+    .quad-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+
+    .compare-card { border-radius: 16px; padding: 24px; }
+    .compare-card.positive { background: rgba(44,197,181,0.1); }
+    .compare-card.negative { background: rgba(229,57,53,0.08); }
+    .compare-label { font-size: 13px; color: #999; margin-bottom: 12px; }
+    .compare-value { font-size: 20px; font-weight: 700; }
+    .compare-value.teal { color: #2CC5B5; }
+    .compare-value.red { color: #E53935; }
+
+    .slide-footer {
+      position: fixed;
+      bottom: 20px; right: 28px;
+      font-size: 15px; font-weight: 600; color: #aaa;
+      letter-spacing: 0.02em;
+      z-index: 99; white-space: nowrap;
+      user-select: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide.active .slide-content { animation: fadeIn 0.35s ease; }
+
+    /* 額外樣式 */
+    .step-badge {
+      display: inline-block;
+      background: rgba(44,197,181,0.15);
+      color: #2CC5B5;
+      border-radius: 20px;
+      padding: 4px 16px;
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 10px;
+    }
+    .tool-tag {
+      display: inline-block;
+      background: #2CC5B5;
+      color: white;
+      border-radius: 20px;
+      padding: 5px 16px;
+      font-size: 13px;
+      font-weight: 600;
+      margin-top: 14px;
+    }
+    .sub-text {
+      font-size: 16px;
+      color: #666;
+      line-height: 1.7;
+      margin-top: 8px;
+    }
+    .card-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: #2D2D2D;
+      margin-bottom: 8px;
+    }
+    .card-desc {
+      font-size: 14px;
+      color: #666;
+      line-height: 1.6;
+    }
+    .section-title {
+      font-size: clamp(26px, 4vw, 38px);
+      font-weight: 900;
+      color: #2D2D2D;
+      margin-bottom: 28px;
+    }
+    .highlight { color: #2CC5B5; }
+    .highlight-orange { color: #F5A623; }
+    .arrow { color: #2CC5B5; font-size: 20px; margin: 0 6px; }
+    .icon-row { display: flex; align-items: center; justify-content: center; gap: 12px; margin-bottom: 20px; }
+    .big-emoji { font-size: 48px; margin-bottom: 12px; }
+  </style>
+</head>
+<body>
+  <div class="slideshow">
+
+    <!-- Slide 1: 封面 -->
+    <section class="slide active">
+      <div class="slide-content">
+        <div class="badge">🤖 AI 時代學習法</div>
+        <div class="title-main">
+          運用 <span class="title-accent">AI</span> 學習<br>新知識領域
+        </div>
+        <p class="sub-text" style="font-size:18px; margin-top:16px;">以 Google 系列工具為例</p>
+        <div style="margin-top:32px; display:flex; justify-content:center; gap:16px; flex-wrap:wrap;">
+          <span style="background:rgba(44,197,181,0.12);color:#2CC5B5;padding:8px 20px;border-radius:12px;font-size:14px;font-weight:600;">📓 NotebookLM</span>
+          <span style="background:rgba(245,166,35,0.12);color:#F5A623;padding:8px 20px;border-radius:12px;font-size:14px;font-weight:600;">✨ Gemini</span>
+          <span style="background:rgba(139,92,246,0.12);color:#8B5CF6;padding:8px 20px;border-radius:12px;font-size:14px;font-weight:600;">🟣 Obsidian</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 2: 章節導覽 -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="badge">📚 本次學習框架</div>
+        <div class="section-title">五個學習底層邏輯</div>
+        <div class="quad-grid" style="gap:14px;">
+          <div class="card" style="text-align:left; padding:20px 24px;">
+            <div style="font-size:22px; margin-bottom:8px;">🚀</div>
+            <div class="card-title">① 開始學習的第一步</div>
+            <div class="card-desc">從碎片關鍵字 → 知識框架</div>
+          </div>
+          <div class="card" style="text-align:left; padding:20px 24px;">
+            <div style="font-size:22px; margin-bottom:8px;">👁️</div>
+            <div class="card-title">② 多感官學習</div>
+            <div class="card-desc">眼、耳、影音同步</div>
+          </div>
+          <div class="card" style="text-align:left; padding:20px 24px;">
+            <div style="font-size:22px; margin-bottom:8px;">💡</div>
+            <div class="card-title">③ 疑惑解決</div>
+            <div class="card-desc">白話、舉例、圖解</div>
+          </div>
+          <div class="card" style="text-align:left; padding:20px 24px;">
+            <div style="font-size:22px; margin-bottom:8px;">🗄️</div>
+            <div class="card-title">④ 建立知識庫</div>
+            <div class="card-desc">個人化、主題化</div>
+          </div>
+        </div>
+        <div class="card" style="margin-top:14px; padding:18px 24px; text-align:left;">
+          <div style="font-size:22px; margin-bottom:8px;">📝</div>
+          <div class="card-title">⑤ 複習與測驗</div>
+          <div class="card-desc">出題刷題、強化記憶</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 3: 傳統 vs AI 對比 -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="step-badge">① 開始學習的第一步</div>
+        <div class="section-title">傳統作法 <span style="color:#ccc;font-weight:400;">vs</span> AI 時代</div>
+        <div class="two-col">
+          <div class="compare-card negative" style="text-align:left;">
+            <div class="compare-label">❌ 傳統作法</div>
+            <div class="compare-value red" style="font-size:18px; margin-bottom:12px;">Google 關鍵字搜尋</div>
+            <ul style="font-size:14px; color:#666; line-height:2; padding-left:18px;">
+              <li>關鍵字 = 碎片化知識</li>
+              <li>影片 = 個人觀點</li>
+              <li>人也會有幻覺與誤解</li>
+            </ul>
+          </div>
+          <div class="compare-card positive" style="text-align:left;">
+            <div class="compare-label">✅ AI 時代作法</div>
+            <div class="compare-value teal" style="font-size:18px; margin-bottom:12px;">官方網站・權威來源</div>
+            <ul style="font-size:14px; color:#2D2D2D; line-height:2; padding-left:18px;">
+              <li>從「點」延伸到「線」與「面」</li>
+              <li>先看章節目錄再深入</li>
+              <li>心智圖・知識圖譜</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:20px; background:rgba(44,197,181,0.08); border-radius:16px; padding:18px 24px;">
+          <span style="font-size:20px;">🎯</span>
+          <span style="font-size:15px; color:#2D2D2D; font-weight:600; margin-left:8px;">NotebookLM + Gemini：整理知識框架</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 4: 知識框架說明 -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="step-badge">① 知識框架建立技巧</div>
+        <div class="section-title">像讀一本書一樣<br>建立<span class="highlight">系統化</span>學習</div>
+        <div class="three-col">
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle teal">📖</div>
+            <div class="card-title">先看目錄</div>
+            <div class="card-desc">看一本書先看有哪些章節，掌握整體輪廓</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle orange">🧠</div>
+            <div class="card-title">心智圖</div>
+            <div class="card-desc">將章節與主題視覺化，建立關聯</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle purple">🌐</div>
+            <div class="card-title">知識圖譜</div>
+            <div class="card-desc">Knowledge Graph — 從點到線面的全局視角</div>
+          </div>
+        </div>
+        <div style="margin-top:20px; display:flex; align-items:center; justify-content:center; gap:8px;">
+          <span style="font-size:16px; color:#999;">關鍵字（點）</span>
+          <span class="arrow">→</span>
+          <span style="font-size:16px; color:#2CC5B5; font-weight:700;">知識線</span>
+          <span class="arrow">→</span>
+          <span style="font-size:16px; color:#2CC5B5; font-weight:700;">知識面</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 5: 多感官學習 -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="step-badge">② 透過不同方式增強學習</div>
+        <div class="section-title">多感官輸入<br><span class="highlight">加速學習效率</span></div>
+        <div class="three-col">
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle teal">👁️</div>
+            <div class="card-title">眼：閱讀</div>
+            <div class="card-desc">文字閱讀、知識框架圖，系統化吸收</div>
+            <div class="tool-tag">NotebookLM</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle orange">👂</div>
+            <div class="card-title">耳：聆聽</div>
+            <div class="card-desc">以純聲音方式學習，散步時也能輸入</div>
+            <div class="tool-tag">NotebookLM</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle purple">🎬</div>
+            <div class="card-title">眼 ＋ 耳</div>
+            <div class="card-desc">簡報影音同步學習，雙管道強化記憶</div>
+            <div class="tool-tag">NotebookLM</div>
+          </div>
+        </div>
+        <div style="margin-top:20px; background:rgba(44,197,181,0.08); border-radius:16px; padding:16px 24px;">
+          <span style="font-size:15px; color:#2D2D2D; font-weight:600;">🎯 NotebookLM 可生成各種格式，滿足不同學習偏好</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 6: 疑惑解決 -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="step-badge">③ 疑惑不明部分的解決方式</div>
+        <div class="section-title">看不懂？<br>換個方式<span class="highlight">讓 AI 解釋</span></div>
+        <div class="three-col">
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle teal">💬</div>
+            <div class="card-title">白話一點</div>
+            <div class="card-desc">要求 AI 用更簡單的語言重新說明概念</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle orange">🌰</div>
+            <div class="card-title">舉例說明</div>
+            <div class="card-desc">要求具體例子，讓抽象觀念變得具體</div>
+          </div>
+          <div class="card" style="text-align:center;">
+            <div class="icon-circle purple">🖼️</div>
+            <div class="card-title">圖解視覺化</div>
+            <div class="card-desc">用圖像呈現複雜關係，最直觀有效</div>
+          </div>
+        </div>
+        <div style="margin-top:20px; background:rgba(245,166,35,0.08); border-radius:16px; padding:16px 24px; display:flex; align-items:center; gap:12px; justify-content:center;">
+          <span style="font-size:15px; color:#2D2D2D; font-weight:600;">🎯 Gemini Gem 提供解答</span>
+          <span style="color:#ccc;">｜</span>
+          <span style="font-size:15px; color:#2D2D2D; font-weight:600;">🍌 Banana 提供圖解</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 7: 知識庫 -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="step-badge">④ 建立自己的知識庫來源</div>
+        <div class="section-title">知識庫要<span class="highlight">為你量身打造</span></div>
+        <div class="two-col">
+          <div class="card" style="text-align:left;">
+            <div style="font-size:36px; margin-bottom:14px;">📓</div>
+            <div class="card-title" style="font-size:20px; margin-bottom:10px;">NotebookLM</div>
+            <ul style="font-size:14px; color:#666; line-height:2.2; padding-left:18px;">
+              <li>上傳官方文件、PDF</li>
+              <li>生成摘要、問答</li>
+              <li>跨資料來源整合</li>
+            </ul>
+          </div>
+          <div class="card" style="text-align:left;">
+            <div style="font-size:36px; margin-bottom:14px;">🟣</div>
+            <div class="card-title" style="font-size:20px; margin-bottom:10px;">Obsidian</div>
+            <ul style="font-size:14px; color:#666; line-height:2.2; padding-left:18px;">
+              <li>隨身攜帶的個人知識庫</li>
+              <li>內建知識圖譜</li>
+              <li>主題化、個人化管理</li>
+            </ul>
+          </div>
+        </div>
+        <div style="margin-top:20px; background:rgba(139,92,246,0.08); border-radius:16px; padding:16px 24px;">
+          <span style="font-size:15px; color:#2D2D2D; font-weight:600;">🎯 Obsidian：隨身學習 + 內建知識圖譜，打造個人化大腦</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 8: 複習測驗 -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="step-badge">⑤ 複習與測驗的需求</div>
+        <div class="section-title">學完還不夠，<br>要<span class="highlight">測驗</span>才能內化</div>
+        <div class="card" style="text-align:center; padding:48px 32px; margin-bottom:20px;">
+          <div class="big-emoji">🧪</div>
+          <div style="font-size:22px; font-weight:700; color:#2D2D2D; margin-bottom:12px;">出測驗題・刷題練習</div>
+          <div style="font-size:15px; color:#666; line-height:1.8;">
+            讓 AI 根據學習內容自動出題<br>
+            用刷題方式強化記憶與理解
+          </div>
+        </div>
+        <div style="background:rgba(245,166,35,0.08); border-radius:16px; padding:18px 24px;">
+          <span style="font-size:15px; color:#2D2D2D; font-weight:600;">🎯 Gemini + Canva 寫程式刷題</span>
+        </div>
+      </div>
+    </section>
+
+    <!-- Slide 9: 工具總覽 -->
+    <section class="slide">
+      <div class="slide-content">
+        <div class="badge">🛠️ 工具總覽</div>
+        <div class="section-title">五個學習場景<br><span class="highlight">對應工具一覽</span></div>
+        <div style="display:flex; flex-direction:column; gap:12px;">
+          <div class="card" style="display:flex; align-items:center; gap:16px; padding:18px 24px; text-align:left;">
+            <div class="icon-square teal">📓</div>
+            <div>
+              <div class="card-title">NotebookLM</div>
+              <div class="card-desc">整理知識框架・生成各種學習格式（文字、音頻、影音）</div>
+            </div>
+          </div>
+          <div class="card" style="display:flex; align-items:center; gap:16px; padding:18px 24px; text-align:left;">
+            <div class="icon-square orange">✨</div>
+            <div>
+              <div class="card-title">Gemini（Gem + Banana）</div>
+              <div class="card-desc">疑問解答・圖解說明・Canva 刷題應用</div>
+            </div>
+          </div>
+          <div class="card" style="display:flex; align-items:center; gap:16px; padding:18px 24px; text-align:left;">
+            <div class="icon-square purple">🟣</div>
+            <div>
+              <div class="card-title">Obsidian</div>
+              <div class="card-desc">個人知識庫・隨身學習・內建知識圖譜</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 頁腳 -->
+    <footer class="slide-footer">🐻 林熊熊分享</footer>
+
+    <!-- 導覽列 -->
+    <nav class="nav-bar">
+      <button class="nav-btn" id="prevBtn">‹</button>
+      <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
+      <span style="color:#ccc">/</span>
+      <span id="totalPages" style="font-size:15px;color:#999"></span>
+      <button class="nav-btn" id="nextBtn">›</button>
+    </nav>
+  </div>
+
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const totalPagesEl = document.getElementById('totalPages');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+
+    let current = 0;
+    totalPagesEl.textContent = slides.length;
+
+    function goTo(n) {
+      slides[current].classList.remove('active');
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      slides[current].classList.add('active');
+      updateIndicator();
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+    }
+
+    function updateIndicator() {
+      pageIndicator.textContent = current + 1;
+    }
+
+    pageIndicator.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'number';
+      input.min = 1;
+      input.max = slides.length;
+      input.value = current + 1;
+      input.className = 'page-jump-input';
+      pageIndicator.replaceWith(input);
+      input.select();
+
+      function commit() {
+        const n = parseInt(input.value, 10);
+        input.replaceWith(pageIndicator);
+        if (!isNaN(n)) goTo(n - 1);
+        else updateIndicator();
+      }
+
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); commit(); }
+        if (e.key === 'Escape') { input.replaceWith(pageIndicator); updateIndicator(); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+      });
+      input.addEventListener('blur', commit);
+      input.addEventListener('input', () => {
+        if (input.value < 1) input.value = 1;
+        if (input.value > slides.length) input.value = slides.length;
+      });
+    });
+
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+
+    document.addEventListener('keydown', e => {
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    });
+
+    goTo(0);
+  </script>
+</body>
+</html>
