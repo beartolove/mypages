@@ -1,0 +1,943 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>運用 AI 學習新知識領域 — Google 工具為例</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans TC", "PingFang TC", sans-serif;
+      background: #F8F6F1;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slideshow {
+      position: relative;
+      width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+
+    .slide {
+      position: absolute; inset: 0;
+      display: none;
+      align-items: center; justify-content: center;
+      padding: 32px 20px 96px;
+      z-index: 1;
+    }
+    .slide.active { display: flex; }
+
+    .slide-content {
+      max-width: 920px; width: 100%;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .slide.active .slide-content { animation: fadeIn 0.32s ease; }
+
+    /* ── Nav ── */
+    .nav-bar {
+      position: fixed; bottom: 28px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 18px;
+      background: white; border-radius: 50px;
+      padding: 10px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none; border: none;
+      font-size: 24px; color: #2D2D2D; cursor: pointer;
+      width: 36px; height: 36px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nav-btn:disabled { color: #ccc; cursor: default; }
+    .nav-btn:disabled:hover { background: none; }
+
+    .page-indicator {
+      font-size: 15px; color: #666;
+      min-width: 60px; text-align: center;
+      cursor: pointer; border-radius: 8px;
+      padding: 2px 6px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .page-indicator:hover { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+    .page-jump-input {
+      width: 48px; border: 2px solid #2CC5B5; border-radius: 8px;
+      font-size: 15px; font-weight: 600; text-align: center;
+      color: #2D2D2D; background: white; outline: none; padding: 2px 4px;
+    }
+
+    .slide-footer {
+      position: fixed; bottom: 18px; right: 26px;
+      font-size: 14px; font-weight: 600; color: #bbb;
+      z-index: 99; user-select: none; white-space: nowrap;
+    }
+
+    /* ── Components ── */
+    .badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.15); color: #F5A623;
+      border-radius: 20px; padding: 5px 18px;
+      font-size: 13px; font-weight: 600; margin-bottom: 18px;
+    }
+    .badge-teal {
+      display: inline-block;
+      background: rgba(44,197,181,0.15); color: #2CC5B5;
+      border-radius: 20px; padding: 5px 18px;
+      font-size: 13px; font-weight: 600; margin-bottom: 18px;
+    }
+    .badge-dark {
+      display: inline-block;
+      background: #2D2D2D; color: white;
+      border-radius: 20px; padding: 5px 18px;
+      font-size: 13px; font-weight: 600; margin-bottom: 18px;
+    }
+
+    .title-main {
+      font-size: clamp(34px, 5.5vw, 58px);
+      font-weight: 900; color: #2D2D2D;
+      line-height: 1.2; margin-bottom: 14px;
+    }
+    .title-accent { color: #2CC5B5; }
+    .title-orange { color: #F5A623; }
+    .section-title {
+      font-size: clamp(22px, 3.5vw, 34px);
+      font-weight: 900; color: #2D2D2D; margin-bottom: 20px;
+      line-height: 1.3;
+    }
+    .subtitle { font-size: 17px; color: #666; line-height: 1.6; }
+
+    .card {
+      background: white; border-radius: 20px;
+      padding: 26px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.07);
+    }
+
+    .icon-circle {
+      width: 66px; height: 66px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px; margin: 0 auto 14px;
+    }
+    .icon-circle.teal   { background: rgba(44,197,181,0.15); }
+    .icon-circle.orange { background: rgba(245,166,35,0.15); }
+    .icon-circle.purple { background: rgba(139,92,246,0.15); }
+    .icon-circle.red    { background: rgba(229,57,53,0.12); }
+    .icon-circle.blue   { background: rgba(59,130,246,0.15); }
+
+    .icon-sq {
+      width: 50px; height: 50px; border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px; color: white; margin-bottom: 10px;
+    }
+    .icon-sq.teal   { background: #2CC5B5; }
+    .icon-sq.orange { background: #F5A623; }
+    .icon-sq.purple { background: #8B5CF6; }
+    .icon-sq.red    { background: #E53935; }
+    .icon-sq.blue   { background: #3B82F6; }
+
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .two-col   { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+    .four-col  { display: grid; grid-template-columns: repeat(4,1fr); gap: 12px; }
+
+    .compare-card { border-radius: 16px; padding: 20px; }
+    .compare-card.pos { background: rgba(44,197,181,0.08); }
+    .compare-card.neg { background: rgba(229,57,53,0.07); }
+
+    /* Code block */
+    .code-block {
+      background: #1E1E2E; border-radius: 14px;
+      padding: 16px 20px; text-align: left;
+      font-family: "JetBrains Mono", "Courier New", monospace;
+      font-size: 12.5px; line-height: 1.7; color: #CDD6F4;
+      white-space: pre-wrap; word-break: break-word;
+      max-height: 200px; overflow-y: auto;
+    }
+    .code-block::-webkit-scrollbar { width: 4px; }
+    .code-block::-webkit-scrollbar-thumb { background: #45475A; border-radius: 4px; }
+    .code-block .kw  { color: #89DCEB; }
+    .code-block .str { color: #A6E3A1; }
+    .code-block .cmt { color: #6C7086; }
+
+    .code-header {
+      display: flex; align-items: center; gap: 8px;
+      background: #181825; border-radius: 14px 14px 0 0;
+      padding: 9px 18px; margin-bottom: -2px;
+    }
+    .code-dot { width: 10px; height: 10px; border-radius: 50%; }
+
+    .highlight-box {
+      background: rgba(44,197,181,0.08);
+      border-left: 4px solid #2CC5B5;
+      border-radius: 0 12px 12px 0;
+      padding: 12px 18px; text-align: left; margin-top: 12px;
+    }
+    .warn-box {
+      background: rgba(229,57,53,0.07);
+      border-left: 4px solid #E53935;
+      border-radius: 0 12px 12px 0;
+      padding: 12px 18px; text-align: left; margin-top: 10px;
+    }
+
+    .step-bubble {
+      width: 30px; height: 30px; border-radius: 50%;
+      background: #2CC5B5; color: white;
+      font-weight: 700; font-size: 14px;
+      display: flex; align-items: center; justify-content: center;
+      margin: 0 auto 8px; flex-shrink: 0;
+    }
+
+    .tool-pill {
+      display: inline-block; border-radius: 8px;
+      padding: 3px 11px; font-size: 12px; font-weight: 700;
+      color: white; margin-bottom: 8px;
+    }
+    .tool-pill.gemini   { background: #4285F4; }
+    .tool-pill.nblm     { background: #F5A623; }
+    .tool-pill.obsidian { background: #8B5CF6; }
+
+    .rank-pill {
+      display: inline-flex; align-items: center; gap: 6px;
+      border-radius: 20px; padding: 5px 14px;
+      font-size: 13px; font-weight: 700; color: white;
+    }
+
+    .text-sm { font-size: 14px; color: #555; line-height: 1.65; }
+    .text-xs { font-size: 12.5px; color: #777; line-height: 1.6; }
+    .fw-700  { font-weight: 700; }
+    .teal    { color: #2CC5B5; }
+    .orange  { color: #F5A623; }
+    .red     { color: #E53935; }
+    .mt-10   { margin-top: 10px; }
+    .mt-14   { margin-top: 14px; }
+    .mt-18   { margin-top: 18px; }
+
+    /* Compare table */
+    .c-table { width: 100%; border-collapse: collapse; font-size: 14px; text-align: left; }
+    .c-table th { background: #2D2D2D; color: white; padding: 10px 16px; font-weight: 700; }
+    .c-table th:first-child { border-radius: 10px 0 0 0; }
+    .c-table th:last-child  { border-radius: 0 10px 0 0; }
+    .c-table td { padding: 10px 16px; border-bottom: 1px solid rgba(0,0,0,0.05); vertical-align: top; }
+    .c-table tr:last-child td:first-child { border-radius: 0 0 0 10px; }
+    .c-table tr:last-child td:last-child  { border-radius: 0 0 10px 0; }
+    .c-table tr:nth-child(even) td { background: rgba(0,0,0,0.02); }
+    .c-table .rec  { color: #2CC5B5; font-weight: 700; }
+    .c-table .norec{ color: #E53935; font-weight: 700; }
+
+    /* CODE letter */
+    .code-letter {
+      font-size: 44px; font-weight: 900; line-height: 1;
+    }
+  </style>
+</head>
+<body>
+<div class="slideshow">
+
+<!-- ═══════════════════════════════════
+     P1  封面
+═══════════════════════════════════ -->
+<section class="slide active">
+<div class="slide-content">
+  <div class="badge">🤖 2026 AI 學習方法論</div>
+  <div class="title-main">
+    運用 AI<br><span class="title-accent">學習新知識領域</span>
+  </div>
+  <p class="subtitle">以 Google 系列工具為例</p>
+  <div style="display:flex;gap:12px;justify-content:center;flex-wrap:wrap;margin-top:28px">
+    <div style="display:flex;align-items:center;gap:8px;background:white;border-radius:40px;padding:9px 20px;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
+      <span style="font-size:18px">📒</span>
+      <span style="font-size:14px;font-weight:700;color:#2D2D2D">NotebookLM</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;background:white;border-radius:40px;padding:9px 20px;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
+      <span style="font-size:18px">✨</span>
+      <span style="font-size:14px;font-weight:700;color:#2D2D2D">Gemini</span>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px;background:white;border-radius:40px;padding:9px 20px;box-shadow:0 2px 12px rgba(0,0,0,0.08)">
+      <span style="font-size:18px">🔮</span>
+      <span style="font-size:14px;font-weight:700;color:#2D2D2D">Obsidian</span>
+    </div>
+  </div>
+  <div style="margin-top:24px;background:rgba(44,197,181,0.08);border-radius:14px;padding:14px 24px;display:inline-block">
+    <span style="font-size:14px;color:#2CC5B5;font-weight:600">C.O.D.E. 知識學習框架 &nbsp;·&nbsp; Harness Engineering 實作示範</span>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P2  零、課前準備
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge">零、課前準備</div>
+  <div class="section-title">開課前，請備妥這兩項工具</div>
+  <div class="two-col">
+    <div class="card" style="text-align:left">
+      <div class="icon-circle purple" style="margin:0 0 14px 0">🔮</div>
+      <div style="font-size:20px;font-weight:900;color:#2D2D2D;margin-bottom:6px">Obsidian</div>
+      <div class="text-sm" style="margin-bottom:12px">免費下載安裝</div>
+      <div style="background:rgba(139,92,246,0.08);border-radius:12px;padding:12px 14px">
+        <div class="text-xs">
+          🗺️ &nbsp;個人知識庫管理<br>
+          📡 &nbsp;內建知識圖譜視覺化<br>
+          📱 &nbsp;支援手機隨身使用
+        </div>
+      </div>
+    </div>
+    <div class="card" style="text-align:left">
+      <div class="icon-circle orange" style="margin:0 0 14px 0">✨</div>
+      <div style="font-size:20px;font-weight:900;color:#2D2D2D;margin-bottom:6px">Google Gemini</div>
+      <div class="text-sm" style="color:#E53935;font-weight:700;margin-bottom:12px">⬆️ 建議付費版</div>
+      <div style="background:rgba(245,166,35,0.09);border-radius:12px;padding:12px 14px">
+        <div class="text-xs" style="line-height:1.9">
+          ✅ &nbsp;Google Drive <strong>5 TB</strong><br>
+          ✅ &nbsp;NotebookLM（付費版）<br>
+          ✅ &nbsp;Google Office 全家桶<br>
+          ✅ &nbsp;AI 用量、智力與免費版截然不同
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P3  一(一) 開始學習的第一步
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge">一、領域學習底層邏輯 · (一)</div>
+  <div class="section-title">開始學習的第一步：<span class="title-accent">找對來源</span></div>
+  <div class="two-col">
+    <div class="compare-card neg" style="border-radius:20px;padding:24px;text-align:left">
+      <div style="font-size:13px;color:#999;margin-bottom:10px">❌ 傳統作法</div>
+      <div style="font-size:17px;font-weight:800;color:#E53935;margin-bottom:14px">Google 搜尋 · YouTube · 關鍵字</div>
+      <div class="text-xs" style="line-height:1.9">
+        ⚠️ 關鍵字只代表碎片化知識<br>
+        ⚠️ 個人影片或網站 = 個人觀點<br>
+        ⚠️ 人也有幻覺、也會理解錯誤
+      </div>
+    </div>
+    <div class="compare-card pos" style="border-radius:20px;padding:24px;text-align:left">
+      <div style="font-size:13px;color:#999;margin-bottom:10px">✅ AI 時代作法</div>
+      <div style="font-size:17px;font-weight:800;color:#2CC5B5;margin-bottom:14px">官方網站 · 權威來源</div>
+      <div class="text-xs" style="line-height:1.9">
+        🎯 從關鍵字的「點」→「線」→「面」<br>
+        📖 先看章節架構，再深入每章主題<br>
+        🗺️ 建立心智圖 · 知識圖譜(Knowledge Graph)
+      </div>
+    </div>
+  </div>
+  <div style="margin-top:16px;border:2px solid #2CC5B5;border-radius:14px;padding:14px 20px;background:rgba(44,197,181,0.05)">
+    <span style="font-size:15px;font-weight:700;color:#2CC5B5">🎯 推薦工具：NotebookLM + Gemini 整理知識框架</span>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P4  一(二) 透過不同方式增強學習
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge">一、領域學習底層邏輯 · (二)</div>
+  <div class="section-title">透過不同感官<span class="title-accent">增強學習</span></div>
+  <div class="three-col">
+    <div class="card">
+      <div class="icon-circle teal">👁️</div>
+      <div style="font-weight:800;font-size:17px;color:#2D2D2D;margin-bottom:8px">眼 · 視覺</div>
+      <div class="text-sm">閱讀文字<br>知識框架<br>資訊圖表（以圖代文）</div>
+    </div>
+    <div class="card">
+      <div class="icon-circle orange">👂</div>
+      <div style="font-weight:800;font-size:17px;color:#2D2D2D;margin-bottom:8px">耳 · 聽覺</div>
+      <div class="text-sm">純聲音格式<br>散步時也可<br>邊走邊聆聽學習</div>
+    </div>
+    <div class="card">
+      <div class="icon-circle purple">🎬</div>
+      <div style="font-weight:800;font-size:17px;color:#2D2D2D;margin-bottom:8px">眼+耳 · 影音</div>
+      <div class="text-sm">簡報影音格式<br>視覺與聽覺<br>同步學習</div>
+    </div>
+  </div>
+  <div style="margin-top:16px;border:2px solid #2CC5B5;border-radius:14px;padding:14px 20px;background:rgba(44,197,181,0.05)">
+    <span style="font-size:15px;font-weight:700;color:#2CC5B5">🎯 推薦工具：NotebookLM 生成各種格式（摘要 · Podcast · 簡報）</span>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P5  一(三) 疑惑不明的解決方式
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge">一、領域學習底層邏輯 · (三)</div>
+  <div class="section-title">看不懂怎麼辦？<span class="title-accent">三招解惑</span></div>
+  <div class="three-col">
+    <div class="card">
+      <div class="icon-circle teal">💬</div>
+      <div style="font-weight:800;font-size:17px;color:#2D2D2D;margin-bottom:8px">換白話</div>
+      <div class="text-sm">請 AI 用更<br>口語化的方式<br>重新解釋</div>
+    </div>
+    <div class="card">
+      <div class="icon-circle orange">💡</div>
+      <div style="font-weight:800;font-size:17px;color:#2D2D2D;margin-bottom:8px">舉例說明</div>
+      <div class="text-sm">要求 AI 提供<br>生活化的具體<br>範例與情境</div>
+    </div>
+    <div class="card">
+      <div class="icon-circle purple">🎨</div>
+      <div style="font-weight:800;font-size:17px;color:#2D2D2D;margin-bottom:8px">圖解視覺化</div>
+      <div class="text-sm">圖解是最好的<br>方式之一，<br>以圖代文</div>
+    </div>
+  </div>
+  <div style="margin-top:16px;border:2px solid #F5A623;border-radius:14px;padding:14px 20px;background:rgba(245,166,35,0.05)">
+    <span style="font-size:15px;font-weight:700;color:#F5A623">🎯 推薦工具：Gemini Gem 提供解答 · Banana 提供圖解</span>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P6  一(四) 建立知識庫
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge">一、領域學習底層邏輯 · (四)</div>
+  <div class="section-title">建立<span class="title-accent">專屬知識庫</span></div>
+  <div class="two-col" style="margin-bottom:14px">
+    <div class="card" style="text-align:left">
+      <div class="icon-sq orange" style="margin:0 0 12px 0">📒</div>
+      <div style="font-weight:800;font-size:17px;color:#2D2D2D;margin-bottom:8px">NotebookLM</div>
+      <div class="text-sm">依主題建立 Notebook<br>匯入官方文件、文獻<br>AI 自動整理並可問答</div>
+    </div>
+    <div class="card" style="text-align:left">
+      <div class="icon-sq purple" style="margin:0 0 12px 0">🔮</div>
+      <div style="font-weight:800;font-size:17px;color:#2D2D2D;margin-bottom:8px">Obsidian</div>
+      <div class="text-sm">本地儲存、隨身攜帶<br>雙向連結筆記<br>內建知識圖譜視覺化</div>
+    </div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,rgba(44,197,181,0.08),rgba(139,92,246,0.08));border:1px solid rgba(44,197,181,0.2)">
+    <div style="font-size:15px;font-weight:700;color:#2D2D2D;margin-bottom:8px">📌 知識庫的核心原則</div>
+    <div class="text-sm">
+      知識庫需為你量身定制：<strong style="color:#2CC5B5">個人化</strong>、<strong style="color:#8B5CF6">主題化</strong><br>
+      不是儲存所有資訊，而是儲存對你有意義的知識
+    </div>
+  </div>
+  <div style="margin-top:12px;border:2px solid #8B5CF6;border-radius:14px;padding:12px 20px;background:rgba(139,92,246,0.05)">
+    <span style="font-size:15px;font-weight:700;color:#8B5CF6">🎯 推薦工具：Obsidian 隨身學習 · 內建知識圖譜</span>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P7  一(五) 複習測驗 + C.O.D.E. 框架介紹
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;margin-bottom:18px">
+    <div class="card" style="text-align:left">
+      <div class="badge" style="margin-bottom:10px">一、(五) 複習與測驗</div>
+      <div style="font-size:16px;font-weight:800;color:#2D2D2D;margin-bottom:8px">📝 出測驗題強化記憶</div>
+      <div class="text-sm">讓 AI 生成練習題<br>刷題強化學習成效</div>
+      <div class="text-xs" style="margin-top:10px;color:#F5A623;font-weight:700">🎯 Gemini + Canva 寫程式刷題</div>
+    </div>
+    <div class="card" style="background:linear-gradient(135deg,#2CC5B5,#2D9CDB);color:white;text-align:center">
+      <div style="font-size:13px;font-weight:600;opacity:0.85;margin-bottom:8px">二、實作框架</div>
+      <div style="font-size:26px;font-weight:900;margin-bottom:4px">C.O.D.E.</div>
+      <div style="font-size:13px;opacity:0.85">知識學習框架</div>
+      <div style="font-size:12px;margin-top:10px;opacity:0.75">以 Harness Engineering 為例</div>
+    </div>
+  </div>
+  <div class="four-col">
+    <div style="background:white;border-radius:16px;padding:18px 12px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.07)">
+      <div class="code-letter teal">C</div>
+      <div style="font-size:11px;color:#999;margin:4px 0">Capture</div>
+      <div style="font-size:13px;color:#555;font-weight:600">收集</div>
+      <div class="text-xs" style="margin-top:6px">官網 / 權威來源</div>
+    </div>
+    <div style="background:white;border-radius:16px;padding:18px 12px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.07)">
+      <div class="code-letter orange">O</div>
+      <div style="font-size:11px;color:#999;margin:4px 0">Organize</div>
+      <div style="font-size:13px;color:#555;font-weight:600">組織</div>
+      <div class="text-xs" style="margin-top:6px">問答 / 心智圖 / 圖表</div>
+    </div>
+    <div style="background:white;border-radius:16px;padding:18px 12px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.07)">
+      <div class="code-letter" style="color:#8B5CF6">D</div>
+      <div style="font-size:11px;color:#999;margin:4px 0">Distill</div>
+      <div style="font-size:13px;color:#555;font-weight:600">消化</div>
+      <div class="text-xs" style="margin-top:6px">語音 / 影片摘要</div>
+    </div>
+    <div style="background:white;border-radius:16px;padding:18px 12px;text-align:center;box-shadow:0 4px 16px rgba(0,0,0,0.07)">
+      <div class="code-letter red">E</div>
+      <div style="font-size:11px;color:#999;margin:4px 0">Express</div>
+      <div style="font-size:13px;color:#555;font-weight:600">表達</div>
+      <div class="text-xs" style="margin-top:6px">生成簡報 / 影片</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P8  Capture 方式A 工具比較
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">C — Capture 收集 · 方式 A</div>
+  <div class="section-title">善用<span class="title-accent">深入研究（Deep Research）</span></div>
+  <div class="card" style="padding:20px 24px;margin-bottom:14px">
+    <table class="c-table">
+      <tr>
+        <th>工具</th>
+        <th>建議</th>
+        <th>原因</th>
+      </tr>
+      <tr>
+        <td><strong>NotebookLM</strong></td>
+        <td class="norec">❌ 不建議</td>
+        <td>搜尋範圍不易控制、來源品質需人工另行把關</td>
+      </tr>
+      <tr>
+        <td><strong>Gemini</strong></td>
+        <td class="rec">✅ 建議</td>
+        <td>品質較佳，較容易調整 Deep Research 的研究方向</td>
+      </tr>
+    </table>
+  </div>
+  <div class="two-col">
+    <div style="background:rgba(229,57,53,0.07);border-radius:16px;padding:18px;text-align:left">
+      <div class="tool-pill nblm">NotebookLM</div>
+      <div style="font-size:13px;font-weight:700;color:#E53935;margin-bottom:6px">❌ Deep Research</div>
+      <div class="text-xs">搜尋範圍難以精確控制<br>來源品質需手動把關</div>
+    </div>
+    <div style="background:rgba(44,197,181,0.08);border-radius:16px;padding:18px;text-align:left">
+      <div class="tool-pill gemini">Gemini</div>
+      <div style="font-size:13px;font-weight:700;color:#2CC5B5;margin-bottom:6px">⭕ Deep Research</div>
+      <div class="text-xs">品質較 NotebookLM 好<br>容易調整研究方向</div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P9  Capture Step 1 — 詢問如何詢問
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">C — Capture · Step 1</div>
+  <div class="section-title">先問 Gemini：<span class="title-accent">「如何詢問？」</span></div>
+  <div class="card" style="text-align:left;padding:18px 22px;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div class="tool-pill gemini">Gemini</div>
+      <span class="text-xs">不知道從何下手時，先讓 AI 告訴你怎麼問</span>
+    </div>
+    <div class="code-header">
+      <div class="code-dot" style="background:#FF5F56"></div>
+      <div class="code-dot" style="background:#FFBD2E"></div>
+      <div class="code-dot" style="background:#27C93F"></div>
+      <span style="color:#6C7086;font-size:12px;margin-left:6px">prompt</span>
+    </div>
+    <div class="code-block" style="border-radius:0 0 12px 12px">[有人說 prompt engineering 已進化至 harness engineering
+什麼是 harness engineering]
+
+如果你是一個 AI 時代的專家，想學習它的[核心與實作方式]
+你會建議我如何運用 Gemini 或 NotebookLM 以 Deep Research 進行收集資料
+
+針對各 prompt 的部份請提供我 markdown code 以利複製運用</div>
+  </div>
+  <div class="highlight-box">
+    <span style="font-size:14px;color:#2CC5B5;font-weight:700">💡 技巧：</span>
+    <span class="text-sm">不知道主題就讓 AI 幫你設計 Prompt，再把 AI 產出的 Prompt 拿去用！</span>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P10  Capture Step 2 — Gemini Deep Research
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">C — Capture · Step 2</div>
+  <div class="section-title">Gemini <span class="title-accent">Deep Research</span> 深度研究</div>
+  <div class="card" style="text-align:left;padding:18px 22px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div class="tool-pill gemini">Gemini Deep Research</div>
+      <span class="text-xs">以下 Prompt 由上一步 AI 自動生成</span>
+    </div>
+    <div class="code-header">
+      <div class="code-dot" style="background:#FF5F56"></div>
+      <div class="code-dot" style="background:#FFBD2E"></div>
+      <div class="code-dot" style="background:#27C93F"></div>
+      <span style="color:#6C7086;font-size:12px;margin-left:6px">prompt</span>
+    </div>
+    <div class="code-block" style="border-radius:0 0 12px 12px;max-height:220px"># Role
+你是一位資深的 AI 系統架構師與技術觀察家。
+
+# Task
+請針對 "Harness Engineering in LLM" 進行深度研究（Deep Research），協助我掌握其核心技術脈絡。
+
+# Research Scope
+1. 定義與起源：Harness Engineering 在 AI 領域的精確定義，以及它為何取代/演化自 Prompt Engineering？
+2. 核心組成：包含哪些技術組件？（例如：Eval Frameworks, Prompt Versioning, Automated Testing, Guardrails）
+3. 主流工具與框架：目前業界主流的 Harness 工具（如 LangSmith, Promptfoo, DeepEval 等）
+4. 實作範例：提供一個從「撰寫 Prompt」到「建立 Harness 測試流程」的邏輯對比。
+
+# Output Requirement
+請以結構化的方式呈現，並大量引用最新技術文獻或部落格觀點，請列出參考來源。</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P11  Capture Step 3 + 4
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">C — Capture · Step 3 &amp; 4</div>
+  <div class="section-title">取得純網址 → <span class="title-accent">匯入 NotebookLM</span></div>
+  <div class="two-col">
+    <div style="text-align:left">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div class="step-bubble" style="margin:0">3</div>
+        <div class="tool-pill gemini">Gemini</div>
+        <span class="text-xs">取得文獻純網址</span>
+      </div>
+      <div class="code-header">
+        <div class="code-dot" style="background:#FF5F56"></div>
+        <div class="code-dot" style="background:#FFBD2E"></div>
+        <div class="code-dot" style="background:#27C93F"></div>
+      </div>
+      <div class="code-block" style="border-radius:0 0 12px 12px;font-size:11.5px">將以上找到的資料來源
+提供我純網址（URL）
+讓我可直接複製到 NotebookLM
+
+只要網址列表
+（每個網址間有換行）
+不要有前後文</div>
+    </div>
+    <div style="text-align:left">
+      <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+        <div class="step-bubble" style="margin:0">4</div>
+        <div class="tool-pill nblm">NotebookLM</div>
+        <span class="text-xs">匯入文獻網址</span>
+      </div>
+      <div style="background:white;border-radius:14px;padding:18px;box-shadow:0 4px 16px rgba(0,0,0,0.07);height:calc(100% - 36px)">
+        <div style="font-size:14px;font-weight:700;color:#2D2D2D;margin-bottom:10px">📒 匯入 NotebookLM</div>
+        <div class="text-xs" style="line-height:1.9;margin-bottom:10px">新增來源 → 「網站網址」</div>
+        <div class="warn-box" style="margin-top:0">
+          <div style="font-size:12px;font-weight:700;color:#E53935;margin-bottom:4px">⚠️ 嚴格限制</div>
+          <div class="text-xs">只能接受純 URL<br>不能包含標題、連結文字<br>或 Markdown 符號（- 或 []）</div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P12  Capture 方式B + 小結
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">C — Capture · 方式 B &amp; 小結</div>
+  <div class="section-title">方式 B：<span class="title-accent">主動鎖定</span>官網與權威網站</div>
+  <div class="two-col" style="margin-bottom:14px">
+    <div class="card" style="text-align:left;padding:18px 20px">
+      <div class="tool-pill gemini" style="margin-bottom:8px">Step 1 · Gemini</div>
+      <div style="font-size:14px;font-weight:700;color:#2D2D2D;margin-bottom:8px">搜尋官方與 KOL 來源</div>
+      <div class="text-xs" style="line-height:1.8">依官方網站、Blog 及該領域權威 KOL 發佈的內容，提供標題與連結，並整理為純 URL 格式</div>
+    </div>
+    <div class="card" style="text-align:left;padding:18px 20px">
+      <div class="tool-pill nblm" style="margin-bottom:8px">Step 2 · NotebookLM</div>
+      <div style="font-size:14px;font-weight:700;color:#2D2D2D;margin-bottom:8px">匯入文獻網址</div>
+      <div class="text-xs" style="line-height:1.8">將純 URL 貼入 NotebookLM 的「網站網址」輸入框，作為後續學習的知識來源</div>
+    </div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,rgba(44,197,181,0.06),rgba(245,166,35,0.06));border:1px solid rgba(44,197,181,0.18)">
+    <div style="font-size:14px;font-weight:700;color:#2D2D2D;margin-bottom:12px">📊 Capture 工具表現排名（由高→低）</div>
+    <div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;justify-content:center">
+      <span class="rank-pill" style="background:#2CC5B5">🥇 Gemini Deep Research</span>
+      <span style="color:#ccc;font-size:20px">›</span>
+      <span class="rank-pill" style="background:#F5A623">🥈 NotebookLM Deep Research</span>
+      <span style="color:#ccc;font-size:20px">›</span>
+      <span class="rank-pill" style="background:#888">🥉 Gemini 搜尋權威來源</span>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P13  Organize 問答+心智圖+資訊圖表A
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">O — Organize 組織</div>
+  <div class="section-title">用 NotebookLM<span class="title-accent">三步驟組織知識</span></div>
+  <div class="three-col" style="margin-bottom:12px">
+    <div class="card" style="text-align:left;padding:18px">
+      <div class="icon-sq teal" style="margin:0 0 10px 0">💬</div>
+      <div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:6px">① 簡易問答</div>
+      <div class="text-xs" style="line-height:1.8">核心概念為何？<br>與傳統的差異？<br>如何實作？</div>
+    </div>
+    <div class="card" style="text-align:left;padding:18px">
+      <div class="icon-sq orange" style="margin:0 0 10px 0">🗺️</div>
+      <div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:6px">② 心智圖</div>
+      <div class="text-xs" style="line-height:1.8">視覺化整體架構<br>快速掌握主題全貌<br>建立知識脈絡層次</div>
+    </div>
+    <div class="card" style="text-align:left;padding:18px">
+      <div class="icon-sq purple" style="margin:0 0 10px 0">📊</div>
+      <div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:6px">③ 資訊圖表 A</div>
+      <div class="text-xs" style="line-height:1.8">切入點：5W1H<br>What / Why / Who<br>When / Where / How</div>
+    </div>
+  </div>
+  <div style="text-align:left">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="tool-pill nblm">NotebookLM</div>
+      <span class="text-xs">資訊圖表 A — 5W1H 框架 Prompt</span>
+    </div>
+    <div class="code-header">
+      <div class="code-dot" style="background:#FF5F56"></div>
+      <div class="code-dot" style="background:#FFBD2E"></div>
+      <div class="code-dot" style="background:#27C93F"></div>
+    </div>
+    <div class="code-block" style="border-radius:0 0 12px 12px;max-height:120px;font-size:11.5px">你是一位資深 AI 產品專家，專長是使用 5W1H 框架，對新出現的 AI 技術進行結構化、具象化、可落地的拆解與分析。目標是幫助用戶快速形成可操作的理解模型。</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P14  Organize 資訊圖表B + 小結
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">O — Organize 組織 · 資訊圖表 B &amp; 小結</div>
+  <div class="section-title">用<span class="title-accent">自媒體博主視角</span>梳理重點</div>
+  <div style="text-align:left;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="tool-pill nblm">NotebookLM</div>
+      <span class="text-xs">資訊圖表 B — 自媒體博主角度（可指定可愛風格）</span>
+    </div>
+    <div class="code-header">
+      <div class="code-dot" style="background:#FF5F56"></div>
+      <div class="code-dot" style="background:#FFBD2E"></div>
+      <div class="code-dot" style="background:#27C93F"></div>
+    </div>
+    <div class="code-block" style="border-radius:0 0 12px 12px;font-size:11.5px">你現在是一位 AI 自媒體博主的專業助理，請幫我梳理這些資料裡的所有核心觀點和方法論，特別是那些能夠直接幫助我[提升 AI 學習的實作技巧]，請用重點和表格的形式列出來</div>
+  </div>
+  <div class="two-col">
+    <div style="background:rgba(44,197,181,0.08);border-radius:14px;padding:16px;text-align:left">
+      <div style="font-size:13px;font-weight:700;color:#2CC5B5;margin-bottom:8px">🎯 Organize 的目的</div>
+      <div class="text-xs" style="line-height:1.9">
+        ① 透過<strong>問答對話</strong>，得到一言以蔽之的核心觀念<br>
+        ② 透過<strong>心智圖、資訊圖表</strong>，掌握整體架構
+      </div>
+    </div>
+    <div style="background:rgba(245,166,35,0.09);border-radius:14px;padding:16px;text-align:left">
+      <div style="font-size:13px;font-weight:700;color:#F5A623;margin-bottom:8px">💡 延伸效果</div>
+      <div class="text-xs" style="line-height:1.9">
+        資訊圖表其實也已經開始<br>
+        協助你踏出<br>
+        <strong>學習內化（Distill）</strong>的第一步！
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P15  Distill 消化
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">D — Distill 消化</div>
+  <div class="section-title">用 NotebookLM<span class="title-accent">深度內化知識</span></div>
+  <div class="three-col" style="margin-bottom:14px">
+    <div class="card" style="padding:18px">
+      <div class="step-bubble">1</div>
+      <div class="icon-sq orange" style="margin:0 auto 8px">🎙️</div>
+      <div style="font-weight:800;font-size:14px;color:#2D2D2D;margin-bottom:6px">語音摘要</div>
+      <div class="text-xs">生成 Podcast 格式<br>散步 / 通勤時聆聽<br>輕鬆吸收精華</div>
+    </div>
+    <div class="card" style="padding:18px">
+      <div class="step-bubble">2</div>
+      <div class="icon-sq purple" style="margin:0 auto 8px">🎬</div>
+      <div style="font-weight:800;font-size:14px;color:#2D2D2D;margin-bottom:6px">影片摘要</div>
+      <div class="text-xs">生成影片腳本<br>搭配視覺呈現<br>同步眼耳學習</div>
+    </div>
+    <div class="card" style="padding:18px">
+      <div class="step-bubble">3</div>
+      <div class="icon-sq teal" style="margin:0 auto 8px">🔍</div>
+      <div style="font-weight:800;font-size:14px;color:#2D2D2D;margin-bottom:6px">深入問答</div>
+      <div class="text-xs">針對疑惑深入追問<br>有價值的答案<br><strong>儲存至記事</strong></div>
+    </div>
+  </div>
+  <div style="text-align:left">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px">
+      <div class="tool-pill nblm">NotebookLM</div>
+      <span class="text-xs">深入問答範例 Prompt</span>
+    </div>
+    <div class="code-header">
+      <div class="code-dot" style="background:#FF5F56"></div>
+      <div class="code-dot" style="background:#FFBD2E"></div>
+      <div class="code-dot" style="background:#27C93F"></div>
+    </div>
+    <div class="code-block" style="border-radius:0 0 12px 12px;font-size:11.5px">為什麼說[從 Context Engineering 進化至 Harness Engineering]？
+請幫我詳細解釋兩者之間的關鍵區別和關聯</div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P16  Express 表達 — 簡報
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">E — Express 表達 · Step 1</div>
+  <div class="section-title">生成<span class="title-accent">簡報</span>向他人分享</div>
+  <div class="card" style="text-align:left;padding:18px 22px;margin-bottom:12px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div class="tool-pill nblm">NotebookLM</div>
+      <span class="text-xs">生成簡報 Prompt</span>
+    </div>
+    <div class="code-header">
+      <div class="code-dot" style="background:#FF5F56"></div>
+      <div class="code-dot" style="background:#FFBD2E"></div>
+      <div class="code-dot" style="background:#27C93F"></div>
+    </div>
+    <div class="code-block" style="border-radius:0 0 12px 12px;font-size:11.5px">你現在是一位 AI 自媒體博主的專業助理，面對非技術背景的業務類型同仁，請你用淺白、舉例的方式說明[Harness Engineering]的主要重點。後續才讓業務類型同仁能跟資訊同仁有效溝通，最後才用簡單的 2 頁說明技術重點</div>
+  </div>
+  <div class="two-col">
+    <div style="background:rgba(44,197,181,0.08);border-radius:14px;padding:14px 16px;text-align:left">
+      <div style="font-size:13px;font-weight:700;color:#2CC5B5;margin-bottom:6px">✅ 簡報結構建議</div>
+      <div class="text-xs" style="line-height:1.9">
+        第一部分：白話說明（業務向）<br>
+        第二部分：溝通橋樑（業務 ↔ 技術）<br>
+        第三部分：技術重點（2 頁精華）
+      </div>
+    </div>
+    <div style="background:rgba(245,166,35,0.09);border-radius:14px;padding:14px 16px;text-align:left">
+      <div style="font-size:13px;font-weight:700;color:#F5A623;margin-bottom:6px">💡 設計原則</div>
+      <div class="text-xs" style="line-height:1.9">
+        先淺後深，循序漸進<br>
+        以具體例子帶入概念<br>
+        讓技術與業務能有效對話
+      </div>
+    </div>
+  </div>
+</div>
+</section>
+
+<!-- ═══════════════════════════════════
+     P17  Express 表達 — 影片摘要 + 結語
+═══════════════════════════════════ -->
+<section class="slide">
+<div class="slide-content">
+  <div class="badge-teal">E — Express 表達 · Step 2</div>
+  <div class="section-title">生成<span class="title-accent">影片摘要</span>擴大影響力</div>
+  <div class="card" style="text-align:left;padding:18px 22px;margin-bottom:14px">
+    <div style="display:flex;align-items:center;gap:8px;margin-bottom:8px">
+      <div class="tool-pill nblm">NotebookLM</div>
+      <span class="text-xs">生成影片摘要 Prompt（同簡報）</span>
+    </div>
+    <div class="code-header">
+      <div class="code-dot" style="background:#FF5F56"></div>
+      <div class="code-dot" style="background:#FFBD2E"></div>
+      <div class="code-dot" style="background:#27C93F"></div>
+    </div>
+    <div class="code-block" style="border-radius:0 0 12px 12px;font-size:11.5px">你現在是一位 AI 自媒體博主的專業助理，面對非技術背景的業務類型同仁，請你用淺白、舉例的方式說明[Harness Engineering]的主要重點。後續才讓業務類型同仁能跟資訊同仁有效溝通，最後才用簡單的 2 頁說明技術重點</div>
+  </div>
+  <div class="card" style="background:linear-gradient(135deg,#2CC5B5,#8B5CF6);color:white;padding:22px">
+    <div style="font-size:16px;font-weight:900;margin-bottom:10px">🚀 C.O.D.E. 完整學習閉環</div>
+    <div style="display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;font-size:13px;font-weight:700">
+      <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:4px 12px">📥 Capture 收集</span>
+      <span style="opacity:0.7">→</span>
+      <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:4px 12px">🗂️ Organize 組織</span>
+      <span style="opacity:0.7">→</span>
+      <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:4px 12px">🎧 Distill 消化</span>
+      <span style="opacity:0.7">→</span>
+      <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:4px 12px">🎤 Express 表達</span>
+    </div>
+    <div style="font-size:13px;margin-top:12px;opacity:0.85">從收集到表達，讓知識真正成為你自己的能力</div>
+  </div>
+</div>
+</section>
+
+<!-- 頁腳 -->
+<footer class="slide-footer">🐻 林熊熊分享</footer>
+
+<!-- 導覽列 -->
+<nav class="nav-bar">
+  <button class="nav-btn" id="prevBtn">‹</button>
+  <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
+  <span style="color:#ccc">/</span>
+  <span id="totalPages" style="font-size:15px;color:#999"></span>
+  <button class="nav-btn" id="nextBtn">›</button>
+</nav>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const totalPagesEl  = document.getElementById('totalPages');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let current = 0;
+  totalPagesEl.textContent = slides.length;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    updateIndicator();
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+  }
+  function updateIndicator() { pageIndicator.textContent = current + 1; }
+
+  pageIndicator.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'number'; input.min = 1; input.max = slides.length;
+    input.value = current + 1; input.className = 'page-jump-input';
+    pageIndicator.replaceWith(input); input.select();
+    function commit() {
+      const n = parseInt(input.value, 10);
+      input.replaceWith(pageIndicator);
+      if (!isNaN(n)) goTo(n - 1); else updateIndicator();
+    }
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter')  { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { input.replaceWith(pageIndicator); updateIndicator(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+    });
+    input.addEventListener('blur', commit);
+    input.addEventListener('input', () => {
+      if (input.value < 1) input.value = 1;
+      if (input.value > slides.length) input.value = slides.length;
+    });
+  });
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+  goTo(0);
+</script>
+</body>
+</html>
