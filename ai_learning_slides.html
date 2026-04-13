@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>運用 AI 學習新知識領域 — Google 工具為例</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&family=JetBrains+Mono:wght@400;600&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans TC", "PingFang TC", sans-serif;
+      background: #F8F6F1; min-height: 100vh; overflow: hidden;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.045) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.045) 1px, transparent 1px);
+      background-size: 40px 40px; pointer-events: none; z-index: 0;
+    }
+    .slideshow {
+      position: relative; width: 100vw; height: 100vh;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .slide {
+      position: absolute; inset: 0; display: none;
+      align-items: center; justify-content: center;
+      padding: 26px 20px 88px; z-index: 1;
+    }
+    .slide.active { display: flex; }
+    .sc { max-width: 900px; width: 100%; text-align: center; }
+    @keyframes fadeIn { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+    .slide.active .sc { animation: fadeIn .3s ease; }
+
+    /* Nav */
+    .nav-bar {
+      position: fixed; bottom: 25px; left: 50%; transform: translateX(-50%);
+      display: flex; align-items: center; gap: 15px;
+      background: white; border-radius: 50px; padding: 8px 24px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.11); z-index: 100;
+    }
+    .nb {
+      background: none; border: none; font-size: 22px; color: #2D2D2D;
+      cursor: pointer; width: 32px; height: 32px; border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background .2s;
+    }
+    .nb:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nb:disabled { color: #ccc; cursor: default; }
+    .nb:disabled:hover { background: none; }
+    .pi {
+      font-size: 14px; color: #666; min-width: 55px; text-align: center;
+      cursor: pointer; border-radius: 8px; padding: 2px 5px;
+      transition: background .15s; user-select: none;
+    }
+    .pi:hover { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+    .pji {
+      width: 44px; border: 2px solid #2CC5B5; border-radius: 8px;
+      font-size: 14px; font-weight: 700; text-align: center;
+      color: #2D2D2D; background: white; outline: none; padding: 2px 3px;
+    }
+    .ft {
+      position: fixed; bottom: 16px; right: 22px;
+      font-size: 13px; font-weight: 600; color: #bbb;
+      z-index: 99; user-select: none; white-space: nowrap;
+    }
+
+    /* ── Design tokens ── */
+    .bdg  { display:inline-block; background:rgba(245,166,35,.15);  color:#F5A623; border-radius:20px; padding:5px 16px; font-size:12.5px; font-weight:600; margin-bottom:15px; }
+    .bdgt { display:inline-block; background:rgba(44,197,181,.15);  color:#2CC5B5; border-radius:20px; padding:5px 16px; font-size:12.5px; font-weight:600; margin-bottom:15px; }
+    .bdgp { display:inline-block; background:rgba(139,92,246,.15);  color:#8B5CF6; border-radius:20px; padding:5px 16px; font-size:12.5px; font-weight:600; margin-bottom:15px; }
+    .bdgr { display:inline-block; background:rgba(229,57,53,.12);   color:#E53935; border-radius:20px; padding:5px 16px; font-size:12.5px; font-weight:600; margin-bottom:15px; }
+
+    .ttl { font-size:clamp(30px,5vw,54px); font-weight:900; color:#2D2D2D; line-height:1.2; margin-bottom:12px; }
+    .stl { font-size:clamp(18px,3vw,30px); font-weight:900; color:#2D2D2D; margin-bottom:17px; line-height:1.3; }
+    .acc{color:#2CC5B5} .ora{color:#F5A623} .pur{color:#8B5CF6} .red{color:#E53935}
+
+    .cd { background:white; border-radius:18px; padding:20px 22px; box-shadow:0 4px 18px rgba(0,0,0,0.07); }
+    .ic  { width:60px;height:60px;border-radius:50%;  display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 12px; }
+    .isq { width:44px;height:44px;border-radius:12px; display:flex;align-items:center;justify-content:center;font-size:20px;color:white;margin-bottom:9px; }
+    .ic.t{background:rgba(44,197,181,.13)} .ic.o{background:rgba(245,166,35,.13)}
+    .ic.p{background:rgba(139,92,246,.13)} .ic.r{background:rgba(229,57,53,.10)}
+    .ic.b{background:rgba(59,130,246,.13)}
+    .isq.t{background:#2CC5B5} .isq.o{background:#F5A623}
+    .isq.p{background:#8B5CF6} .isq.r{background:#E53935} .isq.b{background:#3B82F6}
+
+    .g2{display:grid;grid-template-columns:repeat(2,1fr);gap:13px}
+    .g3{display:grid;grid-template-columns:repeat(3,1fr);gap:13px}
+    .g4{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+
+    .pos{border-radius:15px;padding:17px;background:rgba(44,197,181,.08)}
+    .neg{border-radius:15px;padding:17px;background:rgba(229,57,53,.07)}
+
+    .hb { background:rgba(44,197,181,.07); border-left:4px solid #2CC5B5; border-radius:0 11px 11px 0; padding:10px 15px; text-align:left; margin-top:9px; }
+    .wb { background:rgba(229,57,53,.07);  border-left:4px solid #E53935;  border-radius:0 11px 11px 0; padding:10px 15px; text-align:left; margin-top:9px; }
+    .gb { background:rgba(245,166,35,.08); border-left:4px solid #F5A623;  border-radius:0 11px 11px 0; padding:10px 15px; text-align:left; margin-top:9px; }
+
+    .tp { display:inline-block; border-radius:7px; padding:3px 9px; font-size:11px; font-weight:700; color:white; margin-bottom:6px; }
+    .tp.g{background:#4285F4} .tp.n{background:#F5A623} .tp.ob{background:#8B5CF6} .tp.or{background:#FF6B35}
+
+    .sb { width:27px;height:27px;border-radius:50%;background:#2CC5B5;color:white;font-weight:800;font-size:12px; display:flex;align-items:center;justify-content:center;margin:0 auto 8px;flex-shrink:0; }
+
+    .cw { text-align:left; }
+    .ch { display:flex;align-items:center;gap:6px;background:#181825;border-radius:11px 11px 0 0;padding:7px 14px; }
+    .dot{ width:8px;height:8px;border-radius:50%; }
+    .cb {
+      background:#1E1E2E; border-radius:0 0 11px 11px;
+      padding:12px 15px; font-family:"JetBrains Mono","Courier New",monospace;
+      font-size:11px; line-height:1.7; color:#CDD6F4;
+      white-space:pre-wrap; word-break:break-word;
+      max-height:175px; overflow-y:auto;
+    }
+    .cb::-webkit-scrollbar{width:4px}
+    .cb::-webkit-scrollbar-thumb{background:#45475A;border-radius:4px}
+
+    .xs{font-size:12px;color:#666;line-height:1.6}
+    .sm{font-size:13.5px;color:#555;line-height:1.65}
+    .fw7{font-weight:700} .fw9{font-weight:900}
+    .tl{text-align:left} .ct{text-align:center}
+    .mt8{margin-top:8px} .mt12{margin-top:12px} .mt15{margin-top:15px}
+
+    .tbl{width:100%;border-collapse:collapse;font-size:12.5px;text-align:left}
+    .tbl th{background:#2D2D2D;color:white;padding:8px 13px;font-weight:700}
+    .tbl th:first-child{border-radius:10px 0 0 0} .tbl th:last-child{border-radius:0 10px 0 0}
+    .tbl td{padding:8px 13px;border-bottom:1px solid rgba(0,0,0,0.05);vertical-align:top}
+    .tbl tr:nth-child(even) td{background:rgba(0,0,0,0.02)}
+    .ok{color:#2CC5B5;font-weight:700} .no{color:#E53935;font-weight:700}
+
+    .cl{font-size:38px;font-weight:900;line-height:1}
+    .rp{display:inline-flex;align-items:center;gap:5px;border-radius:20px;padding:4px 11px;font-size:11.5px;font-weight:700;color:white}
+
+    /* tag row */
+    .tag-row{display:flex;gap:8px;flex-wrap:wrap;margin-bottom:10px;align-items:center}
+  </style>
+</head>
+<body>
+<div class="slideshow">
+
+<!-- ══════════════════════════════════
+  P01  封面
+══════════════════════════════════ -->
+<section class="slide active"><div class="sc">
+  <div class="bdg">🤖 2026 AI 學習方法論</div>
+  <div class="ttl">運用 AI<br><span class="acc">學習新知識領域</span></div>
+  <p style="font-size:16px;color:#666;margin-bottom:22px">以 Google 系列工具為例</p>
+  <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin-bottom:20px">
+    <div style="background:white;border-radius:40px;padding:7px 16px;box-shadow:0 2px 10px rgba(0,0,0,0.08);display:flex;align-items:center;gap:6px"><span>📒</span><span style="font-size:13px;font-weight:700">NotebookLM</span></div>
+    <div style="background:white;border-radius:40px;padding:7px 16px;box-shadow:0 2px 10px rgba(0,0,0,0.08);display:flex;align-items:center;gap:6px"><span>✨</span><span style="font-size:13px;font-weight:700">Gemini</span></div>
+    <div style="background:white;border-radius:40px;padding:7px 16px;box-shadow:0 2px 10px rgba(0,0,0,0.08);display:flex;align-items:center;gap:6px"><span>🔮</span><span style="font-size:13px;font-weight:700">Obsidian</span></div>
+  </div>
+  <div class="g4">
+    <div style="background:white;border-radius:13px;padding:14px 8px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,0.07)"><div class="cl acc">C</div><div style="font-size:10px;color:#999;margin:3px 0">Capture</div><div class="xs fw7">收集</div></div>
+    <div style="background:white;border-radius:13px;padding:14px 8px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,0.07)"><div class="cl ora">O</div><div style="font-size:10px;color:#999;margin:3px 0">Organize</div><div class="xs fw7">組織</div></div>
+    <div style="background:white;border-radius:13px;padding:14px 8px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,0.07)"><div class="cl pur">D</div><div style="font-size:10px;color:#999;margin:3px 0">Distill</div><div class="xs fw7">消化</div></div>
+    <div style="background:white;border-radius:13px;padding:14px 8px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,0.07)"><div class="cl red">E</div><div style="font-size:10px;color:#999;margin:3px 0">Express</div><div class="xs fw7">表達</div></div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P02  零、課前準備（第一個 --- 之前）
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdg">零、課前準備</div>
+  <div class="stl">開始前請備妥這兩項工具</div>
+  <div class="g2">
+    <div class="cd tl">
+      <div class="ic p" style="margin:0 0 11px 0">🔮</div>
+      <div style="font-size:18px;font-weight:900;color:#2D2D2D;margin-bottom:5px">Obsidian</div>
+      <div class="xs" style="margin-bottom:10px">免費下載安裝</div>
+      <div style="background:rgba(139,92,246,0.08);border-radius:11px;padding:10px 13px">
+        <div class="xs" style="line-height:1.9">🗺️ 個人知識庫管理<br>🔗 雙向連結筆記<br>📊 內建知識圖譜視覺化<br>📱 多裝置同步</div>
+      </div>
+    </div>
+    <div class="cd tl">
+      <div class="ic o" style="margin:0 0 11px 0">✨</div>
+      <div style="font-size:18px;font-weight:900;color:#2D2D2D;margin-bottom:5px">Google Gemini</div>
+      <div class="xs" style="color:#E53935;font-weight:700;margin-bottom:10px">⬆️ 建議付費版</div>
+      <div style="background:rgba(245,166,35,0.09);border-radius:11px;padding:10px 13px">
+        <div class="xs" style="line-height:1.9">✅ Google Drive <strong>5 TB</strong><br>✅ NotebookLM 付費版<br>✅ Google Office 全家桶<br>✅ AI 用量與智力截然不同</div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P03  一(一) 開始學習的第一步
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdg">一、領域學習底層邏輯 · (一)</div>
+  <div class="stl">開始學習的第一步：<span class="acc">找對來源</span></div>
+  <div class="g2">
+    <div class="neg tl">
+      <div style="font-size:12px;color:#999;margin-bottom:8px">❌ 傳統作法</div>
+      <div style="font-size:14px;font-weight:900;color:#E53935;margin-bottom:11px">Google 關鍵字 · YouTube · AI 搜尋</div>
+      <div class="xs" style="line-height:1.9">⚠️ 關鍵字只代表碎片化知識<br>⚠️ 個人影片或網站 = 個人觀點<br>⚠️ 人也有幻覺、也會理解錯誤</div>
+    </div>
+    <div class="pos tl">
+      <div style="font-size:12px;color:#999;margin-bottom:8px">✅ AI 時代作法</div>
+      <div style="font-size:14px;font-weight:900;color:#2CC5B5;margin-bottom:11px">官方網站 · 權威來源</div>
+      <div class="xs" style="line-height:1.9">🎯 從關鍵字的「點」→「線」→「面」<br>📖 先看章節架構 → 再深入主題<br>🗺️ 心智圖 · 知識圖譜（Knowledge Graph）</div>
+    </div>
+  </div>
+  <div style="margin-top:13px;border:2px solid #2CC5B5;border-radius:12px;padding:11px 18px;background:rgba(44,197,181,0.05)">
+    <span style="font-size:13.5px;font-weight:700;color:#2CC5B5">🎯 推薦工具：NotebookLM + Gemini 整理知識框架</span>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P04  一(二) 透過不同方式增強學習
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdg">一、領域學習底層邏輯 · (二)</div>
+  <div class="stl">透過不同感官<span class="acc">增強學習效果</span></div>
+  <div class="g3">
+    <div class="cd"><div class="ic t">👁️</div><div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:7px">眼 · 視覺</div><div class="xs">閱讀文字<br>知識框架<br>資訊圖表（以圖代文）</div></div>
+    <div class="cd"><div class="ic o">👂</div><div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:7px">耳 · 聽覺</div><div class="xs">純聲音格式<br>散步時也可<br>邊走邊學習</div></div>
+    <div class="cd"><div class="ic p">🎬</div><div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:7px">眼+耳 · 影音</div><div class="xs">簡報影音格式<br>視覺聽覺<br>同步輸入</div></div>
+  </div>
+  <div style="margin-top:13px;border:2px solid #2CC5B5;border-radius:12px;padding:11px 18px;background:rgba(44,197,181,0.05)">
+    <span style="font-size:13.5px;font-weight:700;color:#2CC5B5">🎯 推薦工具：NotebookLM 生成各種格式（摘要 · Podcast · 簡報）</span>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P05  一(三) 疑惑不明的解決方式
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdg">一、領域學習底層邏輯 · (三)</div>
+  <div class="stl">看不懂？<span class="acc">三招化解疑惑</span></div>
+  <div class="g3">
+    <div class="cd"><div class="ic t">💬</div><div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:7px">換白話</div><div class="xs">請 AI 用更口語化的方式重新解釋</div></div>
+    <div class="cd"><div class="ic o">💡</div><div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:7px">舉例說明</div><div class="xs">要求生活化具體的情境範例</div></div>
+    <div class="cd"><div class="ic p">🎨</div><div style="font-weight:800;font-size:15px;color:#2D2D2D;margin-bottom:7px">圖解視覺化</div><div class="xs">圖解是最好的方式之一，以圖代文</div></div>
+  </div>
+  <div style="margin-top:13px;border:2px solid #F5A623;border-radius:12px;padding:11px 18px;background:rgba(245,166,35,0.05)">
+    <span style="font-size:13.5px;font-weight:700;color:#F5A623">🎯 推薦工具：Gemini Gem 提供解答 · Banana 提供圖解</span>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P06  一(四) 建立知識庫
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdg">一、領域學習底層邏輯 · (四)</div>
+  <div class="stl">建立<span class="acc">專屬個人知識庫</span></div>
+  <div class="g2" style="margin-bottom:13px">
+    <div class="cd tl">
+      <div class="isq o" style="margin:0 0 9px 0">📒</div>
+      <div style="font-size:16px;font-weight:900;color:#2D2D2D;margin-bottom:6px">NotebookLM</div>
+      <div class="xs" style="line-height:1.8">依主題建立 Notebook<br>匯入官方文件與文獻<br>AI 自動整理並可問答</div>
+    </div>
+    <div class="cd tl">
+      <div class="isq p" style="margin:0 0 9px 0">🔮</div>
+      <div style="font-size:16px;font-weight:900;color:#2D2D2D;margin-bottom:6px">Obsidian</div>
+      <div class="xs" style="line-height:1.8">本地儲存 · 隨身攜帶<br>雙向連結筆記<br>內建知識圖譜視覺化</div>
+    </div>
+  </div>
+  <div class="cd" style="background:linear-gradient(135deg,rgba(44,197,181,0.07),rgba(139,92,246,0.07));border:1px solid rgba(44,197,181,0.2)">
+    <div style="font-size:13.5px;font-weight:700;color:#2D2D2D;margin-bottom:6px">📌 核心原則</div>
+    <div class="sm">知識庫需為你量身定制：<strong class="acc">個人化</strong>、<strong class="pur">主題化</strong><br>不是儲存所有資訊，而是儲存對你有意義的知識</div>
+  </div>
+  <div style="margin-top:12px;border:2px solid #8B5CF6;border-radius:12px;padding:10px 18px;background:rgba(139,92,246,0.05)">
+    <span style="font-size:13.5px;font-weight:700;color:#8B5CF6">🎯 推薦工具：Obsidian 隨身學習 · 內建知識圖譜</span>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P07  一(五) + 二、C.O.D.E. 介紹
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="g2" style="margin-bottom:13px">
+    <div class="cd tl">
+      <div class="bdg" style="margin-bottom:9px">一、(五) 複習與測驗</div>
+      <div style="font-size:15px;font-weight:800;color:#2D2D2D;margin-bottom:7px">📝 出測驗題強化記憶</div>
+      <div class="xs" style="line-height:1.8">讓 AI 生成練習題目，刷題強化學習成效</div>
+      <div class="xs" style="margin-top:9px;color:#F5A623;font-weight:700">🎯 Gemini + Canva 寫程式刷題</div>
+    </div>
+    <div class="cd" style="background:linear-gradient(135deg,#2CC5B5,#2D9CDB);color:white;text-align:center;padding:22px 14px">
+      <div style="font-size:12px;font-weight:600;opacity:.8;margin-bottom:5px">二、實作框架</div>
+      <div style="font-size:26px;font-weight:900;margin-bottom:3px">C.O.D.E.</div>
+      <div style="font-size:12px;opacity:.85">知識學習框架</div>
+      <div style="font-size:11px;margin-top:7px;opacity:.7">以 Harness Engineering 為實作範例</div>
+    </div>
+  </div>
+  <div class="g4">
+    <div style="background:white;border-radius:13px;padding:13px 7px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,0.07)"><div class="cl acc">C</div><div style="font-size:10px;color:#999;margin:3px 0">Capture</div><div class="xs fw7">收集官網</div></div>
+    <div style="background:white;border-radius:13px;padding:13px 7px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,0.07)"><div class="cl ora">O</div><div style="font-size:10px;color:#999;margin:3px 0">Organize</div><div class="xs fw7">問答圖表</div></div>
+    <div style="background:white;border-radius:13px;padding:13px 7px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,0.07)"><div class="cl pur">D</div><div style="font-size:10px;color:#999;margin:3px 0">Distill</div><div class="xs fw7">語音消化</div></div>
+    <div style="background:white;border-radius:13px;padding:13px 7px;text-align:center;box-shadow:0 4px 14px rgba(0,0,0,0.07)"><div class="cl red">E</div><div style="font-size:10px;color:#999;margin:3px 0">Express</div><div class="xs fw7">生成簡報</div></div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P08  Capture 方式A 工具比較
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">C — Capture 收集 · 方式 A</div>
+  <div class="stl">善用<span class="acc">Deep Research 深入研究</span></div>
+  <div class="cd" style="padding:16px 20px;margin-bottom:13px">
+    <table class="tbl">
+      <tr><th>工具</th><th>建議</th><th>說明</th></tr>
+      <tr><td><strong>NotebookLM</strong></td><td class="no">❌ 不建議</td><td>搜尋範圍不易控制，來源品質需人工另行把關</td></tr>
+      <tr><td><strong>Gemini</strong></td><td class="ok">✅ 建議</td><td>品質較佳，較容易調整 Deep Research 研究方向</td></tr>
+    </table>
+  </div>
+  <div class="g2">
+    <div class="neg tl">
+      <div class="tp n">NotebookLM</div>
+      <div style="font-size:12.5px;font-weight:800;color:#E53935;margin-bottom:6px">❌ Deep Research</div>
+      <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div><span style="color:#6C7086;font-size:10px;margin-left:4px">prompt</span></div>
+      <div class="cb" style="max-height:65px;font-size:10px">openai所提出的harness engineering核心概念、與傳統作法的差異、實作方式</div></div>
+    </div>
+    <div class="pos tl">
+      <div class="tp g">Gemini</div>
+      <div style="font-size:12.5px;font-weight:800;color:#2CC5B5;margin-bottom:6px">⭕ Deep Research</div>
+      <div class="xs" style="line-height:1.8;margin-bottom:8px">品質較 NotebookLM 好<br>容易調整自己要的方向</div>
+      <div class="hb"><div class="xs">以下 Step 1-4 示範<br>Gemini 完整操作流程 →</div></div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P09  Capture Step 1 — 詢問如何詢問
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">C — Capture · Step 1</div>
+  <div class="stl">先問 Gemini：<span class="acc">「如何詢問？」</span></div>
+  <div class="cd" style="padding:15px 18px;margin-bottom:11px">
+    <div class="tag-row"><div class="tp g">Gemini</div><span class="xs">不知從何下手時，先讓 AI 幫你設計 Prompt</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div><span style="color:#6C7086;font-size:10px;margin-left:4px">prompt</span></div>
+    <div class="cb">[有人說 prompt engineering 已進化至 harness engineering
+什麼是 harness engineering]
+
+如果你是一個 AI 時代的專家，想學習它的[核心與實作方式]
+你會建議我如何運用 Gemini 或 notebookLM 以 Deep Research 進行收集資料
+
+針對各 prompt 的部份請提供我 markdown code 以利複製運用</div></div>
+  </div>
+  <div class="hb">
+    <span style="font-size:12.5px;color:#2CC5B5;font-weight:700">💡 核心技巧：</span>
+    <span class="xs"> 不熟悉主題 → 先讓 AI 設計 Prompt → 再把 AI 產出的 Prompt 拿去實際執行！</span>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P10  Capture Step 2 — Deep Research Prompt
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">C — Capture · Step 2</div>
+  <div class="stl">Gemini <span class="acc">Deep Research</span> 完整 Prompt</div>
+  <div class="cd" style="padding:15px 18px">
+    <div class="tag-row"><div class="tp g">Gemini Deep Research</div><span class="xs">以下 Prompt 由 Step 1 的 AI 自動生成</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div><span style="color:#6C7086;font-size:10px;margin-left:4px">AI 自動生成的 prompt</span></div>
+    <div class="cb" style="max-height:230px"># Role
+你是一位資深的 AI 系統架構師與技術觀察家。
+
+# Task
+請針對 "Harness Engineering in LLM" 進行深度研究（Deep Research），協助我掌握其核心技術脈絡。
+
+# Research Scope
+1. 定義與起源：Harness Engineering 的精確定義，以及它為何取代/演化自 Prompt Engineering？
+2. 核心組成：包含哪些技術組件？（Eval Frameworks, Prompt Versioning, Automated Testing, Guardrails）
+3. 主流工具與框架：業界主流 Harness 工具（如 LangSmith, Promptfoo, DeepEval 等）
+4. 實作範例：從「撰寫 Prompt」到「建立 Harness 測試流程」的邏輯對比
+
+# Output Requirement
+請以結構化方式呈現，大量引用最新技術文獻或部落格觀點，請列出參考來源。</div></div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P11  Capture Step 3 取得純 URL
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">C — Capture · Step 3</div>
+  <div class="stl">取得<span class="acc">純網址（URL）</span>準備匯入</div>
+  <div class="cd" style="padding:15px 18px;margin-bottom:11px">
+    <div class="tag-row"><div class="tp g">Gemini</div><span class="xs">從 Deep Research 結果中提取純 URL 列表</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+    <div class="cb">將以上找到的資料來源
+提供我純網址（URL），讓我可直接複製到 Google NotebookLM 使用
+只要網址列表（每個網址間有換行），不要有前後文
+
+- 注意：NotebookLM 的「網站網址」輸入框非常嚴格，
+  只能接受純網址（URL），不能包含標題、連結文字
+  或 Markdown 的符號（如 - 或 []）。</div></div>
+  </div>
+  <div class="wb"><div style="font-size:12px;font-weight:700;color:#E53935;margin-bottom:3px">⚠️ NotebookLM 嚴格限制</div><div class="xs">只能接受純 URL · 不能含標題、連結文字、Markdown 符號（- 或 []）</div></div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P12  Capture Step 4 + 方式B + 小結
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">C — Capture · Step 4 · 方式 B · 小結</div>
+  <div class="stl">匯入 NotebookLM · <span class="acc">方式 B 與排名小結</span></div>
+  <div class="g2" style="margin-bottom:12px">
+    <div class="cd tl" style="padding:15px 17px">
+      <div class="tp n" style="margin-bottom:6px">Step 4 · NotebookLM</div>
+      <div style="font-size:13.5px;font-weight:800;color:#2D2D2D;margin-bottom:5px">匯入文獻網址</div>
+      <div class="xs" style="line-height:1.8">新增來源 → 「網站網址」<br>貼入純 URL 列表</div>
+    </div>
+    <div class="cd tl" style="padding:15px 17px">
+      <div class="tp g" style="margin-bottom:6px">方式 B · Gemini</div>
+      <div style="font-size:13.5px;font-weight:800;color:#2D2D2D;margin-bottom:5px">主動鎖定官網與 KOL</div>
+      <div class="xs" style="line-height:1.8">搜尋官方網站、Blog 及<br>領域權威 KOL 發佈內容<br>整理為純 URL → 匯入 NBLM</div>
+    </div>
+  </div>
+  <div class="cd" style="background:linear-gradient(135deg,rgba(44,197,181,0.06),rgba(245,166,35,0.06));border:1px solid rgba(44,197,181,0.18)">
+    <div style="font-size:12.5px;font-weight:700;color:#2D2D2D;margin-bottom:10px">📊 Capture 工具表現排名（由高→低）</div>
+    <div style="display:flex;align-items:center;gap:7px;flex-wrap:wrap;justify-content:center">
+      <span class="rp" style="background:#2CC5B5">🥇 Gemini Deep Research</span>
+      <span style="color:#ccc;font-size:16px">›</span>
+      <span class="rp" style="background:#F5A623">🥈 NotebookLM Deep Research</span>
+      <span style="color:#ccc;font-size:16px">›</span>
+      <span class="rp" style="background:#888">🥉 Gemini 搜尋權威來源</span>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P13  Organize 問答+心智圖+資訊圖表A
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">O — Organize 組織</div>
+  <div class="stl">三步驟<span class="acc">組織知識架構</span></div>
+  <div class="g3" style="margin-bottom:11px">
+    <div class="cd"><div class="isq t" style="margin:0 auto 9px">💬</div><div style="font-weight:800;font-size:14px;color:#2D2D2D;margin-bottom:6px">① 問答對話</div><div class="xs">核心概念為何？<br>與傳統差異？如何實作？</div></div>
+    <div class="cd"><div class="isq o" style="margin:0 auto 9px">🗺️</div><div style="font-weight:800;font-size:14px;color:#2D2D2D;margin-bottom:6px">② 心智圖</div><div class="xs">視覺化整體架構<br>掌握主題全貌</div></div>
+    <div class="cd"><div class="isq p" style="margin:0 auto 9px">📊</div><div style="font-weight:800;font-size:14px;color:#2D2D2D;margin-bottom:6px">③ 資訊圖表 A</div><div class="xs">5W1H 框架切入<br>What/Why/Who/When/Where/How</div></div>
+  </div>
+  <div class="cd tl" style="padding:13px 17px">
+    <div class="tag-row"><div class="tp n">NotebookLM</div><span class="xs">資訊圖表 A — 5W1H Prompt</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+    <div class="cb" style="max-height:95px;font-size:10px">你是一位資深 AI 產品專家，專長是使用 5W1H 框架，對新出現的 AI 技術進行結構化、具象化、可落地的拆解與分析。目標是幫助用戶快速形成可操作的理解模型，判斷：這個新東西到底是什麼、值不值得用、什麼時候用、在真實場景中應該怎麼用才是最佳實踐。</div></div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P14  Organize 資訊圖表B + 小結
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">O — Organize · 資訊圖表 B &amp; 小結</div>
+  <div class="stl">用<span class="acc">自媒體博主視角</span>梳理重點</div>
+  <div class="cd tl" style="padding:13px 17px;margin-bottom:11px">
+    <div class="tag-row"><div class="tp n">NotebookLM</div><span class="xs">資訊圖表 B — 博主角度（可指定可愛風格）</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+    <div class="cb" style="max-height:75px;font-size:10px">你現在是一位 AI 自媒體博主的專業助理，請幫我梳理這些資料裡的所有核心觀點和方法論，特別是那些能夠直接幫助我[提升 AI 學習的實作技巧]，請用重點和表格的形式列出來</div></div>
+  </div>
+  <div class="g2">
+    <div style="background:rgba(44,197,181,0.08);border-radius:13px;padding:13px 15px;text-align:left">
+      <div style="font-size:12.5px;font-weight:700;color:#2CC5B5;margin-bottom:7px">🎯 Organize 的目的</div>
+      <div class="xs" style="line-height:1.9">① 透過<strong>問答對話</strong>，得到一言以蔽之的核心觀念<br>② 透過<strong>心智圖、資訊圖表</strong>，掌握整體架構</div>
+    </div>
+    <div style="background:rgba(245,166,35,0.09);border-radius:13px;padding:13px 15px;text-align:left">
+      <div style="font-size:12.5px;font-weight:700;color:#F5A623;margin-bottom:7px">💡 延伸效果</div>
+      <div class="xs" style="line-height:1.9">資訊圖表也已同步開啟<br><strong>學習內化（Distill）</strong>的第一步！</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P15  Distill 消化
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">D — Distill 消化</div>
+  <div class="stl">用 NotebookLM<span class="acc">深度內化知識</span></div>
+  <div class="g2" style="margin-bottom:11px">
+    <div class="cd tl" style="padding:15px 17px">
+      <div class="sb" style="margin:0 0 8px 0">1</div>
+      <div class="isq o" style="margin:0 0 8px 0">🎙️</div>
+      <div style="font-weight:800;font-size:13.5px;color:#2D2D2D;margin-bottom:5px">語音摘要（Podcast）</div>
+      <div class="xs" style="line-height:1.8">生成雙人對談格式<br>散步通勤時聆聽<br>輕鬆吸收精華</div>
+    </div>
+    <div class="cd tl" style="padding:15px 17px">
+      <div class="sb" style="margin:0 0 8px 0">2</div>
+      <div class="isq p" style="margin:0 0 8px 0">🔍</div>
+      <div style="font-weight:800;font-size:13.5px;color:#2D2D2D;margin-bottom:5px">深入問答</div>
+      <div class="xs" style="line-height:1.8">針對疑惑深入追問<br>有價值的答案<br><strong>📌 儲存至記事</strong></div>
+    </div>
+  </div>
+  <div class="cd tl" style="padding:13px 17px">
+    <div class="tag-row"><div class="tp n">NotebookLM</div><span class="xs">深入問答範例 Prompt</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+    <div class="cb" style="max-height:70px;font-size:10px">為什麼說[從 Context Engineering 進化至 Harness Engineering]？請幫我詳細解釋兩者之間的關鍵區別和關聯</div></div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P16  Express Step 1 — 影片摘要
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">E — Express 表達 · Step 1</div>
+  <div class="stl">生成<span class="acc">影片摘要</span>擴大傳播</div>
+  <div class="cd tl" style="padding:15px 18px;margin-bottom:11px">
+    <div class="tag-row"><div class="tp n">NotebookLM</div><span class="xs">影片摘要 Prompt</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+    <div class="cb">你現在是一位 AI 自媒體博主的專業助理，請幫我梳理這些資料裡的所有核心觀點、方法論與實作重點，特別是那些能夠直接幫助我[提升 AI 學習的實作技巧]</div></div>
+  </div>
+  <div class="g2">
+    <div style="background:rgba(44,197,181,0.08);border-radius:13px;padding:13px 15px;text-align:left">
+      <div style="font-size:12.5px;font-weight:700;color:#2CC5B5;margin-bottom:6px">🎬 適用情境</div>
+      <div class="xs" style="line-height:1.8">製作課程回顧影片<br>社群平台短影音腳本<br>學習心得影片分享</div>
+    </div>
+    <div style="background:rgba(245,166,35,0.09);border-radius:13px;padding:13px 15px;text-align:left">
+      <div style="font-size:12.5px;font-weight:700;color:#F5A623;margin-bottom:6px">💡 輸出特點</div>
+      <div class="xs" style="line-height:1.8">清楚的核心觀點列表<br>方法論重點整理<br>可直接轉為影片腳本</div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P17  Express Step 2 — 簡報
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">E — Express 表達 · Step 2</div>
+  <div class="stl">生成<span class="acc">簡報</span>跨部門溝通</div>
+  <div class="cd tl" style="padding:15px 18px;margin-bottom:11px">
+    <div class="tag-row"><div class="tp n">NotebookLM</div><span class="xs">簡報 Prompt（針對非技術背景）</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+    <div class="cb">你現在是一位 AI 自媒體博主的專業助理，面對非技術背景的業務類型同仁，請你用淺白、舉例的方式說明[Harness Engineering]的主要重點。後續才讓業務類型同仁能跟資訊同仁有效溝通，最後才用簡單的 2 頁說明技術重點</div></div>
+  </div>
+  <div class="g3">
+    <div style="background:rgba(44,197,181,0.08);border-radius:12px;padding:12px 10px;text-align:center"><div style="font-size:18px;margin-bottom:5px">📖</div><div class="xs fw7">第一部分</div><div class="xs">白話說明（業務向）</div></div>
+    <div style="background:rgba(245,166,35,0.09);border-radius:12px;padding:12px 10px;text-align:center"><div style="font-size:18px;margin-bottom:5px">🤝</div><div class="xs fw7">第二部分</div><div class="xs">溝通橋樑<br>業務 ↔ 技術</div></div>
+    <div style="background:rgba(139,92,246,0.09);border-radius:12px;padding:12px 10px;text-align:center"><div style="font-size:18px;margin-bottom:5px">⚙️</div><div class="xs fw7">第三部分</div><div class="xs">技術精華（2 頁）</div></div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P18  補充：YouTube to NotebookLM
+       （含 --- 在 code block 內，不算換頁）
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgt">C — Capture 補充 · 瀏覽器外掛</div>
+  <div class="stl">🎬 YouTube to <span class="acc">NotebookLM</span></div>
+  <div class="g2" style="margin-bottom:12px">
+    <div class="cd tl" style="padding:15px 17px">
+      <div style="font-size:13.5px;font-weight:900;color:#2D2D2D;margin-bottom:8px">🔧 解決什麼問題？</div>
+      <div class="xs" style="line-height:1.9">將<strong>搜尋結果、播放清單</strong>的多部影片<br>一次批次加入 NotebookLM<br><br>省去逐一複製 URL 的繁瑣步驟</div>
+    </div>
+    <div class="cd tl" style="padding:15px 17px">
+      <div style="font-size:13.5px;font-weight:900;color:#2D2D2D;margin-bottom:8px">📥 安裝方式</div>
+      <div class="xs" style="line-height:1.9">Chrome Web Store<br>搜尋「YouTube to NotebookLM」<br>安裝後即可使用</div>
+      <div class="gb" style="margin-top:10px"><div class="xs">⭐ 範例：憶筆-iPAS初級<br>依官方資料建立章節列表</div></div>
+    </div>
+  </div>
+  <div class="cd tl" style="padding:13px 17px">
+    <div class="tag-row"><div class="tp n">NotebookLM</div><span class="xs">匯入後，以原子化筆記原則整理來源</span></div>
+    <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+    <div class="cb" style="max-height:75px;font-size:10px">依照「iPAS AI應用規劃師的章節列表」分章節
+並將所有來源內容的主題，以原子化筆記的原則列在各章節之下
+提供給我 markdown code 以利我複製使用</div></div>
+    <div class="hb mt8"><div class="xs">💡 為何不用 Gemini：整理範圍較大，<strong>無法一次吃進 context 中使用</strong></div></div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P19  三(一)(A) Gemini 一次性對話
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdg">三、實作(二) 遇到疑惑 · (A)</div>
+  <div class="stl">Gemini <span class="acc">一次性對話</span>三步驟解惑</div>
+  <div style="display:flex;flex-direction:column;gap:10px">
+    <div class="cd tl" style="padding:13px 17px">
+      <div class="tag-row"><div class="tp g">Step 1 · Gemini</div><span class="xs">引用 NotebookLM 來源，設定資深講師角色</span></div>
+      <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+      <div class="cb" style="max-height:100px;font-size:10px">你是一位資深的AI領域講師，並有20年以上的授課經驗，能由淺入深面對沒有基礎的對象說明清楚，讓對方徹底理解
+
+先確認你了解以上指令即可，等候接下來所提出的問題
+（回答時請不要含有引述標記如 [cite: 3130] 等）
+
+格式：# 主題 / ## 📌說明 / ## 📌舉例</div></div>
+    </div>
+    <div class="g2">
+      <div class="cd tl" style="padding:13px 15px">
+        <div class="tag-row"><div class="tp g">Step 2 · Gemini</div></div>
+        <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+        <div class="cb" style="max-height:55px;font-size:10px">詳細說明 harness engineering 的概念與實作</div></div>
+      </div>
+      <div class="cd tl" style="padding:13px 15px">
+        <div class="tag-row"><div class="tp or">Step 3 · Gemini Banana</div></div>
+        <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+        <div class="cb" style="max-height:55px;font-size:10px">生成圖片
+將核心重點化為可愛版專業資訊圖表，正體中文，16:9，4K</div></div>
+      </div>
+    </div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P20  三(一)(B) Gemini Gem
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdg">三、實作(二) 遇到疑惑 · (B)</div>
+  <div class="stl">Gemini <span class="acc">Gem</span>：可重複使用的智慧助手</div>
+  <div class="g3" style="margin-bottom:11px">
+    <div class="cd tl" style="padding:14px 13px">
+      <div style="font-size:16px;margin-bottom:7px">🔧</div>
+      <div style="font-size:12.5px;font-weight:900;color:#2D2D2D;margin-bottom:6px">Harness 白話助手</div>
+      <div class="xs" style="line-height:1.8;margin-bottom:8px">引用 NotebookLM 來源<br>建立後可重複使用</div>
+      <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+      <div class="cb" style="max-height:48px;font-size:9.5px">詳細說明 harness engineering</div></div>
+    </div>
+    <div class="cd tl" style="padding:14px 13px">
+      <div style="font-size:16px;margin-bottom:7px">🛡️</div>
+      <div style="font-size:12.5px;font-weight:900;color:#2D2D2D;margin-bottom:6px">MITRE 資安助手</div>
+      <div class="xs" style="line-height:1.8;margin-bottom:8px">引用 NBLM 資安知識庫<br>快速解答資安術語</div>
+      <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+      <div class="cb" style="max-height:48px;font-size:9.5px">AI提示詞攻擊</div></div>
+    </div>
+    <div class="cd tl" style="padding:14px 13px">
+      <div style="font-size:16px;margin-bottom:7px">🎯</div>
+      <div style="font-size:12.5px;font-weight:900;color:#2D2D2D;margin-bottom:6px">ORID 教練提問法</div>
+      <div class="xs" style="line-height:1.8;margin-bottom:8px">職場情境應用<br>解決人際問題</div>
+      <div class="cw"><div class="ch"><div class="dot" style="background:#FF5F56"></div><div class="dot" style="background:#FFBD2E"></div><div class="dot" style="background:#27C93F"></div></div>
+      <div class="cb" style="max-height:48px;font-size:9.5px">遇到難以控制情緒已影響工作環境的同仁</div></div>
+    </div>
+  </div>
+  <div class="wb"><span style="font-size:12px;font-weight:700;color:#E53935">⚠️ 注意：</span><span class="xs"> Gem 若引用了 NotebookLM 來源，可能就無法公開分享給他人使用</span></div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P21  四、Obsidian 為何選擇 + 外掛清單
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="bdgp">四、實作(三) 建立知識庫 — Obsidian</div>
+  <div class="stl">為何選擇 <span class="pur">Obsidian</span>？</div>
+  <div class="g2" style="margin-bottom:11px">
+    <div style="display:flex;flex-direction:column;gap:8px">
+      <div class="cd" style="padding:11px 15px;text-align:left;display:flex;align-items:flex-start;gap:9px">
+        <span style="font-size:17px;flex-shrink:0">🆓</span>
+        <div><div class="xs fw7" style="color:#2D2D2D;margin-bottom:2px">完全免費 · 本地儲存</div><div class="xs">兼容通用 Markdown 格式</div></div>
+      </div>
+      <div class="cd" style="padding:11px 15px;text-align:left;display:flex;align-items:flex-start;gap:9px">
+        <span style="font-size:17px;flex-shrink:0">☁️</span>
+        <div><div class="xs fw7" style="color:#2D2D2D;margin-bottom:2px">多裝置免費同步</div><div class="xs">Google Drive / OneDrive</div></div>
+      </div>
+      <div class="cd" style="padding:11px 15px;text-align:left;display:flex;align-items:flex-start;gap:9px">
+        <span style="font-size:17px;flex-shrink:0">🤖</span>
+        <div><div class="xs fw7" style="color:#2D2D2D;margin-bottom:2px">與 AI 高度整合</div><div class="xs">Markdown + CLI → 本地個人 Wiki</div></div>
+      </div>
+    </div>
+    <div class="cd tl" style="padding:14px 16px">
+      <div style="font-size:12.5px;font-weight:700;color:#8B5CF6;margin-bottom:9px">🔌 精選已安裝外掛</div>
+      <div class="xs" style="line-height:2.1">
+        📽️ <strong>Advanced Slides</strong>：筆記直接變簡報<br>
+        🗺️ <strong>Enhancing Mindmap</strong>：markdown → 心智圖<br>
+        ✏️ <strong>Excalidraw</strong>：圖形繪製工具<br>
+        📋 <strong>Kanban</strong>：待辦事項看板視圖<br>
+        🔄 <strong>Remotely Save</strong>：免費跨裝置同步<br>
+        📄 <strong>Better Export PDF</strong>：頁面轉 PDF
+      </div>
+    </div>
+  </div>
+  <div class="cd" style="background:linear-gradient(135deg,rgba(139,92,246,0.08),rgba(44,197,181,0.08));border:1px solid rgba(139,92,246,0.2);padding:12px 18px">
+    <div class="xs"><span style="font-weight:700;color:#8B5CF6">📥 已幫你設定好的儲存庫：</span> 解壓縮後以 Obsidian 開啟資料夾即可，含字型放大、快速鍵標示、icon 美化、bases 資料表格等</div>
+  </div>
+</div></section>
+
+<!-- ══════════════════════════════════
+  P22  五、複習測驗 + 六、課程總結
+══════════════════════════════════ -->
+<section class="slide"><div class="sc">
+  <div class="g2" style="margin-bottom:12px">
+    <div class="cd tl" style="padding:15px 17px">
+      <div class="bdgr" style="margin-bottom:9px">五、實作(四) 複習測驗</div>
+      <div class="tag-row"><div class="tp g">Gemini Gem</div><span class="xs">引用 NotebookLM 來源出題</span></div>
+      <div class="xs" style="line-height:1.9;margin-bottom:8px">
+        📊 三欄式表格輸出<br>
+        📏 難度分佈：易 30% · 中 50% · 難 20%<br>
+        📋 預設 20 題（上限 100 題）<br>
+        📥 可直接匯出 Google Sheet
+      </div>
+      <div class="hb"><div class="xs">💡 為何不用 NBLM：需多種來源、靈活出題範圍、可匯出 Sheet</div></div>
+    </div>
+    <div class="cd tl" style="padding:15px 17px">
+      <div class="bdgt" style="margin-bottom:9px">六、課程總結</div>
+      <div style="font-size:13.5px;font-weight:900;color:#2D2D2D;margin-bottom:10px">與其追著工具更新，不如掌握<span class="acc">兩個底層邏輯</span></div>
+      <div style="display:flex;flex-direction:column;gap:8px">
+        <div style="background:rgba(44,197,181,0.08);border-radius:11px;padding:11px 13px">
+          <div class="xs fw7" style="color:#2CC5B5;margin-bottom:4px">① 需求拆解邏輯</div>
+          <div class="xs">依自己的需求，如何拆解、逐步實現</div>
+        </div>
+        <div style="background:rgba(245,166,35,0.09);border-radius:11px;padding:11px 13px">
+          <div class="xs fw7" style="color:#F5A623;margin-bottom:4px">② 工具使用邏輯</div>
+          <div class="xs">該 AI 工具適合做什麼、何時需要多步驟迭代<br>考量注意力 · 考量幻覺 vs 靈活度</div>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="cd" style="background:linear-gradient(135deg,#2CC5B5,#8B5CF6);color:white;padding:18px">
+    <div style="font-size:15px;font-weight:900;margin-bottom:8px">🚀 C.O.D.E. 學習閉環</div>
+    <div style="display:flex;align-items:center;gap:6px;justify-content:center;flex-wrap:wrap;font-size:12px;font-weight:700">
+      <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:4px 11px">📥 Capture</span>
+      <span style="opacity:.7">→</span>
+      <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:4px 11px">🗂️ Organize</span>
+      <span style="opacity:.7">→</span>
+      <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:4px 11px">🎧 Distill</span>
+      <span style="opacity:.7">→</span>
+      <span style="background:rgba(255,255,255,0.2);border-radius:8px;padding:4px 11px">🎤 Express</span>
+    </div>
+    <div style="font-size:12px;margin-top:9px;opacity:.85">從收集到表達，讓知識真正成為你自己的能力</div>
+  </div>
+</div></section>
+
+<!-- 頁腳 & 導覽 -->
+<footer class="ft">🐻 林熊熊分享</footer>
+<nav class="nav-bar">
+  <button class="nb" id="prevBtn">‹</button>
+  <span class="pi" id="pageIndicator" title="點擊跳頁">1</span>
+  <span style="color:#ccc">/</span>
+  <span id="totalPages" style="font-size:14px;color:#999"></span>
+  <button class="nb" id="nextBtn">›</button>
+</nav>
+</div>
+
+<script>
+const slides=document.querySelectorAll('.slide');
+const pi=document.getElementById('pageIndicator');
+const tp=document.getElementById('totalPages');
+const pb=document.getElementById('prevBtn');
+const nb=document.getElementById('nextBtn');
+let cur=0; tp.textContent=slides.length;
+
+function goTo(n){
+  slides[cur].classList.remove('active');
+  cur=Math.max(0,Math.min(n,slides.length-1));
+  slides[cur].classList.add('active');
+  pi.textContent=cur+1;
+  pb.disabled=cur===0; nb.disabled=cur===slides.length-1;
+}
+
+pi.addEventListener('click',()=>{
+  const inp=document.createElement('input');
+  inp.type='number'; inp.min=1; inp.max=slides.length;
+  inp.value=cur+1; inp.className='pji';
+  pi.replaceWith(inp); inp.select();
+  function commit(){
+    const n=parseInt(inp.value,10);
+    inp.replaceWith(pi);
+    if(!isNaN(n)) goTo(n-1); else pi.textContent=cur+1;
+  }
+  inp.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();commit();}
+    if(e.key==='Escape'){inp.replaceWith(pi);pi.textContent=cur+1;}
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight') e.stopPropagation();
+  });
+  inp.addEventListener('blur',commit);
+  inp.addEventListener('input',()=>{
+    if(inp.value<1)inp.value=1;
+    if(inp.value>slides.length)inp.value=slides.length;
+  });
+});
+
+pb.addEventListener('click',()=>goTo(cur-1));
+nb.addEventListener('click',()=>goTo(cur+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown') goTo(cur+1);
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')   goTo(cur-1);
+});
+goTo(0);
+</script>
+</body>
+</html>
