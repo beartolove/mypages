@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 工安管理系統 - UI 需求模擬原型 v2</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .sidebar-active { background-color: #1e3a5f; color: white; border-left: 4px solid #3b82f6; }
+        .modal { display: none; position: fixed; z-index: 50; left: 0; top: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.5); }
+        .badge { 
+            position: absolute; top: -4px; right: -4px;
+            background: #ef4444; color: white; 
+            min-width: 20px; height: 20px; 
+            border-radius: 10px; font-size: 11px; 
+            display: flex; align-items: center; justify-content: center;
+            font-weight: bold; padding: 0 6px;
+        }
+        .requirement-note {
+            background: linear-gradient(135deg, #fef3c7 0%, #fde68a 100%);
+            border-left: 4px solid #f59e0b;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+        }
+        .requirement-note::before {
+            content: "📋 需求說明：";
+            font-weight: bold;
+            color: #b45309;
+        }
+        .dev-note {
+            background: linear-gradient(135deg, #dbeafe 0%, #bfdbfe 100%);
+            border-left: 4px solid #3b82f6;
+            padding: 12px 16px;
+            margin: 12px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 13px;
+        }
+        .dev-note::before {
+            content: "💻 開發備註：";
+            font-weight: bold;
+            color: #1d4ed8;
+        }
+    </style>
+</head>
+<body class="flex flex-col h-screen overflow-hidden">
+
+    <!-- 頂部導覽列 -->
+    <header class="bg-white border-b px-4 md:px-6 py-3 flex justify-between items-center shadow-sm z-20">
+        <div class="flex items-center space-x-3">
+            <div class="bg-blue-600 p-2 rounded-lg shadow-md">
+                <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m5.618-4.016A11.955 11.955 0 0112 2.944a11.955 11.955 0 01-8.618 3.04m17.236 0a11.955 11.955 0 00-1.242 1.54M3.382 6.016a11.955 11.955 0 011.242 1.54M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+            </div>
+            <div>
+                <h1 class="text-lg md:text-xl font-bold text-gray-800 tracking-wider">AI 工安管理系統</h1>
+                <p class="text-[10px] text-gray-400">高雄港務分公司 ｜ UI 需求原型 v2.0</p>
+            </div>
+        </div>
+        <div class="flex items-center space-x-2 md:space-x-4">
+            <!-- 權限切換 -->
+            <div class="hidden md:flex items-center space-x-2">
+                <span class="text-sm text-gray-500 font-medium">身分切換：</span>
+                <select id="roleSelector" onchange="initRole()" class="bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block p-2.5 font-bold outline-none">
+                    <option value="inspector">1. 現場巡查人員</option>
+                    <option value="supervisor">2. 現場巡查主管 (轄區)</option>
+                    <option value="manager">3. 管理中心人員 (全港)</option>
+                    <option value="admin">4. 系統維管人員</option>
+                </select>
+            </div>
+            <!-- 【優化】登入者資訊顯示 -->
+            <div class="flex items-center space-x-3 pl-4 border-l border-gray-200">
+                <div class="w-9 h-9 bg-gradient-to-br from-blue-500 to-blue-700 rounded-full flex items-center justify-center text-white font-bold text-sm shadow-md">
+                    <span id="userAvatar">王</span>
+                </div>
+                <div class="hidden md:block">
+                    <div id="userName" class="text-sm font-bold text-gray-700">王小明</div>
+                    <div id="userRole" class="text-[10px] text-gray-400">現場巡查人員</div>
+                </div>
+                <button onclick="alert('模擬功能：登出系統')" class="text-gray-400 hover:text-red-500 transition-colors" title="登出">
+                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1"></path></svg>
+                </button>
+            </div>
+        </div>
+    </header>
+
+    <!-- Mobile 角色選擇器 -->
+    <div class="md:hidden bg-white border-b px-4 py-2">
+        <select id="roleSelectorMobile" onchange="initRoleMobile()" class="w-full bg-blue-50 border border-blue-200 text-blue-800 text-sm rounded-lg p-2.5 font-bold outline-none">
+            <option value="inspector">1. 現場巡查人員</option>
+            <option value="supervisor">2. 現場巡查主管 (轄區)</option>
+            <option value="manager">3. 管理中心人員 (全港)</option>
+            <option value="admin">4. 系統維管人員</option>
+        </select>
+    </div>
+
+    <div class="flex flex-1 overflow-hidden">
+        <!-- 側邊欄 -->
+        <aside class="hidden md:flex w-64 bg-slate-50 border-r flex-col">
+            <nav id="sidebarNav" class="flex-1 py-4 space-y-1">
+                <!-- 由 JS 動態生成項目，包含數字徽章 -->
+            </nav>
+            <div class="p-4 border-t text-xs text-gray-400 bg-white">
+                <p>中島區 31-41 號碼頭專案</p>
+                <p class="mt-1 font-mono text-[10px]">系統版本：v2.0 BETA</p>
+            </div>
+        </aside>
+
+        <!-- 主要內容區 -->
+        <main id="mainContent" class="flex-1 overflow-y-auto p-4 md:p-8 bg-white">
+            <!-- 由 JS 動態切換顯示內容 -->
+        </main>
+    </div>
+
+    <!-- 【優化】彈窗：案件詳情與處置（加入完整 TPNet 欄位） -->
+    <div id="caseModal" class="modal flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-4xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex justify-between items-center bg-gradient-to-r from-slate-50 to-white">
+                <h3 class="text-lg font-bold">【案件詳情與處置】案號：20260430-008</h3>
+                <button onclick="closeModal('caseModal')" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-8">
+                <div>
+                    <!-- AI 抓拍影像區 -->
+                    <div class="relative bg-black rounded-lg overflow-hidden h-64 flex items-center justify-center border shadow-inner">
+                        <img src="https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=800" class="opacity-80 object-cover w-full h-full">
+                        <div class="absolute border-4 border-red-500 w-24 h-32 top-10 left-1/2 -translate-x-1/2 shadow-[0_0_15px_rgba(239,68,68,0.5)]">
+                            <span class="bg-red-500 text-white text-[10px] px-1 font-bold absolute -top-6 left-0 whitespace-nowrap">AI 偵測：未穿反光背心</span>
+                        </div>
+                    </div>
+                    
+                    <!-- 【優化】TPNet 串接資訊完整欄位 -->
+                    <div class="mt-4 space-y-3 text-sm bg-blue-50 p-4 rounded-xl border border-blue-100">
+                        <div class="flex justify-between items-center border-b border-blue-100 pb-2">
+                            <span class="font-bold text-blue-800">📡 TPNet 串接資訊</span>
+                            <span class="text-[10px] bg-green-100 text-green-700 px-2 py-0.5 rounded-full">已成功串接</span>
+                        </div>
+                        <div class="grid grid-cols-2 gap-3 text-gray-700">
+                            <div><span class="text-gray-400 text-xs">違規時段</span><p class="font-bold">2026-04-30 11:20:05</p></div>
+                            <div><span class="text-gray-400 text-xs">作業地點</span><p class="font-bold">35 號碼頭</p></div>
+                            <div><span class="text-gray-400 text-xs">船簽號碼</span><p class="font-bold font-mono">KH2026043001</p></div>
+                            <div><span class="text-gray-400 text-xs">作業時段</span><p class="font-bold">08:00 - 16:00</p></div>
+                            <div class="col-span-2"><span class="text-gray-400 text-xs">裝卸公司</span><p class="font-bold text-blue-700">萬海航運股份有限公司</p></div>
+                            <div><span class="text-gray-400 text-xs">統一編號</span><p class="font-bold font-mono">12345678</p></div>
+                            <div><span class="text-gray-400 text-xs">聯絡電話</span><p class="font-bold">07-1234567</p></div>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-note mt-4">
+                        此區資料需由系統自動串接 TPNet，根據「違規時段」與「碼頭位置」反查當下作業的裝卸公司資訊，無需人工輸入。
+                    </div>
+                </div>
+                <div class="space-y-4">
+                    <label class="block font-bold text-gray-700">現場處理情形回報：</label>
+                    <textarea class="w-full border border-gray-300 rounded-xl p-4 h-32 text-sm focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all" placeholder="請描述您的現場處置動作...&#10;例如：已於現場口頭勸導，當事人已穿戴反光背心。"></textarea>
+                    
+                    <div class="bg-slate-50 p-4 rounded-xl border">
+                        <label class="block text-sm font-bold text-gray-600 mb-2">處理方式：</label>
+                        <div class="flex flex-wrap gap-2">
+                            <label class="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-50">
+                                <input type="radio" name="action" value="warn" checked class="text-blue-600">
+                                <span class="text-sm">現場勸導</span>
+                            </label>
+                            <label class="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-50">
+                                <input type="radio" name="action" value="record" class="text-blue-600">
+                                <span class="text-sm">違規記點</span>
+                            </label>
+                            <label class="flex items-center space-x-2 bg-white px-3 py-2 rounded-lg border cursor-pointer hover:bg-blue-50">
+                                <input type="radio" name="action" value="transfer" class="text-blue-600">
+                                <span class="text-sm">移送處理</span>
+                            </label>
+                        </div>
+                    </div>
+                    
+                    <div class="flex space-x-3 pt-2">
+                        <button onclick="alert('模擬功能：下載包含 AI 標註的違規截圖與 TPNet 公司資訊')" class="flex-1 bg-slate-100 hover:bg-slate-200 py-3 rounded-xl text-sm font-bold text-slate-700 border border-slate-200 transition-colors">
+                            📥 下載行政截圖
+                        </button>
+                        <button onclick="closeModal('caseModal'); alert('案件已送交主管審核')" class="flex-1 bg-blue-600 hover:bg-blue-700 text-white py-3 rounded-xl text-sm font-bold shadow-lg shadow-blue-200 transition-all">
+                            📤 送交主管審核
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 【新增】彈窗：主管審核確認 -->
+    <div id="reviewModal" class="modal flex items-center justify-center p-4">
+        <div class="bg-white rounded-xl shadow-2xl max-w-3xl w-full max-h-[90vh] overflow-y-auto">
+            <div class="p-6 border-b flex justify-between items-center bg-gradient-to-r from-green-50 to-white">
+                <h3 class="text-lg font-bold">【主管審核】案號：20260430-005</h3>
+                <button onclick="closeModal('reviewModal')" class="text-gray-400 hover:text-gray-600 text-2xl">&times;</button>
+            </div>
+            <div class="p-6">
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+                    <!-- 違規影像 -->
+                    <div>
+                        <div class="relative bg-black rounded-lg overflow-hidden h-48 flex items-center justify-center">
+                            <img src="https://images.unsplash.com/photo-1504307651254-35680f356dfd?auto=format&fit=crop&q=80&w=600" class="opacity-80 object-cover w-full h-full">
+                            <div class="absolute border-4 border-red-500 w-16 h-20 top-8 left-1/3 shadow-[0_0_10px_rgba(239,68,68,0.5)]">
+                                <span class="bg-red-500 text-white text-[9px] px-1 font-bold absolute -top-5 left-0 whitespace-nowrap">未戴安全帽</span>
+                            </div>
+                        </div>
+                    </div>
+                    <!-- 案件摘要 -->
+                    <div class="space-y-3 text-sm">
+                        <div class="bg-slate-50 p-4 rounded-xl">
+                            <div class="grid grid-cols-2 gap-3">
+                                <div><span class="text-gray-400 text-xs">巡查人員</span><p class="font-bold">張小巡</p></div>
+                                <div><span class="text-gray-400 text-xs">違規時間</span><p class="font-bold">11:20:05</p></div>
+                                <div><span class="text-gray-400 text-xs">碼頭位置</span><p class="font-bold">35 號碼頭</p></div>
+                                <div><span class="text-gray-400 text-xs">違規態樣</span><p class="font-bold text-orange-600">未戴安全帽</p></div>
+                            </div>
+                        </div>
+                        <div class="bg-blue-50 p-4 rounded-xl">
+                            <span class="text-gray-500 text-xs">巡查人員處理情形：</span>
+                            <p class="font-medium mt-1">已於現場口頭勸導，當事人已立即戴上安全帽，並下載行政截圖存證。</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- 審核意見 -->
+                <div class="mb-6">
+                    <label class="block font-bold text-gray-700 mb-2">主管審核意見（選填）：</label>
+                    <textarea class="w-full border border-gray-300 rounded-xl p-4 h-24 text-sm focus:ring-2 focus:ring-blue-500 outline-none" placeholder="如需補充說明或退回原因請填寫..."></textarea>
+                </div>
+                
+                <div class="requirement-note">
+                    主管審核後，系統將自動更新案件狀態。若「同意結案」則進入結案歸檔；若「退回修正」則通知巡查人員重新處理。
+                </div>
+                
+                <!-- 審核按鈕 -->
+                <div class="flex space-x-4 mt-6">
+                    <button onclick="closeModal('reviewModal'); alert('已退回修正，系統將通知巡查人員')" class="flex-1 bg-yellow-500 hover:bg-yellow-600 text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-yellow-100 transition-all">
+                        ↩️ 退回修正
+                    </button>
+                    <button onclick="closeModal('reviewModal'); alert('已同意結案，案件歸檔完成')" class="flex-1 bg-green-600 hover:bg-green-700 text-white py-4 rounded-xl text-sm font-bold shadow-lg shadow-green-100 transition-all">
+                        ✓ 同意結案
+                    </button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // 使用者資訊對應
+        const userInfo = {
+            inspector: { name: '王小明', role: '現場巡查人員', avatar: '王' },
+            supervisor: { name: '張主管', role: '轄區主管', avatar: '張' },
+            manager: { name: '陳經理', role: '管理中心人員', avatar: '陳' },
+            admin: { name: '李維管', role: '系統維管人員', avatar: '李' }
+        };
+
+        // 【優化】側邊欄配置：加入數字徽章
+        const roleNavs = {
+            inspector: [
+                { id: 'ins_dash', label: '待處理清單', icon: 'M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z', badge: 3 },
+                { id: 'ins_history', label: '歷史處置紀錄', icon: 'M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', badge: 0 }
+            ],
+            supervisor: [
+                { id: 'sup_dash', label: '轄區職安看板', icon: 'M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z', badge: 0 },
+                { id: 'sup_audit', label: '案件審核功能', icon: 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z', badge: 5 },
+                { id: 'sup_report', label: '轄區報表下載', icon: 'M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z', badge: 0 }
+            ],
+            manager: [
+                { id: 'man_dash', label: '全港監控總覽', icon: 'M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z', badge: 0 },
+                { id: 'man_data', label: '全局數據中心', icon: 'M4 7v10c0 2.21 3.582 4 8 4s8-1.79 8-4V7M4 7c0 2.21 3.582 4 8 4s8-1.79 8-4M4 7c0-2.21 3.582-4 8-4s8 1.79 8 4m0 5c0 2.21-3.582 4-8 4s-8-1.79-8-4', badge: 0 }
+            ],
+            admin: [
+                { id: 'adm_status', label: '設備狀態監控', icon: 'M9 3v2m6-2v2M9 19v2m6-2v2M5 9H3m2 6H3m18-6h-2m2 6h-2M7 19h10a2 2 0 002-2V7a2 2 0 00-2-2H7a2 2 0 00-2 2v10a2 2 0 002 2zM9 9h6v6H9V9z', badge: 2 },
+                { id: 'adm_ai', label: 'AI 參數調校', icon: 'M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4', badge: 0 },
+                { id: 'adm_user', label: '帳號權限設定', icon: 'M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z', badge: 0 },
+                { id: 'adm_fence', label: '電子圍籬設定', icon: 'M9 20l-5.447-2.724A1 1 0 013 16.382V5.618a1 1 0 011.447-.894L9 7m0 13l6-3m-6 3V7m6 10l4.553 2.276A1 1 0 0021 18.382V7.618a1 1 0 00-.553-.894L15 4m0 13V4m0 0L9 7', badge: 0 }
+            ]
+        };
+
+        // 頁面內容定義
+        const pages = {
+            inspector: {
+                ins_dash: `
+                    <div class="mb-6 flex flex-col md:flex-row md:justify-between md:items-end gap-4">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800 tracking-tight">待處理案件清單</h2>
+                            <p class="text-slate-500 mt-1">AI 已自動偵測違規事件，請點擊「處理案件」進行現場查處。</p>
+                        </div>
+                        <div class="bg-red-50 text-red-600 px-6 md:px-8 py-4 md:py-5 rounded-2xl md:rounded-3xl border border-red-100 flex items-center space-x-4 md:space-x-5 shadow-sm">
+                            <span class="text-4xl md:text-5xl font-black italic">3</span>
+                            <span class="font-bold leading-tight">案件待處理<br><span class="text-xs font-normal text-red-400">目前處於警示發報狀態</span></span>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-note">
+                        此數字需即時更新，與側邊欄的數字徽章同步。當有新案件時，需有聲音或推播通知（可由使用者設定開關）。
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-x-auto">
+                        <table class="w-full text-left min-w-[700px]">
+                            <thead class="bg-slate-50 border-b text-slate-400 text-xs font-bold uppercase tracking-widest">
+                                <tr>
+                                    <th class="px-6 md:px-8 py-5">時間</th>
+                                    <th class="px-6 md:px-8 py-5">碼頭編號</th>
+                                    <th class="px-6 md:px-8 py-5">違規態樣</th>
+                                    <th class="px-6 md:px-8 py-5">狀態</th>
+                                    <th class="px-6 md:px-8 py-5 text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="text-sm divide-y">
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 md:px-8 py-5 font-medium text-slate-600">11:20:05</td>
+                                    <td class="px-6 md:px-8 py-5 font-bold text-blue-600 font-mono text-base">35 號</td>
+                                    <td class="px-6 md:px-8 py-5"><span class="bg-orange-100 text-orange-700 px-3 py-1 rounded-full text-xs font-bold">未穿反光背心</span></td>
+                                    <td class="px-6 md:px-8 py-5"><span class="flex items-center text-red-500 font-bold animate-pulse"><span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>警報發報中</span></td>
+                                    <td class="px-6 md:px-8 py-5 text-center">
+                                        <button onclick="openModal('caseModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-2 rounded-xl text-xs font-bold shadow-md shadow-blue-100 transition-all">處理案件</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 md:px-8 py-5 font-medium text-slate-600">10:45:12</td>
+                                    <td class="px-6 md:px-8 py-5 font-bold text-blue-600 font-mono text-base">38 號</td>
+                                    <td class="px-6 md:px-8 py-5"><span class="bg-red-100 text-red-700 px-3 py-1 rounded-full text-xs font-bold">未戴安全帽</span></td>
+                                    <td class="px-6 md:px-8 py-5 text-amber-600 font-medium">📝 填寫處理中</td>
+                                    <td class="px-6 md:px-8 py-5 text-center">
+                                        <button class="bg-slate-800 hover:bg-slate-900 text-white px-4 md:px-5 py-2 rounded-xl text-xs font-bold shadow-md transition-all">繼續回報</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 md:px-8 py-5 font-medium text-slate-600">09:32:48</td>
+                                    <td class="px-6 md:px-8 py-5 font-bold text-blue-600 font-mono text-base">31 號</td>
+                                    <td class="px-6 md:px-8 py-5"><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-bold">交叉作業</span></td>
+                                    <td class="px-6 md:px-8 py-5"><span class="flex items-center text-red-500 font-bold animate-pulse"><span class="w-2 h-2 bg-red-500 rounded-full mr-2"></span>警報發報中</span></td>
+                                    <td class="px-6 md:px-8 py-5 text-center">
+                                        <button onclick="openModal('caseModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 md:px-5 py-2 rounded-xl text-xs font-bold shadow-md shadow-blue-100 transition-all">處理案件</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `,
+                ins_history: `
+                    <div class="mb-8">
+                        <h2 class="text-2xl font-bold text-slate-800">歷史處置紀錄</h2>
+                        <p class="text-slate-500 mt-1">檢視過去所有已完成或送審中的案件紀錄。</p>
+                    </div>
+                    
+                    <!-- 篩選條件 -->
+                    <div class="bg-slate-50 p-4 rounded-xl mb-6 flex flex-wrap gap-4 items-end">
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="text-xs font-bold text-gray-400 mb-1 block">起始日期</label>
+                            <input type="date" class="w-full border rounded-lg p-2 text-sm">
+                        </div>
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="text-xs font-bold text-gray-400 mb-1 block">結束日期</label>
+                            <input type="date" class="w-full border rounded-lg p-2 text-sm">
+                        </div>
+                        <div class="flex-1 min-w-[150px]">
+                            <label class="text-xs font-bold text-gray-400 mb-1 block">案件狀態</label>
+                            <select class="w-full border rounded-lg p-2 text-sm">
+                                <option>全部</option>
+                                <option>已結案</option>
+                                <option>待審核</option>
+                                <option>退回修正</option>
+                            </select>
+                        </div>
+                        <button class="bg-blue-600 text-white px-6 py-2 rounded-lg text-sm font-bold">查詢</button>
+                    </div>
+                    
+                    <div class="grid grid-cols-1 gap-4">
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-blue-200 transition-all">
+                            <div class="flex items-center space-x-4 md:space-x-6">
+                                <div class="bg-green-100 p-4 rounded-xl text-green-600">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">案號：20260429-001</div>
+                                    <div class="font-bold text-slate-700 text-lg">31 號碼頭 - 未戴安全帽</div>
+                                    <div class="text-sm text-gray-500 mt-1">已由主管核定結案 | 2026-04-29 14:30</div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3 items-center">
+                                <span class="bg-green-100 text-green-700 px-4 py-1.5 rounded-full text-xs font-black shadow-sm">✓ 已結案</span>
+                                <button class="text-blue-600 hover:text-blue-800 text-sm font-bold underline">查看報告</button>
+                            </div>
+                        </div>
+                        <div class="bg-white p-6 rounded-2xl border border-yellow-200 shadow-sm flex flex-col md:flex-row justify-between items-start md:items-center gap-4 hover:border-yellow-300 transition-all">
+                            <div class="flex items-center space-x-4 md:space-x-6">
+                                <div class="bg-yellow-100 p-4 rounded-xl text-yellow-600">
+                                    <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path></svg>
+                                </div>
+                                <div>
+                                    <div class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mb-1">案號：20260430-002</div>
+                                    <div class="font-bold text-slate-700 text-lg">33 號碼頭 - 闖入作業區</div>
+                                    <div class="text-sm text-gray-500 mt-1">等待主管審核中 | 2026-04-30 09:15</div>
+                                </div>
+                            </div>
+                            <div class="flex space-x-3 items-center">
+                                <span class="bg-yellow-100 text-yellow-700 px-4 py-1.5 rounded-full text-xs font-black shadow-sm">⏳ 待審核</span>
+                            </div>
+                        </div>
+                    </div>
+                `
+            },
+            supervisor: {
+                sup_dash: `
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">轄區職安分析看板</h2>
+                    
+                    <div class="requirement-note mb-6">
+                        以下圖表需使用 Chart.js 或其他圖表庫實作，支援 hover 顯示數值、點擊篩選等互動功能。圖表數據需可透過 API 即時更新。
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <!-- 趨勢圖 -->
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="font-bold text-slate-600 text-sm mb-4">📈 本月違規趨勢分析</h4>
+                            <div style="height: 200px; position: relative;">
+                                <canvas id="trendChart"></canvas>
+                            </div>
+                        </div>
+                        <!-- 圓餅圖 -->
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="font-bold text-slate-600 text-sm mb-4">📊 違規態樣比例</h4>
+                            <div style="height: 200px; position: relative;">
+                                <canvas id="pieChart"></canvas>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- KPI 卡片 -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                        <div class="bg-blue-50 p-5 rounded-2xl border border-blue-100">
+                            <div class="text-xs text-blue-600 font-bold">本月違規總數</div>
+                            <div class="text-3xl font-black text-blue-700 mt-2">42</div>
+                        </div>
+                        <div class="bg-green-50 p-5 rounded-2xl border border-green-100">
+                            <div class="text-xs text-green-600 font-bold">結案率</div>
+                            <div class="text-3xl font-black text-green-700 mt-2">89%</div>
+                        </div>
+                        <div class="bg-yellow-50 p-5 rounded-2xl border border-yellow-100">
+                            <div class="text-xs text-yellow-600 font-bold">待審核案件</div>
+                            <div class="text-3xl font-black text-yellow-700 mt-2">5</div>
+                        </div>
+                        <div class="bg-purple-50 p-5 rounded-2xl border border-purple-100">
+                            <div class="text-xs text-purple-600 font-bold">平均處理時效</div>
+                            <div class="text-3xl font-black text-purple-700 mt-2">45<span class="text-sm">分</span></div>
+                        </div>
+                    </div>
+                `,
+                sup_audit: `
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                        <div>
+                            <h2 class="text-2xl font-bold text-slate-800">案件審核功能</h2>
+                            <p class="text-slate-500 mt-1">審核第一線巡查人員提交的處置結果。</p>
+                        </div>
+                        <div class="bg-yellow-50 text-yellow-700 px-6 py-3 rounded-2xl border border-yellow-200 font-black shadow-sm flex items-center space-x-2">
+                            <span class="text-2xl">5</span>
+                            <span class="text-sm">件待核定</span>
+                        </div>
+                    </div>
+                    
+                    <div class="requirement-note mb-6">
+                        點擊「檢視/審核」按鈕後，需彈出審核視窗顯示完整案件資訊（含影像、處理情形），主管可填寫審核意見後選擇「同意結案」或「退回修正」。
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl border border-gray-100 overflow-x-auto shadow-sm">
+                        <table class="w-full text-left text-sm min-w-[650px]">
+                            <thead class="bg-slate-50 border-b text-gray-400 text-xs font-bold uppercase tracking-widest">
+                                <tr>
+                                    <th class="px-6 py-5">巡查人員</th>
+                                    <th class="px-6 py-5">時間 / 碼頭</th>
+                                    <th class="px-6 py-5">違規態樣</th>
+                                    <th class="px-6 py-5">處理情形摘要</th>
+                                    <th class="px-6 py-5 text-center">操作</th>
+                                </tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-5 font-bold">張小巡</td>
+                                    <td class="px-6 py-5 text-gray-500">11:20 / 35號</td>
+                                    <td class="px-6 py-5"><span class="bg-red-100 text-red-700 px-2 py-1 rounded text-xs font-bold">未戴安全帽</span></td>
+                                    <td class="px-6 py-5 text-gray-600 max-w-[200px] truncate">已現場勸導並下載單據</td>
+                                    <td class="px-6 py-5 text-center">
+                                        <button onclick="openModal('reviewModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold">檢視/審核</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-5 font-bold">李小華</td>
+                                    <td class="px-6 py-5 text-gray-500">10:45 / 38號</td>
+                                    <td class="px-6 py-5"><span class="bg-orange-100 text-orange-700 px-2 py-1 rounded text-xs font-bold">未穿反光背心</span></td>
+                                    <td class="px-6 py-5 text-gray-600 max-w-[200px] truncate">人員已穿戴完成，拍照存證</td>
+                                    <td class="px-6 py-5 text-center">
+                                        <button onclick="openModal('reviewModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold">檢視/審核</button>
+                                    </td>
+                                </tr>
+                                <tr class="hover:bg-slate-50 transition-colors">
+                                    <td class="px-6 py-5 font-bold">王小明</td>
+                                    <td class="px-6 py-5 text-gray-500">09:30 / 31號</td>
+                                    <td class="px-6 py-5"><span class="bg-purple-100 text-purple-700 px-2 py-1 rounded text-xs font-bold">交叉作業</span></td>
+                                    <td class="px-6 py-5 text-gray-600 max-w-[200px] truncate">已暫停作業並重新規劃動線</td>
+                                    <td class="px-6 py-5 text-center">
+                                        <button onclick="openModal('reviewModal')" class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-xs font-bold">檢視/審核</button>
+                                    </td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `,
+                sup_report: `
+                    <h2 class="text-2xl font-bold text-slate-800 mb-8">轄區報表下載</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="group border-2 border-slate-100 p-8 rounded-3xl hover:bg-blue-50 hover:border-blue-200 transition-all cursor-pointer shadow-sm">
+                            <div class="bg-blue-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-blue-100">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <h4 class="font-black text-slate-700 text-lg">職安月報 (PDF)</h4>
+                            <p class="text-xs text-slate-400 mt-2 font-medium">含圖表分析與案件摘要</p>
+                            <div class="mt-6 text-blue-600 text-sm font-black flex items-center group-hover:translate-x-1 transition-transform">下載報表 →</div>
+                        </div>
+                        <div class="group border-2 border-slate-100 p-8 rounded-3xl hover:bg-green-50 hover:border-green-200 transition-all cursor-pointer shadow-sm">
+                            <div class="bg-green-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-green-100">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 10v6m0 0l-3-3m3 3l3-3m2 8H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                            </div>
+                            <h4 class="font-black text-slate-700 text-lg">原始數據 (CSV)</h4>
+                            <p class="text-xs text-slate-400 mt-2 font-medium">可匯入 Excel 進行分析</p>
+                            <div class="mt-6 text-green-600 text-sm font-black flex items-center group-hover:translate-x-1 transition-transform">下載數據 →</div>
+                        </div>
+                        <div class="group border-2 border-slate-100 p-8 rounded-3xl hover:bg-purple-50 hover:border-purple-200 transition-all cursor-pointer shadow-sm">
+                            <div class="bg-purple-600 text-white w-12 h-12 rounded-2xl flex items-center justify-center mb-6 shadow-lg shadow-purple-100">
+                                <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                            </div>
+                            <h4 class="font-black text-slate-700 text-lg">裝卸公司排名</h4>
+                            <p class="text-xs text-slate-400 mt-2 font-medium">依違規次數排序</p>
+                            <div class="mt-6 text-purple-600 text-sm font-black flex items-center group-hover:translate-x-1 transition-transform">查看排名 →</div>
+                        </div>
+                    </div>
+                `
+            },
+            manager: {
+                man_dash: `
+                    <h2 class="text-2xl font-bold text-slate-800 mb-8">全港職安監控總覽</h2>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
+                        <div class="bg-gradient-to-br from-blue-600 to-blue-700 p-6 md:p-8 rounded-3xl text-white shadow-xl shadow-blue-100">
+                            <div class="text-[10px] opacity-70 font-black uppercase tracking-widest">全港總違規案件</div>
+                            <div class="text-4xl md:text-5xl font-black mt-3">142 <span class="text-lg font-normal opacity-60">件</span></div>
+                            <div class="mt-4 flex items-center text-xs font-bold bg-white/10 w-fit px-3 py-1 rounded-full text-blue-100">↑ 比上月增加 12%</div>
+                        </div>
+                        <div class="bg-white border border-blue-50 p-6 md:p-8 rounded-3xl shadow-sm">
+                            <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest">當月結案率</div>
+                            <div class="text-4xl md:text-5xl font-black mt-3 text-green-600">89.2%</div>
+                            <div class="mt-4 text-xs text-gray-400">目標：90%</div>
+                        </div>
+                        <div class="bg-white border border-blue-50 p-6 md:p-8 rounded-3xl shadow-sm">
+                            <div class="text-[10px] text-gray-400 font-black uppercase tracking-widest">平均處理時效</div>
+                            <div class="text-4xl md:text-5xl font-black mt-3 text-blue-600">45 <span class="text-lg font-normal opacity-40">分鐘</span></div>
+                            <div class="mt-4 text-xs text-green-500">↓ 比上月減少 15 分鐘</div>
+                        </div>
+                    </div>
+                    <div class="bg-white rounded-3xl border border-gray-100 p-6 md:p-8 shadow-sm">
+                        <h3 class="font-black text-slate-800 mb-6 flex items-center"><span class="w-2 h-6 bg-blue-600 rounded-full mr-3"></span> 區段案件處理狀態統計</h3>
+                        <div class="overflow-x-auto">
+                            <table class="w-full text-left text-sm min-w-[500px]">
+                                <thead class="text-gray-400 border-b">
+                                    <tr><th class="pb-4 px-4">區段位置</th><th class="pb-4 px-4 text-center">待處理</th><th class="pb-4 px-4 text-center">處理中</th><th class="pb-4 px-4 text-center">已結案</th><th class="pb-4 px-4 text-center">結案率</th></tr>
+                                </thead>
+                                <tbody class="divide-y">
+                                    <tr class="hover:bg-slate-50 transition-all"><td class="py-5 px-4 font-bold text-slate-700">31-33 號碼頭</td><td class="px-4 text-center"><span class="bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold">2</span></td><td class="px-4 text-center font-medium">4</td><td class="px-4 text-center font-medium">15</td><td class="px-4 text-center text-green-600 font-bold">71%</td></tr>
+                                    <tr class="bg-blue-50/50 hover:bg-blue-50 transition-all"><td class="py-5 px-4 font-bold text-blue-700 border-l-4 border-blue-600">34-36 號碼頭</td><td class="px-4 text-center"><span class="bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold">8</span></td><td class="px-4 text-center">1</td><td class="px-4 text-center text-slate-400">24</td><td class="px-4 text-center text-green-600 font-bold">73%</td></tr>
+                                    <tr class="hover:bg-slate-50 transition-all"><td class="py-5 px-4 font-bold text-slate-700">37-41 號碼頭</td><td class="px-4 text-center"><span class="bg-red-100 text-red-600 px-3 py-1 rounded-full font-bold">1</span></td><td class="px-4 text-center font-medium">2</td><td class="px-4 text-center font-medium">22</td><td class="px-4 text-center text-green-600 font-bold">88%</td></tr>
+                                </tbody>
+                            </table>
+                        </div>
+                    </div>
+                `,
+                man_data: `
+                    <h2 class="text-2xl font-bold text-slate-800 mb-8">全局數據中心</h2>
+                    <div class="bg-slate-50 p-6 rounded-2xl border border-gray-100 mb-8">
+                        <h4 class="font-bold mb-4 text-sm text-slate-600">📊 篩選條件設定</h4>
+                        <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                            <div><label class="text-xs font-bold text-gray-400 mb-1 block">起始日期</label><input type="date" class="w-full bg-white border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none"></div>
+                            <div><label class="text-xs font-bold text-gray-400 mb-1 block">結束日期</label><input type="date" class="w-full bg-white border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none"></div>
+                            <div><label class="text-xs font-bold text-gray-400 mb-1 block">碼頭分區</label><select class="w-full bg-white border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none"><option>全港碼頭 (31-41 號)</option><option>31-33 號</option><option>34-36 號</option><option>37-41 號</option></select></div>
+                            <div><label class="text-xs font-bold text-gray-400 mb-1 block">裝卸公司</label><select class="w-full bg-white border border-gray-200 p-3 rounded-xl text-sm font-bold outline-none"><option>全部公司</option><option>萬海航運</option><option>長榮海運</option><option>陽明海運</option></select></div>
+                        </div>
+                        <div class="flex flex-wrap gap-4 mt-6">
+                            <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-100 transition-all">📄 產出全港職安月報 (PDF)</button>
+                            <button class="bg-green-600 hover:bg-green-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-green-100 transition-all">📊 匯出違規明細 (Excel)</button>
+                            <button class="bg-white border-2 border-slate-200 text-slate-500 px-6 py-3 rounded-xl font-bold text-sm hover:bg-slate-100 transition-all">重設條件</button>
+                        </div>
+                    </div>
+                    <div class="flex flex-col items-center justify-center h-48 border-4 border-dashed border-slate-100 rounded-3xl text-slate-300">
+                        <svg class="w-12 h-12 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="1" d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                        <p class="font-bold">請設定條件後點擊「產出報表」以預覽資料</p>
+                    </div>
+                `
+            },
+            admin: {
+                adm_status: `
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">設備狀態監控中心</h2>
+                    
+                    <!-- 設備狀態摘要 -->
+                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4 mb-8">
+                        <div class="bg-white p-4 rounded-xl border shadow-sm text-center">
+                            <div class="text-3xl font-black text-blue-600">8</div>
+                            <div class="text-xs text-gray-400 mt-1">設備總數</div>
+                        </div>
+                        <div class="bg-green-50 p-4 rounded-xl border border-green-100 text-center">
+                            <div class="text-3xl font-black text-green-600">6</div>
+                            <div class="text-xs text-green-600 mt-1">正常運作</div>
+                        </div>
+                        <div class="bg-red-50 p-4 rounded-xl border border-red-100 text-center">
+                            <div class="text-3xl font-black text-red-600">2</div>
+                            <div class="text-xs text-red-600 mt-1">異常離線</div>
+                        </div>
+                        <div class="bg-yellow-50 p-4 rounded-xl border border-yellow-100 text-center">
+                            <div class="text-3xl font-black text-yellow-600">0</div>
+                            <div class="text-xs text-yellow-600 mt-1">維修中</div>
+                        </div>
+                    </div>
+                    
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+                        <table class="w-full text-left text-sm min-w-[600px]">
+                            <thead class="bg-slate-50 border-b text-gray-400 text-[10px] font-black uppercase tracking-widest">
+                                <tr><th class="px-6 py-5">位置</th><th class="px-6 py-5">設備代碼</th><th class="px-6 py-5">連線狀態</th><th class="px-6 py-5">最後更新</th><th class="px-6 py-5 text-center">操作</th></tr>
+                            </thead>
+                            <tbody class="divide-y font-mono">
+                                <tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-5 font-sans font-bold text-slate-600">31 號碼頭</td><td class="px-6 py-5">CAM-31-A</td><td class="px-6 py-5"><span class="flex items-center text-green-600 font-bold"><span class="w-2 h-2 bg-green-500 rounded-full mr-2 shadow-[0_0_8px_rgba(34,197,94,0.5)]"></span>正常</span></td><td class="px-6 py-5 text-gray-400 text-xs">2 分鐘前</td><td class="px-6 py-5 text-center"><button class="text-blue-500 text-xs hover:underline">遠端重啟</button></td></tr>
+                                <tr class="bg-red-50/50"><td class="px-6 py-5 font-sans font-bold text-red-600">35 號碼頭</td><td class="px-6 py-5">CAM-35-A</td><td class="px-6 py-5"><span class="flex items-center text-red-600 font-bold animate-pulse"><span class="w-2 h-2 bg-red-600 rounded-full mr-2 shadow-[0_0_8px_rgba(220,38,38,0.5)]"></span>離線</span></td><td class="px-6 py-5 text-gray-400 text-xs">45 分鐘前</td><td class="px-6 py-5 text-center"><button class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow">發送維修工單</button></td></tr>
+                                <tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-5 font-sans font-bold text-slate-600">38 號碼頭</td><td class="px-6 py-5">CAM-38-A</td><td class="px-6 py-5"><span class="flex items-center text-green-600 font-bold"><span class="w-2 h-2 bg-green-500 rounded-full mr-2"></span>正常</span></td><td class="px-6 py-5 text-gray-400 text-xs">1 分鐘前</td><td class="px-6 py-5 text-center"><button class="text-blue-500 text-xs hover:underline">遠端重啟</button></td></tr>
+                                <tr class="bg-red-50/50"><td class="px-6 py-5 font-sans font-bold text-red-600">41 號碼頭</td><td class="px-6 py-5">CAM-41-A</td><td class="px-6 py-5"><span class="flex items-center text-red-600 font-bold animate-pulse"><span class="w-2 h-2 bg-red-600 rounded-full mr-2 shadow-[0_0_8px_rgba(220,38,38,0.5)]"></span>離線</span></td><td class="px-6 py-5 text-gray-400 text-xs">2 小時前</td><td class="px-6 py-5 text-center"><button class="bg-red-600 text-white px-3 py-1.5 rounded-lg text-[10px] font-bold shadow">發送維修工單</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `,
+                adm_ai: `
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">AI 辨識參數調校</h2>
+                    
+                    <div class="requirement-note mb-6">
+                        靈敏度調整將影響 AI 判斷的嚴格程度。數值越高，越容易觸發警報（但也可能增加誤報）；數值越低，則需要更明確的違規才會觸發。建議依現場環境測試後調整。
+                    </div>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="font-bold mb-6 text-blue-700 text-sm">🎚️ 各項目偵測靈敏度</h4>
+                            <div class="space-y-6">
+                                <div>
+                                    <div class="flex justify-between mb-2 text-sm"><span class="font-medium text-gray-600">未戴安全帽</span><span class="font-bold text-blue-600">75%</span></div>
+                                    <input type="range" class="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-blue-600" value="75">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2 text-sm"><span class="font-medium text-gray-600">未穿反光背心</span><span class="font-bold text-blue-600">70%</span></div>
+                                    <input type="range" class="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-blue-600" value="70">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2 text-sm"><span class="font-medium text-gray-600">作業區闖入</span><span class="font-bold text-blue-600">85%</span></div>
+                                    <input type="range" class="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-blue-600" value="85">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2 text-sm"><span class="font-medium text-gray-600">交叉作業偵測</span><span class="font-bold text-blue-600">80%</span></div>
+                                    <input type="range" class="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-blue-600" value="80">
+                                </div>
+                                <div>
+                                    <div class="flex justify-between mb-2 text-sm"><span class="font-medium text-gray-600">非作業車輛</span><span class="font-bold text-blue-600">65%</span></div>
+                                    <input type="range" class="w-full h-2 bg-slate-100 rounded-full appearance-none cursor-pointer accent-blue-600" value="65">
+                                </div>
+                            </div>
+                            <button class="w-full bg-blue-600 text-white py-3 rounded-xl font-bold text-sm mt-8 shadow-lg shadow-blue-100 hover:bg-blue-700 transition-all">💾 儲存參數設定</button>
+                        </div>
+                        <div class="bg-white p-8 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="font-bold mb-6 text-green-700 text-sm">🔘 功能開關</h4>
+                            <div class="space-y-4">
+                                <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
+                                    <span class="font-medium">未戴安全帽偵測</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
+                                    <span class="font-medium">未穿反光背心偵測</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
+                                    <span class="font-medium">作業區闘入偵測</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
+                                    <span class="font-medium">交叉作業偵測</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" checked class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-slate-50 rounded-xl">
+                                    <span class="font-medium">非作業車輛偵測</span>
+                                    <label class="relative inline-flex items-center cursor-pointer">
+                                        <input type="checkbox" class="sr-only peer">
+                                        <div class="w-11 h-6 bg-gray-200 rounded-full peer peer-checked:after:translate-x-full after:content-[''] after:absolute after:top-[2px] after:left-[2px] after:bg-white after:rounded-full after:h-5 after:w-5 after:transition-all peer-checked:bg-green-600"></div>
+                                    </label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                `,
+                adm_user: `
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                        <h2 class="text-2xl font-bold text-slate-800">帳號權限管理</h2>
+                        <button class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-3 rounded-xl font-bold text-sm shadow-lg shadow-blue-100 transition-all">+ 新增帳號</button>
+                    </div>
+                    <div class="bg-white rounded-2xl border border-gray-100 shadow-sm overflow-x-auto">
+                        <table class="w-full text-left text-sm min-w-[700px]">
+                            <thead class="bg-slate-50 border-b text-gray-400 text-[10px] font-black uppercase tracking-widest">
+                                <tr><th class="px-6 py-5">姓名</th><th class="px-6 py-5">所屬單位</th><th class="px-6 py-5">角色權限</th><th class="px-6 py-5">負責區域</th><th class="px-6 py-5">狀態</th><th class="px-6 py-5 text-center">操作</th></tr>
+                            </thead>
+                            <tbody class="divide-y">
+                                <tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-5 font-bold">李維管</td><td class="px-6 py-5 text-gray-400">資訊維護處</td><td><span class="bg-slate-800 text-white px-3 py-1 rounded text-[10px] font-bold">系統維管</span></td><td class="px-6 py-5 text-gray-500">全系統</td><td class="px-6 py-5"><span class="text-green-600 font-bold">● 啟用</span></td><td class="px-6 py-5 text-center"><button class="text-blue-600 hover:underline text-xs font-bold">編輯</button></td></tr>
+                                <tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-5 font-bold">張主管</td><td class="px-6 py-5 text-gray-400">港棧作業處</td><td><span class="bg-green-100 text-green-700 px-3 py-1 rounded text-[10px] font-bold">轄區主管</span></td><td class="px-6 py-5 text-gray-500">31-41 號</td><td class="px-6 py-5"><span class="text-green-600 font-bold">● 啟用</span></td><td class="px-6 py-5 text-center"><button class="text-blue-600 hover:underline text-xs font-bold">編輯</button></td></tr>
+                                <tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-5 font-bold">王小明</td><td class="px-6 py-5 text-gray-400">港棧作業處</td><td><span class="bg-blue-100 text-blue-700 px-3 py-1 rounded text-[10px] font-bold">現場巡查</span></td><td class="px-6 py-5 text-gray-500">31-35 號</td><td class="px-6 py-5"><span class="text-green-600 font-bold">● 啟用</span></td><td class="px-6 py-5 text-center"><button class="text-blue-600 hover:underline text-xs font-bold">編輯</button></td></tr>
+                                <tr class="hover:bg-slate-50 transition-colors"><td class="px-6 py-5 font-bold">陳經理</td><td class="px-6 py-5 text-gray-400">職安管理處</td><td><span class="bg-purple-100 text-purple-700 px-3 py-1 rounded text-[10px] font-bold">管理中心</span></td><td class="px-6 py-5 text-gray-500">全港區</td><td class="px-6 py-5"><span class="text-green-600 font-bold">● 啟用</span></td><td class="px-6 py-5 text-center"><button class="text-blue-600 hover:underline text-xs font-bold">編輯</button></td></tr>
+                            </tbody>
+                        </table>
+                    </div>
+                `,
+                adm_fence: `
+                    <h2 class="text-2xl font-bold text-slate-800 mb-6">電子圍籬設定</h2>
+                    
+                    <div class="requirement-note mb-6">
+                        電子圍籬用於定義「作業區域」，當偵測到人員或車輛進入非允許區域時，系統將自動觸發警報。需支援在地圖上以滑鼠框選區域，並可設定每個區域的名稱與警報層級。
+                    </div>
+                    
+                    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+                        <!-- 【優化】碼頭區域示意地圖 -->
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="font-bold mb-4 text-sm text-slate-600">🗺️ 碼頭區域示意圖（31-41 號）</h4>
+                            <div class="bg-slate-100 rounded-xl p-4 relative" style="min-height: 320px;">
+                                <!-- 簡易 SVG 地圖示意 -->
+                                <svg viewBox="0 0 400 280" class="w-full h-auto">
+                                    <!-- 水域 -->
+                                    <rect x="0" y="0" width="400" height="80" fill="#bfdbfe" rx="4"/>
+                                    <text x="200" y="45" text-anchor="middle" fill="#3b82f6" font-size="12" font-weight="bold">高雄港水域</text>
+                                    
+                                    <!-- 碼頭區塊 -->
+                                    <rect x="20" y="90" width="50" height="60" fill="#22c55e" stroke="#16a34a" stroke-width="2" rx="4"/>
+                                    <text x="45" y="125" text-anchor="middle" fill="white" font-size="10" font-weight="bold">31號</text>
+                                    
+                                    <rect x="80" y="90" width="50" height="60" fill="#22c55e" stroke="#16a34a" stroke-width="2" rx="4"/>
+                                    <text x="105" y="125" text-anchor="middle" fill="white" font-size="10" font-weight="bold">33號</text>
+                                    
+                                    <rect x="140" y="90" width="50" height="60" fill="#ef4444" stroke="#dc2626" stroke-width="2" rx="4" class="animate-pulse"/>
+                                    <text x="165" y="125" text-anchor="middle" fill="white" font-size="10" font-weight="bold">35號</text>
+                                    
+                                    <rect x="200" y="90" width="50" height="60" fill="#22c55e" stroke="#16a34a" stroke-width="2" rx="4"/>
+                                    <text x="225" y="125" text-anchor="middle" fill="white" font-size="10" font-weight="bold">36號</text>
+                                    
+                                    <rect x="260" y="90" width="50" height="60" fill="#22c55e" stroke="#16a34a" stroke-width="2" rx="4"/>
+                                    <text x="285" y="125" text-anchor="middle" fill="white" font-size="10" font-weight="bold">38號</text>
+                                    
+                                    <rect x="320" y="90" width="60" height="60" fill="#ef4444" stroke="#dc2626" stroke-width="2" rx="4" class="animate-pulse"/>
+                                    <text x="350" y="125" text-anchor="middle" fill="white" font-size="10" font-weight="bold">41號</text>
+                                    
+                                    <!-- 道路 -->
+                                    <rect x="20" y="160" width="360" height="30" fill="#e5e7eb" rx="4"/>
+                                    <text x="200" y="180" text-anchor="middle" fill="#6b7280" font-size="10">聯外道路</text>
+                                    
+                                    <!-- 圍籬區域示意 -->
+                                    <rect x="135" y="85" width="60" height="70" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,3"/>
+                                    <rect x="315" y="85" width="70" height="70" fill="none" stroke="#ef4444" stroke-width="2" stroke-dasharray="5,3"/>
+                                    
+                                    <!-- 攝影機圖示 -->
+                                    <circle cx="45" cy="200" r="8" fill="#3b82f6"/>
+                                    <circle cx="165" cy="200" r="8" fill="#3b82f6"/>
+                                    <circle cx="285" cy="200" r="8" fill="#3b82f6"/>
+                                    <circle cx="350" cy="200" r="8" fill="#3b82f6"/>
+                                    <text x="200" y="230" text-anchor="middle" fill="#6b7280" font-size="9">● 攝影機位置</text>
+                                    
+                                    <!-- 圖例 -->
+                                    <rect x="20" y="250" width="12" height="12" fill="#22c55e" rx="2"/>
+                                    <text x="38" y="260" fill="#374151" font-size="9">正常</text>
+                                    <rect x="80" y="250" width="12" height="12" fill="#ef4444" rx="2"/>
+                                    <text x="98" y="260" fill="#374151" font-size="9">離線</text>
+                                    <rect x="150" y="250" width="12" height="12" fill="none" stroke="#ef4444" stroke-dasharray="3,2" rx="2"/>
+                                    <text x="168" y="260" fill="#374151" font-size="9">電子圍籬</text>
+                                </svg>
+                            </div>
+                            <div class="mt-4 flex flex-wrap gap-2">
+                                <button class="bg-blue-600 text-white px-4 py-2 rounded-lg text-xs font-bold">+ 新增圍籬區域</button>
+                                <button class="bg-slate-200 text-slate-600 px-4 py-2 rounded-lg text-xs font-bold">清除所有選區</button>
+                            </div>
+                        </div>
+                        
+                        <!-- 圍籬清單 -->
+                        <div class="bg-white p-6 rounded-2xl border border-gray-100 shadow-sm">
+                            <h4 class="font-bold mb-4 text-sm text-slate-600">📋 已設定圍籬清單</h4>
+                            <div class="space-y-3">
+                                <div class="flex justify-between items-center p-4 bg-red-50 rounded-xl border border-red-100">
+                                    <div>
+                                        <div class="font-bold text-red-700">35 號碼頭作業區</div>
+                                        <div class="text-xs text-red-500 mt-1">警報層級：高 ｜ 範圍：裝卸作業區</div>
+                                    </div>
+                                    <button class="text-red-600 text-xs font-bold hover:underline">編輯</button>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-red-50 rounded-xl border border-red-100">
+                                    <div>
+                                        <div class="font-bold text-red-700">41 號碼頭危險區</div>
+                                        <div class="text-xs text-red-500 mt-1">警報層級：高 ｜ 範圍：吊臂作業半徑</div>
+                                    </div>
+                                    <button class="text-red-600 text-xs font-bold hover:underline">編輯</button>
+                                </div>
+                                <div class="flex justify-between items-center p-4 bg-yellow-50 rounded-xl border border-yellow-100">
+                                    <div>
+                                        <div class="font-bold text-yellow-700">聯外道路管制區</div>
+                                        <div class="text-xs text-yellow-600 mt-1">警報層級：中 ｜ 範圍：非作業車輛禁入</div>
+                                    </div>
+                                    <button class="text-yellow-600 text-xs font-bold hover:underline">編輯</button>
+                                </div>
+                            </div>
+                            
+                            <div class="dev-note mt-6">
+                                實際系統需整合 GIS 地圖或攝影機視角圖，讓管理者可以用滑鼠直接框選電子圍籬範圍，並即時預覽偵測區域。
+                            </div>
+                        </div>
+                    </div>
+                `
+            }
+        };
+
+        let currentRoleKey = 'inspector';
+
+        function initRole() {
+            currentRoleKey = document.getElementById('roleSelector').value;
+            document.getElementById('roleSelectorMobile').value = currentRoleKey;
+            updateUserInfo();
+            renderSidebar();
+            switchTab(roleNavs[currentRoleKey][0].id);
+        }
+
+        function initRoleMobile() {
+            currentRoleKey = document.getElementById('roleSelectorMobile').value;
+            document.getElementById('roleSelector').value = currentRoleKey;
+            updateUserInfo();
+            renderSidebar();
+            switchTab(roleNavs[currentRoleKey][0].id);
+        }
+
+        function updateUserInfo() {
+            const info = userInfo[currentRoleKey];
+            document.getElementById('userName').textContent = info.name;
+            document.getElementById('userRole').textContent = info.role;
+            document.getElementById('userAvatar').textContent = info.avatar;
+        }
+
+        function renderSidebar() {
+            const nav = document.getElementById('sidebarNav');
+            const items = roleNavs[currentRoleKey];
+            nav.innerHTML = items.map(item => `
+                <div class="px-3">
+                    <button id="btn-${item.id}" onclick="switchTab('${item.id}')" class="w-full flex items-center px-4 py-3.5 text-sm font-bold rounded-2xl transition-all sidebar-item text-slate-500 hover:bg-slate-200/50 relative">
+                        <svg class="w-5 h-5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="${item.icon}"></path></svg>
+                        ${item.label}
+                        ${item.badge > 0 ? `<span class="badge">${item.badge}</span>` : ''}
+                    </button>
+                </div>
+            `).join('');
+        }
+
+        function switchTab(tabId) {
+            document.querySelectorAll('.sidebar-item').forEach(el => el.classList.remove('sidebar-active', 'shadow-lg'));
+            const btn = document.getElementById('btn-' + tabId);
+            if(btn) btn.classList.add('sidebar-active', 'shadow-lg');
+            const content = pages[currentRoleKey][tabId];
+            document.getElementById('mainContent').innerHTML = content || '<div class="h-full flex items-center justify-center text-gray-300 font-bold">頁面建置中...</div>';
+            
+            // 初始化圖表（如果有的話）
+            setTimeout(() => {
+                initCharts();
+            }, 100);
+        }
+
+        function openModal(modalId) { 
+            document.getElementById(modalId).style.display = 'flex'; 
+        }
+        function closeModal(modalId) { 
+            document.getElementById(modalId).style.display = 'none'; 
+        }
+
+        // 儲存圖表實例
+        let chartInstances = {};
+
+        // 初始化 Chart.js 圖表
+        function initCharts() {
+            // 銷毀舊圖表
+            if (chartInstances.trendChart) {
+                chartInstances.trendChart.destroy();
+                chartInstances.trendChart = null;
+            }
+            if (chartInstances.pieChart) {
+                chartInstances.pieChart.destroy();
+                chartInstances.pieChart = null;
+            }
+
+            // 趨勢圖
+            const trendCanvas = document.getElementById('trendChart');
+            if (trendCanvas) {
+                chartInstances.trendChart = new Chart(trendCanvas, {
+                    type: 'line',
+                    data: {
+                        labels: ['第1週', '第2週', '第3週', '第4週', '第5週'],
+                        datasets: [{
+                            label: '違規件數',
+                            data: [8, 12, 10, 18, 14],
+                            borderColor: '#3b82f6',
+                            backgroundColor: 'rgba(59, 130, 246, 0.1)',
+                            fill: true,
+                            tension: 0.4,
+                            pointBackgroundColor: '#3b82f6',
+                            pointRadius: 5,
+                            pointHoverRadius: 7
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: { 
+                            legend: { display: false },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return '違規件數: ' + context.parsed.y + ' 件';
+                                    }
+                                }
+                            }
+                        },
+                        scales: { 
+                            y: { 
+                                beginAtZero: true,
+                                ticks: { stepSize: 5 }
+                            } 
+                        }
+                    }
+                });
+            }
+
+            // 圓餅圖
+            const pieCanvas = document.getElementById('pieChart');
+            if (pieCanvas) {
+                chartInstances.pieChart = new Chart(pieCanvas, {
+                    type: 'doughnut',
+                    data: {
+                        labels: ['未戴安全帽', '未穿反光背心', '交叉作業', '闖入作業區', '非作業車輛'],
+                        datasets: [{
+                            data: [35, 25, 18, 15, 7],
+                            backgroundColor: ['#ef4444', '#f97316', '#a855f7', '#3b82f6', '#6b7280'],
+                            borderWidth: 2,
+                            borderColor: '#ffffff'
+                        }]
+                    },
+                    options: {
+                        responsive: true,
+                        maintainAspectRatio: false,
+                        plugins: {
+                            legend: {
+                                position: 'right',
+                                labels: { 
+                                    boxWidth: 12, 
+                                    font: { size: 11 },
+                                    padding: 15
+                                }
+                            },
+                            tooltip: {
+                                callbacks: {
+                                    label: function(context) {
+                                        return context.label + ': ' + context.parsed + '%';
+                                    }
+                                }
+                            }
+                        }
+                    }
+                });
+            }
+        }
+        
+        // 初始化
+        initRole();
+    </script>
+</body>
+</html>
