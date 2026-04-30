@@ -1,0 +1,252 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>2025 郵輪船期預報分析儀表板</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@300;400;500;700&display=swap');
+        body { font-family: 'Noto Sans TC', sans-serif; background-color: #f8fafc; }
+        .glass-card { background: rgba(255, 255, 255, 0.9); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.2); }
+        .gradient-bg { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); }
+    </style>
+</head>
+<body class="text-slate-800">
+
+    <!-- Header Area -->
+    <header class="gradient-bg text-white py-8 px-6 shadow-lg mb-8">
+        <div class="max-w-7xl mx-auto flex flex-col md:flex-row justify-between items-center">
+            <div>
+                <h1 class="text-3xl font-bold mb-2 flex items-center gap-2">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-8 w-8 text-blue-400" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+                    </svg>
+                    2025 郵輪船期預報分析
+                </h1>
+                <p class="text-slate-400">基於 285 筆預測數據的視覺化決策輔助系統</p>
+            </div>
+            <div class="mt-4 md:mt-0 text-sm text-slate-300 bg-slate-800/50 p-3 rounded-lg border border-slate-700">
+                數據更新日期：2025/01/10
+            </div>
+        </div>
+    </header>
+
+    <main class="max-w-7xl mx-auto px-6 pb-12">
+        
+        <!-- KPI Row -->
+        <div class="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-blue-500">
+                <p class="text-slate-500 text-sm font-medium">總預計航次</p>
+                <h3 class="text-3xl font-bold text-slate-900">285 <span class="text-sm font-normal text-slate-400">航次</span></h3>
+            </div>
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-emerald-500">
+                <p class="text-slate-500 text-sm font-medium">預估總人次</p>
+                <h3 class="text-3xl font-bold text-slate-900">1,014,350 <span class="text-sm font-normal text-slate-400">人次</span></h3>
+            </div>
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-amber-500">
+                <p class="text-slate-500 text-sm font-medium">首航航次佔比</p>
+                <h3 class="text-3xl font-bold text-slate-900">15.4% <span class="text-sm font-normal text-slate-400">初登場</span></h3>
+            </div>
+            <div class="glass-card p-6 rounded-2xl shadow-sm border-l-4 border-indigo-500">
+                <p class="text-slate-500 text-sm font-medium">平均載客率</p>
+                <h3 class="text-3xl font-bold text-slate-900">3,559 <span class="text-sm font-normal text-slate-400">人/航次</span></h3>
+            </div>
+        </div>
+
+        <!-- Main Charts Section -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+            <!-- Port Distribution -->
+            <div class="glass-card p-6 rounded-2xl shadow-md">
+                <h4 class="text-lg font-bold mb-6 flex items-center gap-2">
+                    各港別航次及人次佔比
+                </h4>
+                <div class="grid grid-cols-2 gap-4">
+                    <div class="relative h-64">
+                        <canvas id="voyagesChart"></canvas>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span class="text-xs text-slate-400">航次分佈</span>
+                        </div>
+                    </div>
+                    <div class="relative h-64">
+                        <canvas id="passengersChart"></canvas>
+                        <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                            <span class="text-xs text-slate-400">人次分佈</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="mt-6 space-y-2">
+                    <div class="flex justify-between items-center text-sm p-2 bg-slate-50 rounded">
+                        <span class="font-medium text-slate-600">主要亮點：</span>
+                        <span class="text-blue-600">基隆港佔總人次 71.5%，展現強大母港優勢。</span>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Monthly Trend -->
+            <div class="glass-card p-6 rounded-2xl shadow-md">
+                <h4 class="text-lg font-bold mb-6">年度航次趨勢 (1-12月)</h4>
+                <div class="h-64">
+                    <canvas id="trendChart"></canvas>
+                </div>
+                <div class="mt-8 flex gap-4">
+                    <div class="flex-1 p-3 bg-blue-50 rounded-lg text-center">
+                        <p class="text-xs text-blue-500 uppercase font-bold">旺季一 (春季)</p>
+                        <p class="text-sm font-semibold">3月 - 5月</p>
+                    </div>
+                    <div class="flex-1 p-3 bg-emerald-50 rounded-lg text-center">
+                        <p class="text-xs text-emerald-500 uppercase font-bold">旺季二 (夏季)</p>
+                        <p class="text-sm font-semibold">7月 - 8月</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Company Contribution Matrix -->
+        <div class="glass-card p-8 rounded-2xl shadow-md mb-8">
+            <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-8 gap-4">
+                <div>
+                    <h4 class="text-xl font-bold">郵輪公司貢獻度矩陣</h4>
+                    <p class="text-slate-500 text-sm">各港口前三大核心貢獻夥伴分析</p>
+                </div>
+                <div class="flex gap-2">
+                    <button class="px-4 py-2 bg-blue-600 text-white text-sm rounded-lg hover:bg-blue-700 transition">下載報表</button>
+                    <button class="px-4 py-2 border border-slate-200 text-sm rounded-lg hover:bg-slate-50 transition">切換視圖</button>
+                </div>
+            </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left">
+                    <thead>
+                        <tr class="border-b border-slate-100 text-slate-400 text-sm uppercase tracking-wider">
+                            <th class="pb-4 font-medium">港口</th>
+                            <th class="pb-4 font-medium">第一大貢獻者</th>
+                            <th class="pb-4 font-medium">第二大貢獻者</th>
+                            <th class="pb-4 font-medium">第三大貢獻者</th>
+                            <th class="pb-4 font-medium">營運亮點</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-slate-50">
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-4 font-bold text-blue-900">基隆港</td>
+                            <td class="py-4">地中海郵輪 (MSC)</td>
+                            <td class="py-4">麗星郵輪 (Star)</td>
+                            <td class="py-4">歌詩達 (Costa)</td>
+                            <td class="py-4"><span class="px-2 py-1 bg-indigo-100 text-indigo-700 text-xs rounded-full">高載客母港</span></td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-4 font-bold text-emerald-900">高雄港</td>
+                            <td class="py-4">歌詩達 (Costa)</td>
+                            <td class="py-4">荷美郵輪 (Holland)</td>
+                            <td class="py-4">名勝世界 (Resorts)</td>
+                            <td class="py-4"><span class="px-2 py-1 bg-emerald-100 text-emerald-700 text-xs rounded-full">雙母港策略</span></td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-4 font-bold text-amber-900">花蓮港</td>
+                            <td class="py-4">挪威郵輪 (NCL)</td>
+                            <td class="py-4">銀海郵輪 (Silversea)</td>
+                            <td class="py-4">公主郵輪 (Princess)</td>
+                            <td class="py-4"><span class="px-2 py-1 bg-amber-100 text-amber-700 text-xs rounded-full">觀光掛靠</span></td>
+                        </tr>
+                        <tr class="hover:bg-slate-50 transition">
+                            <td class="py-4 font-bold text-purple-900">澎湖港</td>
+                            <td class="py-4">麗星郵輪 (Star)</td>
+                            <td class="py-4">龐洛郵輪 (Ponant)</td>
+                            <td class="py-4">其他探險郵輪</td>
+                            <td class="py-4"><span class="px-2 py-1 bg-purple-100 text-purple-700 text-xs rounded-full">跳島旅遊</span></td>
+                        </tr>
+                    </tbody>
+                </table>
+            </div>
+        </div>
+
+    </main>
+
+    <footer class="bg-slate-900 text-slate-500 py-12 text-center border-t border-slate-800">
+        <p class="mb-2">© 2025 郵輪產業大數據分析平臺</p>
+        <p class="text-xs">本頁面為技術雛型展示，數據來源自「2025年郵輪船期預報表」</p>
+    </footer>
+
+    <script>
+        const ports = ['基隆', '高雄', '花蓮', '澎湖', '其他'];
+        const voyageData = [178, 56, 24, 15, 12];
+        const passengerData = [725, 182, 58, 29, 20]; // 萬人次單位
+
+        // Colors
+        const primaryColors = ['#2563eb', '#10b981', '#f59e0b', '#8b5cf6', '#94a3b8'];
+
+        // Voyages Chart
+        new Chart(document.getElementById('voyagesChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ports,
+                datasets: [{
+                    data: voyageData,
+                    backgroundColor: primaryColors,
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // Passengers Chart
+        new Chart(document.getElementById('passengersChart'), {
+            type: 'doughnut',
+            data: {
+                labels: ports,
+                datasets: [{
+                    data: passengerData,
+                    backgroundColor: primaryColors,
+                    borderWidth: 0,
+                    hoverOffset: 15
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { position: 'bottom', labels: { boxWidth: 12, padding: 15 } }
+                },
+                cutout: '70%'
+            }
+        });
+
+        // Trend Chart
+        new Chart(document.getElementById('trendChart'), {
+            type: 'line',
+            data: {
+                labels: ['1月', '2月', '3月', '4月', '5月', '6月', '7月', '8月', '9月', '10月', '11月', '12月'],
+                datasets: [{
+                    label: '預計航次',
+                    data: [12, 18, 42, 38, 35, 15, 28, 30, 22, 20, 15, 10],
+                    borderColor: '#2563eb',
+                    backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                    fill: true,
+                    tension: 0.4,
+                    pointRadius: 4,
+                    pointBackgroundColor: '#2563eb'
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false }
+                },
+                scales: {
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9' } },
+                    x: { grid: { display: false } }
+                }
+            }
+        });
+    </script>
+</body>
+</html>
