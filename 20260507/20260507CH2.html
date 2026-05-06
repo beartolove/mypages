@@ -1,0 +1,847 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI課程分享 CH2｜實例示範</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans TC", "Inter", sans-serif;
+      background: #F8F6F1;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slideshow {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 100px;
+      z-index: 1;
+    }
+
+    .slide.active { display: flex; }
+
+    .slide-content {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .slide.active .slide-content { animation: fadeIn 0.35s ease; }
+
+    /* NAV */
+    .nav-bar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: white;
+      border-radius: 50px;
+      padding: 10px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #2D2D2D;
+      cursor: pointer;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nav-btn:disabled { color: #ccc; cursor: default; }
+    .nav-btn:disabled:hover { background: none; }
+
+    .page-indicator {
+      font-size: 15px;
+      color: #666;
+      min-width: 60px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 2px 6px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .page-indicator:hover { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+
+    .page-jump-input {
+      width: 48px;
+      border: 2px solid #2CC5B5;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      text-align: center;
+      color: #2D2D2D;
+      background: white;
+      outline: none;
+      padding: 2px 4px;
+    }
+
+    .slide-footer {
+      position: fixed;
+      bottom: 20px; right: 28px;
+      font-size: 15px; font-weight: 600; color: #aaa;
+      letter-spacing: 0.02em;
+      z-index: 99; white-space: nowrap;
+      user-select: none;
+    }
+
+    /* COMPONENTS */
+    .badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.15);
+      color: #F5A623;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .badge-teal {
+      background: rgba(44,197,181,0.15);
+      color: #2CC5B5;
+    }
+
+    .badge-purple {
+      background: rgba(139,92,246,0.15);
+      color: #8B5CF6;
+    }
+
+    .title-main {
+      font-size: clamp(38px, 5.5vw, 60px);
+      font-weight: 900;
+      color: #2D2D2D;
+      line-height: 1.2;
+      margin-bottom: 14px;
+    }
+    .title-accent { color: #2CC5B5; }
+    .title-orange { color: #F5A623; }
+
+    .subtitle {
+      font-size: 18px;
+      color: #666;
+      line-height: 1.6;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+      text-align: left;
+    }
+
+    .card-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: #2D2D2D;
+      margin-bottom: 10px;
+    }
+
+    .card-text {
+      font-size: 15px;
+      color: #666;
+      line-height: 1.7;
+    }
+
+    .section-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #999;
+      letter-spacing: 0.1em;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .page-title {
+      font-size: clamp(26px, 4vw, 40px);
+      font-weight: 900;
+      color: #2D2D2D;
+      margin-bottom: 24px;
+      line-height: 1.25;
+    }
+
+    .icon-circle {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 14px;
+    }
+    .icon-circle.teal   { background: rgba(44,197,181,0.15); }
+    .icon-circle.orange { background: rgba(245,166,35,0.15); }
+    .icon-circle.red    { background: rgba(229,57,53,0.15); }
+    .icon-circle.purple { background: rgba(139,92,246,0.15); }
+    .icon-circle.blue   { background: rgba(59,130,246,0.15); }
+
+    .icon-square {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .icon-square.teal   { background: #2CC5B5; }
+    .icon-square.orange { background: #F5A623; }
+    .icon-square.purple { background: #8B5CF6; }
+    .icon-square.red    { background: #E53935; }
+    .icon-square.blue   { background: #3B82F6; }
+
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 18px; }
+    .two-col   { display: grid; grid-template-columns: repeat(2,1fr); gap: 18px; }
+    .quad-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      padding: 14px 18px;
+      background: #F8F6F1;
+      border-radius: 14px;
+      margin-bottom: 10px;
+      text-align: left;
+    }
+    .step-num {
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #2CC5B5;
+      color: white;
+      font-weight: 700;
+      font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .step-content { flex: 1; }
+    .step-title { font-size: 15px; font-weight: 700; color: #2D2D2D; margin-bottom: 4px; }
+    .step-desc  { font-size: 13px; color: #666; line-height: 1.6; }
+
+    .tag {
+      display: inline-block;
+      background: rgba(44,197,181,0.12);
+      color: #2CC5B5;
+      border-radius: 8px;
+      padding: 3px 10px;
+      font-size: 12px;
+      font-weight: 600;
+      margin: 3px 3px 3px 0;
+    }
+
+    .tag-orange {
+      background: rgba(245,166,35,0.12);
+      color: #F5A623;
+    }
+
+    .highlight-box {
+      background: rgba(44,197,181,0.1);
+      border-left: 4px solid #2CC5B5;
+      border-radius: 0 12px 12px 0;
+      padding: 14px 18px;
+      text-align: left;
+      font-size: 14px;
+      color: #444;
+      line-height: 1.7;
+      margin-bottom: 10px;
+    }
+
+    .code-block {
+      background: #2D2D2D;
+      border-radius: 12px;
+      padding: 16px 20px;
+      text-align: left;
+      font-size: 13px;
+      color: #A8FF78;
+      line-height: 1.8;
+      font-family: "Courier New", monospace;
+      margin-bottom: 12px;
+      overflow: hidden;
+    }
+
+    .stat-big {
+      font-size: 52px;
+      font-weight: 900;
+      color: #2CC5B5;
+      line-height: 1;
+    }
+
+    .dot-list {
+      list-style: none;
+      text-align: left;
+      font-size: 15px;
+      color: #444;
+      line-height: 1;
+    }
+    .dot-list li {
+      padding: 7px 0;
+      border-bottom: 1px solid rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .dot-list li:last-child { border-bottom: none; }
+
+    .style-chip {
+      display: inline-block;
+      background: white;
+      border: 1.5px solid rgba(0,0,0,0.1);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 13px;
+      color: #555;
+      margin: 4px;
+      font-weight: 500;
+    }
+  </style>
+</head>
+<body>
+<div class="slideshow">
+
+  <!-- ===== P1 封面 ===== -->
+  <section class="slide active" data-index="0">
+    <div class="slide-content">
+      <div class="badge">AI 應用實務工作坊</div>
+      <div class="title-main">
+        CH2 <span class="title-accent">實例示範</span>
+      </div>
+      <div class="title-main" style="font-size:clamp(22px,3.5vw,38px);font-weight:700;color:#666;margin-bottom:28px;">
+        Gemini 全功能實戰演練
+      </div>
+      <div class="three-col" style="margin-top:32px;">
+        <div class="card" style="text-align:center;">
+          <div class="icon-circle teal" style="margin-bottom:10px;">💬</div>
+          <div style="font-weight:700;color:#2D2D2D;font-size:15px;">Chat</div>
+          <div style="font-size:13px;color:#999;margin-top:4px;">純粹對話</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="icon-circle orange" style="margin-bottom:10px;">✏️</div>
+          <div style="font-weight:700;color:#2D2D2D;font-size:15px;">Canvas</div>
+          <div style="font-size:13px;color:#999;margin-top:4px;">人機共筆寫作</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div class="icon-circle purple" style="margin-bottom:10px;">📊</div>
+          <div style="font-weight:700;color:#2D2D2D;font-size:15px;">Sheets</div>
+          <div style="font-size:13px;color:#999;margin-top:4px;">試算表整合</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P2 章節一 Gemini Chat ===== -->
+  <section class="slide" data-index="1">
+    <div class="slide-content">
+      <div class="badge">第一章節</div>
+      <div class="title-main">Gemini <span class="title-accent">Chat</span></div>
+      <div class="subtitle" style="margin-bottom:32px;">純粹對話模式・兩種入口</div>
+      <div class="two-col">
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <div class="icon-square blue">🔍</div>
+            <div class="card-title" style="margin:0;font-size:18px;">Google Search<br><span style="color:#2CC5B5;font-size:14px;">AI 模式</span></div>
+          </div>
+          <ul class="dot-list">
+            <li>🏀 <span>搜尋 NBA 今年戰績前5名</span></li>
+            <li>📋 <span>平均得失分、勝負場次表格</span></li>
+            <li>⭐ <span>明星球員近三年各項數據</span></li>
+            <li>📄 <span>可匯出至文件</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:14px;">
+            <div class="icon-square teal">✨</div>
+            <div class="card-title" style="margin:0;font-size:18px;">Gemini<br><span style="color:#2CC5B5;font-size:14px;">完整版</span></div>
+          </div>
+          <ul class="dot-list">
+            <li>🏀 <span>相同 NBA 戰績查詢</span></li>
+            <li>📋 <span>雙表格完整輸出</span></li>
+            <li>📄 <span>匯出至 Google 文件</span></li>
+            <li>📊 <span>匯出至 Google 試算表</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P3 提示詞範例 Chat ===== -->
+  <section class="slide" data-index="2">
+    <div class="slide-content">
+      <div class="badge badge-teal">提示詞範例</div>
+      <div class="page-title">NBA 查詢提示詞</div>
+      <div class="code-block">
+🏀 幫我搜尋NBA今年戰績前5名隊伍<br><br>
+一、以表格列出今年的<br>
+　　平均得失分、勝負場次<br><br>
+二、以表格列出該隊伍明星球員<br>
+　　及近三年各項數據
+      </div>
+      <div class="two-col" style="margin-top:12px;">
+        <div class="highlight-box">
+          <strong>📄 Google Search AI 模式</strong><br>
+          可匯出至文件
+        </div>
+        <div class="highlight-box" style="border-color:#F5A623;background:rgba(245,166,35,0.08);">
+          <strong>📊 Gemini 完整版</strong><br>
+          可匯出至 Google 文件 ＋ 試算表
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P4 章節二 Gemini Canvas ===== -->
+  <section class="slide" data-index="3">
+    <div class="slide-content">
+      <div class="badge" style="background:rgba(139,92,246,0.15);color:#8B5CF6;">第二章節</div>
+      <div class="title-main">Gemini <span style="color:#8B5CF6;">Canvas</span></div>
+      <div class="subtitle" style="margin-bottom:28px;">人機共筆寫作・六大 Demo 實戰</div>
+      <div class="quad-grid">
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square purple">🎬</div>
+          <div><div class="card-title">Demo 1</div><div class="card-text">YouTube 影片字幕摘要</div></div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square teal">📝</div>
+          <div><div class="card-title">Demo 2</div><div class="card-text">會議紀錄整理</div></div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square orange">📈</div>
+          <div><div class="card-title">Demo 3-1</div><div class="card-text">郵輪數據圖表分析</div></div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square blue">🎛️</div>
+          <div><div class="card-title">Demo 3-2</div><div class="card-text">郵輪目標互動模擬</div></div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-top:14px;">
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square red">🖼️</div>
+          <div><div class="card-title">Demo 4</div><div class="card-text">15頁專業簡報製作</div></div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square teal">🗂️</div>
+          <div><div class="card-title">Demo 5 + 6</div><div class="card-text">系統雛型 ＆ 報名統計</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P5 Demo 1 YouTube摘要 ===== -->
+  <section class="slide" data-index="4">
+    <div class="slide-content">
+      <div class="badge badge-purple">Demo 1</div>
+      <div class="page-title">🎬 YouTube 影片摘要</div>
+      <div class="code-block">
+針對所提供的 Youtube 影片詳讀後整理<br><br>
+一、核心概念<br><br>
+二、步驟、時間(timestamp)、<br>
+　　提示詞的表格
+      </div>
+      <div class="three-col" style="margin-top:14px;">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">✏️</div>
+          <div class="card-title" style="font-size:14px;">可共同編輯</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">📄</div>
+          <div class="card-title" style="font-size:14px;">匯出 Google 文件</div>
+        </div>
+        <div class="card" style="text-align:center;">
+          <div style="font-size:28px;margin-bottom:8px;">🌐</div>
+          <div class="card-title" style="font-size:14px;">建立網頁／資訊圖表</div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:12px;">
+        💡 還可建立：<span class="tag">測驗</span><span class="tag">學習卡</span><span class="tag">語音摘要</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P6 Demo 2 會議紀錄 ===== -->
+  <section class="slide" data-index="5">
+    <div class="slide-content">
+      <div class="badge badge-teal">Demo 2</div>
+      <div class="page-title">📝 會議紀錄整理</div>
+      <div class="two-col">
+        <div class="card">
+          <div class="section-label">角色設定</div>
+          <div style="font-size:14px;color:#444;line-height:1.8;">
+            🧑‍💼 <strong>高階執行長特助</strong> ＋ <strong>管理顧問</strong><br>
+            從混亂逐字稿中精準提取核心決策、<br>辨識潛在風險
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-label">輸出結構</div>
+          <ul class="dot-list" style="font-size:13px;">
+            <li>📌 <span>會議概覽</span></li>
+            <li>💡 <span>決策摘要 (Key Decisions)</span></li>
+            <li>🚀 <span>待辦事項 Action Items（含表格）</span></li>
+            <li>🔍 <span>懸而未決事項</span></li>
+          </ul>
+        </div>
+      </div>
+      <div class="quad-grid" style="margin-top:14px;">
+        <div class="highlight-box">
+          <strong>🔖 防呆標記</strong><br>
+          <span class="tag">[建議]</span><span class="tag">[待裁示]</span> 主動加註
+        </div>
+        <div class="highlight-box" style="border-color:#8B5CF6;background:rgba(139,92,246,0.08);">
+          <strong>✂️ 精準過濾</strong><br>
+          自動過濾冗餘寒暄、發散討論
+        </div>
+        <div class="highlight-box" style="border-color:#F5A623;background:rgba(245,166,35,0.08);">
+          <strong>📋 語氣專業</strong><br>
+          口語化 → 商業書面用語
+        </div>
+        <div class="highlight-box" style="border-color:#E53935;background:rgba(229,57,53,0.06);">
+          <strong>📊 結構化排版</strong><br>
+          Markdown + 表格分層呈現
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P7 Demo 3-1 數據分析 ===== -->
+  <section class="slide" data-index="6">
+    <div class="slide-content">
+      <div class="badge" style="background:rgba(245,166,35,0.15);color:#F5A623;">Demo 3-1</div>
+      <div class="page-title">📈 郵輪數據圖表分析</div>
+      <div class="code-block">
+針對各港人次比例繪製成圓餅圖<br>
+包括萬人次、比例進行標示
+      </div>
+      <div class="two-col" style="margin-top:16px;">
+        <div class="card" style="text-align:center;">
+          <div style="font-size:40px;margin-bottom:12px;">🥧</div>
+          <div class="card-title">圓餅圖輸出</div>
+          <div class="card-text">各港人次比例<br>含萬人次標示</div>
+        </div>
+        <div class="card">
+          <div class="section-label" style="margin-bottom:12px;">技術說明</div>
+          <ul class="dot-list" style="font-size:14px;">
+            <li>🌐 <span>本質：生成一頁式 HTML 網頁</span></li>
+            <li>📊 <span>呈現數位儀表板效果</span></li>
+            <li>📋 <span>可複製貼到記事本存成 .html</span></li>
+            <li>🔧 <span>出現錯誤點「修正錯誤」即可</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P8 Demo 3-2 數據模擬 ===== -->
+  <section class="slide" data-index="7">
+    <div class="slide-content">
+      <div class="badge" style="background:rgba(59,130,246,0.15);color:#3B82F6;">Demo 3-2</div>
+      <div class="page-title">🎛️ 郵輪目標互動模擬</div>
+      <div class="code-block">
+幫我做一個模擬互動一頁網頁<br><br>
+可輸入全臺總人次目標<br>
+依原比例建議各港應增加的人次及成長比例<br>
+也可手動下修某港目標值，分攤到其他港
+      </div>
+      <div class="two-col" style="margin-top:14px;">
+        <div class="card" style="text-align:left;">
+          <div class="section-label">功能特色</div>
+          <ul class="dot-list" style="font-size:14px;">
+            <li>🎯 <span>輸入全臺人次目標</span></li>
+            <li>📐 <span>按原比例分配各港</span></li>
+            <li>🔢 <span>建議各港增加人次</span></li>
+            <li>🔄 <span>手動下修自動分攤</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="section-label">UI 優化提示詞</div>
+          <div style="font-size:13px;color:#444;line-height:1.8;background:#F8F6F1;border-radius:10px;padding:12px;">
+            整體高度不要太高<br>各港間距縮小<br>scrollbar <strong>不同色條</strong>區分<br>原數據 vs 新調整結果
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P9 Demo 4 簡報製作 ===== -->
+  <section class="slide" data-index="8">
+    <div class="slide-content">
+      <div class="badge" style="background:rgba(229,57,53,0.12);color:#E53935;">Demo 4</div>
+      <div class="page-title">🖼️ 15 頁專業簡報製作</div>
+      <div class="two-col">
+        <div>
+          <div class="code-block" style="font-size:12px;">
+幫我截取報告重點<br>生成 15 頁簡報 (Google Slide)<br><br>
+含：封面、目錄<br>各重點頁：標題＋條列重點＋意象<br>結語<br>風格：Executive Corporate
+          </div>
+          <div class="highlight-box">
+            ✅ 可匯出為 <strong>Google Slide</strong><br>
+            ✅ 再用「保留這版，改為 Bold Typography」迭代
+          </div>
+        </div>
+        <div class="card">
+          <div class="section-label">常用風格一覽</div>
+          <div style="margin-top:6px;line-height:2;">
+            <span class="style-chip">極簡主義</span>
+            <span class="style-chip">商務執行風</span>
+            <span class="style-chip">科技前衛</span>
+            <span class="style-chip">資訊圖表</span>
+            <span class="style-chip">現代扁平</span>
+            <span class="style-chip">工業硬派</span>
+            <span class="style-chip" style="border-color:#2CC5B5;color:#2CC5B5;font-weight:700;">大膽文字排版 ★</span>
+            <span class="style-chip">自然永續</span>
+            <span class="style-chip">創意幾何</span>
+            <span class="style-chip">學術研究</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P10 Demo 5 系統需求雛型 ===== -->
+  <section class="slide" data-index="9">
+    <div class="slide-content">
+      <div class="badge badge-teal">Demo 5</div>
+      <div class="page-title">🗂️ 系統需求雛型開發</div>
+      <div class="step-row">
+        <div class="step-num">1</div>
+        <div class="step-content">
+          <div class="step-title">分析需求（Chat 模式）</div>
+          <div class="step-desc">請 AI 閱讀檔案後，建議儀表板開發規劃：年度航次人次統計、各港別分析、各船公司貢獻度</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">2</div>
+        <div class="step-content">
+          <div class="step-title">雛型圖像化（Banana 生圖）</div>
+          <div class="step-desc">「生成圖片 → 將以上內容做成資訊圖表進行雛型展示」</div>
+        </div>
+      </div>
+      <div class="step-row">
+        <div class="step-num">3</div>
+        <div class="step-content">
+          <div class="step-title">雛型網頁化（Canvas）</div>
+          <div class="step-desc">「將以上內容做成一頁式互動網頁進行雛型展示」</div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:4px;">
+        💡 先 Chat 確認理解內容 → 再 Canvas 產出互動網頁雛型，效果更佳！
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P11 Demo 6 報名統計 ===== -->
+  <section class="slide" data-index="10">
+    <div class="slide-content">
+      <div class="badge badge-purple">Demo 6</div>
+      <div class="page-title">📊 報名結果統計</div>
+      <div class="subtitle" style="margin-bottom:20px;">Gemini in Google Sheets</div>
+      <div class="two-col">
+        <div class="card">
+          <div class="section-label">操作流程</div>
+          <ul class="dot-list" style="font-size:14px;">
+            <li>⭐ <span>在試算表右上角按星星啟動</span></li>
+            <li>🔢 <span>統計各場次報名人數</span></li>
+            <li>🏢 <span>統計各單位報名人數（由大到小）</span></li>
+            <li>📅 <span>分日期場次統計各單位人數</span></li>
+          </ul>
+        </div>
+        <div class="card">
+          <div class="section-label">進階應用</div>
+          <div style="margin-top:8px;">
+            <div class="step-row" style="margin-bottom:8px;padding:10px 14px;">
+              <div class="icon-square teal" style="width:36px;height:36px;font-size:16px;">📄</div>
+              <div class="step-content">
+                <div class="step-title" style="font-size:14px;">匯出至 Google 文件</div>
+              </div>
+            </div>
+            <div class="step-row" style="padding:10px 14px;">
+              <div class="icon-square orange" style="width:36px;height:36px;font-size:16px;">🎨</div>
+              <div class="step-content">
+                <div class="step-title" style="font-size:14px;">化為資訊圖表（Nano Banana）</div>
+                <div class="step-desc" style="font-size:12px;">可愛版專業資訊圖表，8K 解析度，16:9</div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P12 生圖提示詞 Demo 6 ===== -->
+  <section class="slide" data-index="11">
+    <div class="slide-content">
+      <div class="badge badge-teal">Demo 6｜生圖提示詞</div>
+      <div class="page-title">🎨 資訊圖表生圖提示詞</div>
+      <div class="code-block" style="font-size:13px;line-height:2;">
+生成圖片<br>
+將附件文字檔核心重點化簡化文字<br>
+並取代為圖解，化為可愛版專業資訊圖表<br><br>
+正體中文、解析度 8k<br>
+每個字的文字筆畫清楚、寬高比 16:9<br><br>
+標題：AI應用實務工作坊-報名統計<br>
+　　　(20260506 08:00 統計)<br><br>
+右下角：製表人：總公司資訊處
+      </div>
+      <div class="three-col" style="margin-top:14px;">
+        <div class="card" style="text-align:center;padding:16px;">
+          <div style="font-size:22px;margin-bottom:6px;">🖼️</div>
+          <div style="font-size:13px;font-weight:600;color:#2D2D2D;">可愛版<br>專業圖表</div>
+        </div>
+        <div class="card" style="text-align:center;padding:16px;">
+          <div style="font-size:22px;margin-bottom:6px;">🔤</div>
+          <div style="font-size:13px;font-weight:600;color:#2D2D2D;">正體中文<br>筆畫清晰</div>
+        </div>
+        <div class="card" style="text-align:center;padding:16px;">
+          <div style="font-size:22px;margin-bottom:6px;">📐</div>
+          <div style="font-size:13px;font-weight:600;color:#2D2D2D;">8K 畫質<br>16:9 比例</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P13 總結 ===== -->
+  <section class="slide" data-index="12">
+    <div class="slide-content">
+      <div class="badge">課程總結</div>
+      <div class="title-main">今日學會的<span class="title-accent">六大技能</span></div>
+      <div class="quad-grid" style="margin-top:24px;">
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square blue">🔍</div>
+          <div><div class="card-title">AI 搜尋</div><div class="card-text" style="font-size:13px;">Google Search AI 模式即時查詢</div></div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square teal">📝</div>
+          <div><div class="card-title">文件摘要</div><div class="card-text" style="font-size:13px;">影片、會議紀錄快速整理</div></div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square orange">📊</div>
+          <div><div class="card-title">數據視覺化</div><div class="card-text" style="font-size:13px;">圖表 ＋ 互動網頁一頁生成</div></div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square red">🖼️</div>
+          <div><div class="card-title">簡報製作</div><div class="card-text" style="font-size:13px;">10種風格 Google Slide 輸出</div></div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-top:14px;">
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square purple">🗂️</div>
+          <div><div class="card-title">系統雛型</div><div class="card-text" style="font-size:13px;">Chat→圖像→網頁三步驟快速驗證</div></div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:12px;align-items:flex-start;">
+          <div class="icon-square teal">📈</div>
+          <div><div class="card-title">試算表整合</div><div class="card-text" style="font-size:13px;">Gemini in Sheets ＋ 資訊圖表生成</div></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 頁腳出處 -->
+  <footer class="slide-footer">🐻 林熊熊分享</footer>
+
+  <!-- 導覽列 -->
+  <nav class="nav-bar">
+    <button class="nav-btn" id="prevBtn">‹</button>
+    <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
+    <span style="color:#ccc">/</span>
+    <span id="totalPages" style="font-size:15px;color:#999"></span>
+    <button class="nav-btn" id="nextBtn">›</button>
+  </nav>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const totalPagesEl  = document.getElementById('totalPages');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+  let current = 0;
+  totalPagesEl.textContent = slides.length;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    updateIndicator();
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+  }
+
+  function updateIndicator() {
+    pageIndicator.textContent = current + 1;
+  }
+
+  pageIndicator.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = 1;
+    input.max = slides.length;
+    input.value = current + 1;
+    input.className = 'page-jump-input';
+    pageIndicator.replaceWith(input);
+    input.select();
+
+    function commit() {
+      const n = parseInt(input.value, 10);
+      input.replaceWith(pageIndicator);
+      if (!isNaN(n)) goTo(n - 1);
+      else updateIndicator();
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { input.replaceWith(pageIndicator); updateIndicator(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+    });
+    input.addEventListener('blur', commit);
+    input.addEventListener('input', () => {
+      if (input.value < 1) input.value = 1;
+      if (input.value > slides.length) input.value = slides.length;
+    });
+  });
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
