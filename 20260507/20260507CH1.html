@@ -1,0 +1,639 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI課程分享 CH1・課前雜談</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans TC", "Inter", sans-serif;
+      background: #F8F6F1;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slideshow {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 100px;
+      z-index: 1;
+    }
+
+    .slide.active { display: flex; }
+
+    .slide-content {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to   { opacity: 1; transform: translateY(0); }
+    }
+    .slide.active .slide-content { animation: fadeIn 0.35s ease; }
+
+    /* NAV */
+    .nav-bar {
+      position: fixed;
+      bottom: 30px; left: 50%;
+      transform: translateX(-50%);
+      display: flex; align-items: center; gap: 20px;
+      background: white;
+      border-radius: 50px;
+      padding: 10px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      z-index: 100;
+    }
+    .nav-btn {
+      background: none; border: none;
+      font-size: 24px; color: #2D2D2D;
+      cursor: pointer;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nav-btn:disabled { color: #ccc; cursor: default; }
+    .nav-btn:disabled:hover { background: none; }
+
+    .page-indicator {
+      font-size: 15px; color: #666;
+      min-width: 72px; text-align: center;
+      cursor: pointer;
+      border-radius: 8px; padding: 2px 6px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .page-indicator:hover { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+    .page-jump-input {
+      width: 48px;
+      border: 2px solid #2CC5B5;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      text-align: center; color: #2D2D2D;
+      background: white; outline: none;
+      padding: 2px 4px;
+    }
+
+    /* FOOTER */
+    .slide-footer {
+      position: fixed;
+      bottom: 20px; right: 28px;
+      font-size: 15px; font-weight: 600; color: #aaa;
+      letter-spacing: 0.02em;
+      z-index: 99; white-space: nowrap;
+      user-select: none;
+    }
+
+    /* CARD */
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    /* BADGE */
+    .badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.15);
+      color: #F5A623;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px; font-weight: 500;
+      margin-bottom: 24px;
+    }
+    .badge.teal {
+      background: rgba(44,197,181,0.15);
+      color: #2CC5B5;
+    }
+    .badge.red {
+      background: rgba(229,57,53,0.12);
+      color: #E53935;
+    }
+
+    /* TITLES */
+    .title-main {
+      font-size: clamp(36px, 5.5vw, 60px);
+      font-weight: 900; color: #2D2D2D;
+      line-height: 1.2; margin-bottom: 16px;
+    }
+    .title-accent { color: #2CC5B5; }
+    .title-sub {
+      font-size: 18px; color: #666;
+      font-weight: 400; margin-bottom: 32px;
+    }
+    .section-title {
+      font-size: 28px; font-weight: 800;
+      color: #2D2D2D; margin-bottom: 28px;
+    }
+
+    /* ICON */
+    .icon-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px;
+    }
+    .icon-circle.teal  { background: rgba(44,197,181,0.15); }
+    .icon-circle.orange{ background: rgba(245,166,35,0.15); }
+    .icon-circle.red   { background: rgba(229,57,53,0.12); }
+    .icon-circle.purple{ background: rgba(139,92,246,0.15); }
+
+    .icon-square {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px; color: white;
+      margin-bottom: 16px;
+    }
+    .icon-square.teal   { background: #2CC5B5; }
+    .icon-square.orange { background: #F5A623; }
+    .icon-square.purple { background: #8B5CF6; }
+    .icon-square.red    { background: #E53935; }
+
+    /* GRIDS */
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .two-col   { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+    .quad-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+
+    /* COMPARE */
+    .compare-card { border-radius: 16px; padding: 24px; text-align: left; }
+    .compare-card.positive { background: rgba(44,197,181,0.1); }
+    .compare-card.negative { background: rgba(229,57,53,0.08); }
+    .compare-label { font-size: 13px; color: #999; margin-bottom: 10px; }
+    .compare-value { font-size: 20px; font-weight: 700; }
+    .compare-value.teal { color: #2CC5B5; }
+    .compare-value.red  { color: #E53935; }
+
+    /* LIST */
+    .item-list { text-align: left; margin-top: 16px; }
+    .item-list li {
+      list-style: none;
+      padding: 10px 14px;
+      margin-bottom: 8px;
+      background: rgba(44,197,181,0.06);
+      border-left: 3px solid #2CC5B5;
+      border-radius: 8px;
+      font-size: 16px; color: #2D2D2D;
+      line-height: 1.6;
+    }
+    .item-list li .sub {
+      font-size: 14px; color: #777;
+      margin-top: 4px;
+    }
+
+    /* HIGHLIGHT BOX */
+    .highlight-box {
+      background: rgba(44,197,181,0.08);
+      border: 1.5px solid rgba(44,197,181,0.3);
+      border-radius: 14px;
+      padding: 20px 28px;
+      margin: 16px 0;
+      font-size: 17px; font-weight: 600;
+      color: #2D2D2D; text-align: left;
+    }
+    .highlight-box .em { color: #2CC5B5; }
+    .highlight-box.warn {
+      background: rgba(229,57,53,0.06);
+      border-color: rgba(229,57,53,0.25);
+    }
+    .highlight-box.warn .em { color: #E53935; }
+
+    /* STAT */
+    .stat-num {
+      font-size: clamp(44px, 7vw, 72px);
+      font-weight: 900; color: #E53935;
+      line-height: 1;
+    }
+    .stat-label { font-size: 15px; color: #666; margin-top: 6px; }
+
+    /* TAG ROW */
+    .tag-row { display: flex; flex-wrap: wrap; gap: 10px; justify-content: center; margin-top: 20px; }
+    .tag {
+      background: white;
+      border: 1.5px solid #e0e0e0;
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-size: 14px; color: #555;
+    }
+
+    /* ARROW */
+    .arrow { font-size: 22px; color: #2CC5B5; margin: 8px 0; }
+  </style>
+</head>
+<body>
+<div class="slideshow">
+
+  <!-- ===== P1 封面 ===== -->
+  <section class="slide active" data-index="0">
+    <div class="slide-content">
+      <div class="badge">2026 AI 課程分享</div>
+      <div class="title-main">
+        課前<span class="title-accent">雜談</span>
+      </div>
+      <div class="title-sub">CH1・學AI之前，先想清楚這些事</div>
+      <div class="tag-row">
+        <span class="tag">🤔 為何學AI</span>
+        <span class="tag">💰 要不要買單</span>
+        <span class="tag">🧠 如何理解AI</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P2 一、為何要學AI？(時代＋政策) ===== -->
+  <section class="slide" data-index="1">
+    <div class="slide-content">
+      <div class="badge">第一章</div>
+      <div class="section-title">一、為何要學 AI？</div>
+      <div class="two-col">
+        <div class="card" style="text-align:left">
+          <div class="icon-circle teal" style="margin:0 0 16px 0">🌐</div>
+          <div style="font-size:18px;font-weight:700;color:#2D2D2D;margin-bottom:10px">時代所趨</div>
+          <div style="font-size:15px;color:#555;line-height:1.7">
+            AI 跟電腦、網路、手機一樣，<br>
+            正在成為<span style="color:#2CC5B5;font-weight:700">普及科技</span>。<br>
+            這一波沒搭上，就是落後。
+          </div>
+        </div>
+        <div class="card" style="text-align:left">
+          <div class="icon-circle orange" style="margin:0 0 16px 0">🏛️</div>
+          <div style="font-size:18px;font-weight:700;color:#2D2D2D;margin-bottom:10px">政策支援</div>
+          <div style="font-size:15px;color:#555;line-height:1.7">
+            行政院蘇俊榮人事長<br>
+            <span style="color:#F5A623;font-weight:700">親自推廣</span>，<br>
+            交通部下亦有相關政策配合。
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P3 個人競爭力 ===== -->
+  <section class="slide" data-index="2">
+    <div class="slide-content">
+      <div class="badge teal">個人競爭力</div>
+      <div class="section-title">會 AI 的人，做得到什麼？</div>
+      <div class="card">
+        <ul class="item-list">
+          <li>
+            🔄 <strong>能力轉型</strong>：從「會使用AI工具」升級到「把AI當員工」
+          </li>
+          <li>
+            ⏱️ <strong style="color:#2CC5B5">70% 工作轉給AI</strong>，多出時間做更有價值的事
+          </li>
+          <li>
+            📚 多元學習<strong>指揮AI的能力</strong>，成為懂得調度的人
+          </li>
+          <li>
+            🏢 建立<strong style="color:#F5A623">一人公司思維</strong> ＋ 被動收入的可能性
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P4 二、我需要買單嗎？核心問題 ===== -->
+  <section class="slide" data-index="3">
+    <div class="slide-content">
+      <div class="badge">第二章</div>
+      <div class="section-title">二、我需要自己為 AI 買單嗎？</div>
+      <div class="highlight-box" style="text-align:center;font-size:20px;margin-bottom:24px">
+        真正的問題是：<span class="em">你有多想投資自己？</span>
+      </div>
+      <div class="two-col">
+        <div class="card" style="text-align:left">
+          <div style="font-size:13px;color:#999;margin-bottom:8px">🎯 目標一</div>
+          <div style="font-size:16px;color:#2D2D2D;line-height:1.6">
+            運用AI提升<strong>工作效率</strong>，<br>做到原來做不到的事
+          </div>
+        </div>
+        <div class="card" style="text-align:left">
+          <div style="font-size:13px;color:#999;margin-bottom:8px">🚀 目標二</div>
+          <div style="font-size:16px;color:#2D2D2D;line-height:1.6">
+            運用AI踏入<br><strong style="color:#2CC5B5">新的跨領域</strong>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P5 每月買哪種AI ===== -->
+  <section class="slide" data-index="4">
+    <div class="slide-content">
+      <div class="badge teal">採購策略</div>
+      <div class="section-title">每個月要買單哪幾種 AI？</div>
+      <div class="two-col">
+        <div class="card compare-card positive" style="text-align:left">
+          <div class="compare-label">策略一</div>
+          <div class="compare-value teal" style="margin-bottom:12px">買 1 種</div>
+          <div style="font-size:15px;color:#444;line-height:1.7">
+            專注單一平台，<br>但需要適應它的<strong>缺點與限制</strong>。
+          </div>
+        </div>
+        <div class="card compare-card negative" style="text-align:left">
+          <div class="compare-label">策略二</div>
+          <div class="compare-value red" style="margin-bottom:12px">買多種</div>
+          <div style="font-size:15px;color:#444;line-height:1.7">
+            截長補短、分散投資，<br>但成本較高，需要<strong>管理多個平台</strong>。
+          </div>
+        </div>
+      </div>
+      <div style="margin-top:20px;font-size:14px;color:#999">沒有唯一答案，依你的使用習慣與預算決定</div>
+    </div>
+  </section>
+
+  <!-- ===== P6 要不要花錢上課 ===== -->
+  <section class="slide" data-index="5">
+    <div class="slide-content">
+      <div class="badge">學習投資</div>
+      <div class="section-title">要不要花錢去上課？</div>
+      <div class="card" style="text-align:left">
+        <ul class="item-list">
+          <li>
+            🤝 <strong>【資訊×人資】</strong>今年攜手開了很多課，先善用現有資源
+          </li>
+          <li>
+            📖 Case Study：<strong>學習原來也可以這樣用</strong>，開拓你的視野
+          </li>
+          <li>
+            💡 有興趣就<strong style="color:#2CC5B5">投資自己</strong>，沒有比現在更好的時機
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P7 公司限制(一) 額度有限 ===== -->
+  <section class="slide" data-index="6">
+    <div class="slide-content">
+      <div class="badge red">公司限制 ①</div>
+      <div class="section-title">額度有限</div>
+      <div class="three-col" style="margin-bottom:20px">
+        <div class="card" style="text-align:center">
+          <div style="font-size:13px;color:#999;margin-bottom:6px">企業版月費</div>
+          <div class="stat-num" style="font-size:40px">1,000</div>
+          <div class="stat-label">元 / 人 / 月</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:13px;color:#999;margin-bottom:6px">全港群人數</div>
+          <div class="stat-num" style="font-size:40px">2,000</div>
+          <div class="stat-label">人</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div style="font-size:13px;color:#999;margin-bottom:6px">年度固定成本</div>
+          <div class="stat-num" style="font-size:40px">2,400</div>
+          <div class="stat-label">萬元</div>
+        </div>
+      </div>
+      <div class="highlight-box warn">
+        ➡️ 如果你是老闆，<span class="em">固定成本＋效益不確定性</span>，你能接受嗎？<br>
+        <span style="font-size:14px;color:#777;margin-top:8px;display:block">
+          ∴ 各處推 1–2 個種子，港群約 100 人・年度共約 <strong>120 萬</strong>。請善用每個種子及上課機會。
+        </span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P8 公司限制(二) 選擇有限 ===== -->
+  <section class="slide" data-index="7">
+    <div class="slide-content">
+      <div class="badge red">公司限制 ②</div>
+      <div class="section-title">選擇有限</div>
+      <div class="card" style="text-align:left;margin-bottom:20px">
+        <div style="font-size:15px;color:#555;line-height:1.8;margin-bottom:12px">
+          Gemini、ChatGPT、Copilot、AWS、Grok…<br>
+          ➡️ 臺灣不一定有正式代理、不一定有符合<strong>AI治理</strong>需求的管理介面，能買的有限。
+        </div>
+        <div class="tag-row" style="justify-content:flex-start">
+          <span class="tag">Gemini</span>
+          <span class="tag">ChatGPT</span>
+          <span class="tag">Copilot</span>
+          <span class="tag">AWS Bedrock</span>
+          <span class="tag">Grok</span>
+        </div>
+      </div>
+      <div class="highlight-box warn" style="font-size:15px">
+        其他可視為一般軟體採購（軟體服務費），<br>
+        但原則是<span class="em">樽節支出、不要浪費</span>。<br>
+        資訊處與會計共識：<strong>「有需求才買，事後也會驗證實際使用量」</strong>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P9 三、AI=新人 ===== -->
+  <section class="slide" data-index="8">
+    <div class="slide-content">
+      <div class="badge teal">第三章</div>
+      <div class="section-title">三、如何了解 AI</div>
+      <div class="highlight-box" style="text-align:center;font-size:20px;margin-bottom:24px">
+        AI ＝ 來了一位很強的<span class="em">新人</span>
+      </div>
+      <div class="three-col">
+        <div class="card" style="text-align:center">
+          <div class="icon-circle purple">🧩</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">專長不同</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">文字厲害、<br>眼睛利、會畫圖</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="icon-circle orange">😴</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">會偷懶、有幻覺</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">算力有限、<br>莽撞、推論錯誤</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="icon-circle teal">🧠</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">記性好壞</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">上下文<br>能力有限制</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P10 所以你應該 ===== -->
+  <section class="slide" data-index="9">
+    <div class="slide-content">
+      <div class="badge teal">正確使用姿勢</div>
+      <div class="section-title">所以你應該這樣用 AI</div>
+      <div class="card">
+        <ul class="item-list">
+          <li>
+            🎯 <strong>選對模型、功能</strong><br>
+            <span class="sub">例如：Gemini Pro vs Nano，各有適用場合</span>
+          </li>
+          <li>
+            📝 <strong>話要講清楚</strong><br>
+            <span class="sub">目的、背景、格式、必要性要求——缺一不可</span>
+          </li>
+          <li>
+            🔪 <strong>任務分次給</strong><br>
+            <span class="sub">聚焦在有限範圍，不要一次丟太多</span>
+          </li>
+        </ul>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P11 學習層次：入門級 ===== -->
+  <section class="slide" data-index="10">
+    <div class="slide-content">
+      <div class="badge">學習層次</div>
+      <div class="section-title">🥉 入門級：從應用面出發</div>
+      <div class="quad-grid">
+        <div class="card" style="text-align:left">
+          <div class="icon-square teal" style="margin-bottom:12px">🔍</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">觀察痛點</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">找出自己的例行事項和每次都很浪費時間的工作</div>
+        </div>
+        <div class="card" style="text-align:left">
+          <div class="icon-square orange" style="margin-bottom:12px">🛠️</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">工具操作</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">學會各工具主功能：Chat、Canvas、生圖、AI in Office → Agent</div>
+        </div>
+        <div class="card" style="text-align:left">
+          <div class="icon-square purple" style="margin-bottom:12px">✍️</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">Demo：Canvas 寫文章</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">今日聚焦實作示範</div>
+        </div>
+        <div class="card" style="text-align:left">
+          <div class="icon-square red" style="margin-bottom:12px">💻</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">Demo：Canvas 寫程式</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">今日聚焦實作示範</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P12 學習層次：進階級 ===== -->
+  <section class="slide" data-index="11">
+    <div class="slide-content">
+      <div class="badge orange" style="background:rgba(139,92,246,0.15);color:#8B5CF6">學習層次</div>
+      <div class="section-title">🥈 進階級：以簡報為例</div>
+      <div class="three-col">
+        <div class="card" style="text-align:center">
+          <div class="icon-circle purple">🤔</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">思維邏輯框架</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">5個Why、5W1H、CODE學習法</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="icon-circle teal">📐</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">領域邏輯框架</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">依專業領域建立屬於你的思考骨架</div>
+        </div>
+        <div class="card" style="text-align:center">
+          <div class="icon-circle orange">🎨</div>
+          <div style="font-size:16px;font-weight:700;margin-bottom:8px">Sense 美感溝通</div>
+          <div style="font-size:14px;color:#666;line-height:1.6">美感力 ＋ 溝通力，讓輸出更有說服力</div>
+        </div>
+      </div>
+      <div class="highlight-box" style="margin-top:20px;text-align:center;font-size:16px">
+        進階不只是「用AI」，而是讓AI幫你呈現<span class="em">更高層次的思考</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="slide-footer">🐻 林熊熊分享</footer>
+
+  <!-- NAV -->
+  <nav class="nav-bar">
+    <button class="nav-btn" id="prevBtn">‹</button>
+    <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
+    <span style="color:#ccc">/</span>
+    <span id="totalPages" style="font-size:15px;color:#999"></span>
+    <button class="nav-btn" id="nextBtn">›</button>
+  </nav>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const totalPagesEl  = document.getElementById('totalPages');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let current = 0;
+  totalPagesEl.textContent = slides.length;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    updateIndicator();
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+  }
+
+  function updateIndicator() {
+    pageIndicator.textContent = current + 1;
+  }
+
+  pageIndicator.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = 1;
+    input.max = slides.length;
+    input.value = current + 1;
+    input.className = 'page-jump-input';
+    pageIndicator.replaceWith(input);
+    input.select();
+
+    function commit() {
+      const n = parseInt(input.value, 10);
+      input.replaceWith(pageIndicator);
+      if (!isNaN(n)) goTo(n - 1);
+      else updateIndicator();
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter')  { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { input.replaceWith(pageIndicator); updateIndicator(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+    });
+    input.addEventListener('blur', commit);
+    input.addEventListener('input', () => {
+      if (input.value < 1) input.value = 1;
+      if (input.value > slides.length) input.value = slides.length;
+    });
+  });
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
