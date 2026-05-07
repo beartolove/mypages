@@ -1,494 +1,350 @@
 <!DOCTYPE html>
 <html lang="zh-TW">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>AI課程分享 CH2｜實例示範</title>
-  
-  <style>
-    *{box-sizing:border-box;margin:0;padding:0}
-    body{font-family:"Noto Sans TC","Inter",sans-serif;background:#F8F6F1;min-height:100vh;overflow:hidden}
-    body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,0.05)1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.05)1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
-    .slideshow{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
-    .slide{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:32px 20px 96px;z-index:1}
-    .slide.active{display:flex}
-    .slide-content{max-width:900px;width:100%;text-align:center}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
-    .slide.active .slide-content{animation:fadeIn 0.3s ease}
-    .nav-bar{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:16px;background:white;border-radius:50px;padding:9px 26px;box-shadow:0 4px 20px rgba(0,0,0,0.12);z-index:100}
-    .nav-btn{background:none;border:none;font-size:24px;color:#2D2D2D;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s}
-    .nav-btn:hover{background:rgba(44,197,181,0.15);color:#2CC5B5}
-    .nav-btn:disabled{color:#ccc;cursor:default}
-    .nav-btn:disabled:hover{background:none}
-    .page-indicator{font-size:15px;color:#666;min-width:58px;text-align:center;cursor:pointer;border-radius:8px;padding:2px 6px;transition:background 0.15s;user-select:none}
-    .page-indicator:hover{background:rgba(44,197,181,0.12);color:#2CC5B5}
-    .page-jump-input{width:48px;border:2px solid #2CC5B5;border-radius:8px;font-size:15px;font-weight:600;text-align:center;color:#2D2D2D;background:white;outline:none;padding:2px 4px}
-    .slide-footer{position:fixed;bottom:16px;right:26px;font-size:14px;font-weight:600;color:#bbb;letter-spacing:0.02em;z-index:99;white-space:nowrap;user-select:none}
-    .badge{display:inline-block;background:rgba(245,166,35,0.15);color:#F5A623;border-radius:20px;padding:5px 18px;font-size:13px;font-weight:600;margin-bottom:14px}
-    .badge-teal{background:rgba(44,197,181,0.15);color:#2CC5B5}
-    .badge-purple{background:rgba(139,92,246,0.15);color:#8B5CF6}
-    .badge-blue{background:rgba(59,130,246,0.15);color:#3B82F6}
-    .badge-red{background:rgba(229,57,53,0.12);color:#E53935}
-    .title-main{font-size:clamp(36px,5.5vw,58px);font-weight:900;color:#2D2D2D;line-height:1.2;margin-bottom:12px}
-    .title-accent{color:#2CC5B5}
-    .title-purple{color:#8B5CF6}
-    .subtitle{font-size:17px;color:#666;line-height:1.6}
-    .page-title{font-size:clamp(22px,3.6vw,36px);font-weight:900;color:#2D2D2D;margin-bottom:16px;line-height:1.25}
-    .section-label{font-size:11px;font-weight:700;color:#999;letter-spacing:0.1em;text-transform:uppercase;margin-bottom:8px}
-    .card{background:white;border-radius:16px;padding:20px;box-shadow:0 4px 16px rgba(0,0,0,0.07);text-align:left}
-    .card-title{font-size:15px;font-weight:700;color:#2D2D2D;margin-bottom:6px}
-    .card-text{font-size:13px;color:#666;line-height:1.7}
-    .icon-circle{width:58px;height:58px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 10px}
-    .icon-circle.teal{background:rgba(44,197,181,0.15)}
-    .icon-circle.orange{background:rgba(245,166,35,0.15)}
-    .icon-circle.purple{background:rgba(139,92,246,0.15)}
-    .icon-circle.blue{background:rgba(59,130,246,0.15)}
-    .icon-square{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:19px;color:white;flex-shrink:0}
-    .icon-square.teal{background:#2CC5B5}
-    .icon-square.orange{background:#F5A623}
-    .icon-square.purple{background:#8B5CF6}
-    .icon-square.red{background:#E53935}
-    .icon-square.blue{background:#3B82F6}
-    .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
-    .two-col{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
-    .quad-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
-    .dot-list{list-style:none}
-    .dot-list li{padding:6px 0;border-bottom:1px solid rgba(0,0,0,0.05);display:flex;align-items:center;gap:7px;font-size:13px;color:#444}
-    .dot-list li:last-child{border-bottom:none}
-    .highlight-box{background:rgba(44,197,181,0.09);border-left:3px solid #2CC5B5;border-radius:0 10px 10px 0;padding:11px 15px;text-align:left;font-size:13px;color:#444;line-height:1.7}
-    .tag{display:inline-block;background:rgba(44,197,181,0.12);color:#2CC5B5;border-radius:7px;padding:1px 9px;font-size:12px;font-weight:600;margin:2px}
-    .style-chip{display:inline-block;background:white;border:1.5px solid rgba(0,0,0,0.1);border-radius:18px;padding:4px 13px;font-size:13px;color:#555;margin:3px;font-weight:500}
-    .step-num{width:28px;height:28px;border-radius:50%;background:#2CC5B5;color:white;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
-    /* PROMPT BLOCK */
-    .prompt-block{position:relative;background:#1E1E2E;border-radius:14px;overflow:hidden;margin-bottom:12px;text-align:left}
-    .prompt-header{display:flex;justify-content:space-between;align-items:center;padding:8px 14px;background:#13131F;border-bottom:1px solid rgba(255,255,255,0.07);gap:10px}
-    .prompt-label{font-size:11px;color:#666;font-family:"Courier New",monospace;letter-spacing:0.06em;flex:1;min-width:0}
-    .copy-btn{background:rgba(44,197,181,0.15);border:1px solid rgba(44,197,181,0.3);color:#2CC5B5;border-radius:6px;padding:4px 14px;font-size:12px;cursor:pointer;font-family:"Noto Sans TC",sans-serif;font-weight:700;transition:all 0.2s;white-space:nowrap;flex-shrink:0}
-    .copy-btn:hover{background:rgba(44,197,181,0.28)}
-    .copy-btn.copied{background:rgba(44,197,181,0.45);color:#fff;border-color:#2CC5B5}
-    .prompt-body{overflow-y:auto;padding:14px 18px;font-size:13px;color:#A8FF78;line-height:1.95;font-family:"Courier New",Courier,monospace;white-space:pre-wrap;word-break:break-word}
-    .prompt-body::-webkit-scrollbar{width:5px}
-    .prompt-body::-webkit-scrollbar-track{background:rgba(255,255,255,0.04)}
-    .prompt-body::-webkit-scrollbar-thumb{background:rgba(44,197,181,0.42);border-radius:3px}
-    .prompt-body::-webkit-scrollbar-thumb:hover{background:rgba(44,197,181,0.7)}
-    .pb-xs{max-height:110px}
-    .pb-sm{max-height:150px}
-    .pb-md{max-height:200px}
-    .pb-lg{max-height:260px}
-    .pb-xl{max-height:52vh}
-    .scroll-hint{font-size:11px;color:#999;text-align:right;margin-top:4px}
-  </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AI課程分享 CH2 實例示範</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:-apple-system,"Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;background:#F8F6F1;height:100vh;overflow:hidden}
+body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.05) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0}
+.slideshow{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center}
+.slide{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:28px 16px 90px;z-index:1;overflow-y:auto}
+.slide.active{display:flex}
+.slide-content{max-width:860px;width:100%;text-align:center}
+@keyframes fadeIn{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:translateY(0)}}
+.slide.active .slide-content{animation:fadeIn .32s ease}
+/* NAV */
+.nav-bar{position:fixed;bottom:22px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:white;border-radius:50px;padding:9px 24px;box-shadow:0 4px 20px rgba(0,0,0,.12);z-index:100}
+.nav-btn{background:none;border:none;font-size:26px;color:#2D2D2D;cursor:pointer;width:38px;height:38px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background .2s}
+.nav-btn:hover{background:rgba(44,197,181,.15);color:#2CC5B5}
+.nav-btn:disabled{color:#ccc;cursor:default}
+.nav-btn:disabled:hover{background:none}
+.page-indicator{font-size:15px;color:#666;min-width:58px;text-align:center;cursor:pointer;border-radius:8px;padding:2px 6px;transition:background .15s;user-select:none}
+.page-indicator:hover{background:rgba(44,197,181,.12);color:#2CC5B5}
+.page-jump-input{width:46px;border:2px solid #2CC5B5;border-radius:8px;font-size:15px;font-weight:600;text-align:center;color:#2D2D2D;background:white;outline:none;padding:2px 4px}
+.slide-footer{position:fixed;bottom:16px;right:20px;font-size:13px;font-weight:600;color:#bbb;z-index:99;white-space:nowrap;user-select:none}
+/* BADGES */
+.badge{display:inline-block;background:rgba(245,166,35,.15);color:#F5A623;border-radius:20px;padding:5px 18px;font-size:12px;font-weight:600;margin-bottom:14px}
+.badge-teal{background:rgba(44,197,181,.15);color:#2CC5B5}
+.badge-purple{background:rgba(139,92,246,.15);color:#8B5CF6}
+.badge-blue{background:rgba(59,130,246,.15);color:#3B82F6}
+.badge-red{background:rgba(229,57,53,.12);color:#E53935}
+.title-main{font-size:clamp(32px,5.5vw,56px);font-weight:900;color:#2D2D2D;line-height:1.2;margin-bottom:12px}
+.ta{color:#2CC5B5}.to{color:#F5A623}.tp{color:#8B5CF6}
+.page-title{font-size:clamp(20px,3.5vw,34px);font-weight:900;color:#2D2D2D;margin-bottom:12px;line-height:1.25}
+.subtitle{font-size:15px;color:#666;line-height:1.6}
+/* CARDS */
+.card{background:white;border-radius:16px;padding:20px;box-shadow:0 4px 20px rgba(0,0,0,.08)}
+.card-title{font-size:15px;font-weight:700;color:#2D2D2D;margin-bottom:7px}
+.card-text{font-size:13px;color:#666;line-height:1.65}
+.slabel{font-size:11px;font-weight:700;color:#999;letter-spacing:.1em;text-transform:uppercase;margin-bottom:9px}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:14px}
+.g2{display:grid;grid-template-columns:repeat(2,1fr);gap:14px}
+.g4{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+.ic{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 11px}
+.ic.teal{background:rgba(44,197,181,.15)}.ic.orange{background:rgba(245,166,35,.15)}.ic.red{background:rgba(229,57,53,.15)}.ic.purple{background:rgba(139,92,246,.15)}.ic.blue{background:rgba(59,130,246,.15)}
+.is{width:42px;height:42px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:18px;color:white;flex-shrink:0}
+.is.teal{background:#2CC5B5}.is.orange{background:#F5A623}.is.purple{background:#8B5CF6}.is.red{background:#E53935}.is.blue{background:#3B82F6}
+/* CODE + COPY */
+.code-wrapper{position:relative;margin-bottom:11px}
+.code-block{background:#1E1E2E;border-radius:12px;padding:15px 18px;text-align:left;font-size:12.5px;color:#A8FF78;line-height:1.85;font-family:"Courier New",monospace;white-space:pre-wrap;max-height:190px;overflow-y:auto;border:1px solid rgba(168,255,120,.15)}
+.code-block.tall{max-height:260px}
+.code-block.short{max-height:110px}
+.code-block::-webkit-scrollbar{width:4px}
+.code-block::-webkit-scrollbar-track{background:rgba(255,255,255,.06);border-radius:2px}
+.code-block::-webkit-scrollbar-thumb{background:rgba(168,255,120,.35);border-radius:2px}
+.copy-btn{position:absolute;top:8px;right:9px;background:rgba(168,255,120,.12);border:1px solid rgba(168,255,120,.28);color:#A8FF78;border-radius:6px;padding:3px 10px;font-size:11px;cursor:pointer;font-family:inherit;font-weight:600;transition:background .2s,color .2s;z-index:5}
+.copy-btn:hover{background:rgba(168,255,120,.25)}
+.copy-btn.copied{color:#FFD700;border-color:rgba(255,215,0,.4);background:rgba(255,215,0,.1)}
+/* LINK PILL */
+.ref-link{display:inline-flex;align-items:center;gap:6px;background:white;border:1.5px solid rgba(44,197,181,.4);color:#2CC5B5;border-radius:20px;padding:5px 14px;font-size:12px;font-weight:600;text-decoration:none;margin-bottom:12px;transition:background .2s,border-color .2s}
+.ref-link:hover{background:rgba(44,197,181,.08);border-color:#2CC5B5}
+.ref-link.orange{border-color:rgba(245,166,35,.4);color:#F5A623}
+.ref-link.orange:hover{background:rgba(245,166,35,.08);border-color:#F5A623}
+.ref-link-row{margin-bottom:10px;display:flex;gap:8px;justify-content:center;flex-wrap:wrap}
+/* MISC */
+.hbox{background:rgba(44,197,181,.1);border-left:4px solid #2CC5B5;border-radius:0 11px 11px 0;padding:11px 15px;text-align:left;font-size:13px;color:#444;line-height:1.7;margin-bottom:8px}
+.hbox.o{border-color:#F5A623;background:rgba(245,166,35,.09)}
+.hbox.p{border-color:#8B5CF6;background:rgba(139,92,246,.08)}
+.hbox.r{border-color:#E53935;background:rgba(229,57,53,.07)}
+.dlist{list-style:none;text-align:left;font-size:13px;color:#444}
+.dlist li{padding:5px 0;border-bottom:1px solid rgba(0,0,0,.06);display:flex;align-items:center;gap:7px}
+.dlist li:last-child{border-bottom:none}
+.step{display:flex;align-items:flex-start;gap:11px;padding:10px 14px;background:#F8F6F1;border-radius:12px;margin-bottom:9px;text-align:left}
+.snum{width:28px;height:28px;border-radius:50%;background:#2CC5B5;color:white;font-weight:700;font-size:13px;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.stitle{font-size:13px;font-weight:700;color:#2D2D2D;margin-bottom:3px}
+.tag{display:inline-block;background:rgba(44,197,181,.12);color:#2CC5B5;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:600;margin:2px 2px 2px 0}
+.sc{display:inline-block;background:white;border:1.5px solid rgba(0,0,0,.1);border-radius:16px;padding:3px 11px;font-size:11.5px;color:#555;margin:3px;font-weight:500}
+.sc.h{border-color:#2CC5B5;color:#2CC5B5;font-weight:700}
+.plabel{font-size:11px;font-weight:700;color:#999;text-transform:uppercase;letter-spacing:.08em;margin-bottom:5px;text-align:left}
+</style>
 </head>
 <body>
 <div class="slideshow">
 
 <!-- P1 封面 -->
-<section class="slide active" data-index="0">
+<section class="slide active">
 <div class="slide-content">
   <div class="badge">AI 應用實務工作坊</div>
-  <div class="title-main">CH2 <span class="title-accent">實例示範</span></div>
-  <div style="font-size:18px;color:#666;margin-bottom:30px;">Gemini 全功能實戰演練</div>
-  <div class="three-col">
-    <div class="card" style="text-align:center"><div class="icon-circle teal">💬</div><div style="font-weight:700;color:#2D2D2D;font-size:15px">Chat</div><div style="font-size:12px;color:#999;margin-top:3px">純粹對話</div></div>
-    <div class="card" style="text-align:center"><div class="icon-circle orange">✏️</div><div style="font-weight:700;color:#2D2D2D;font-size:15px">Canvas</div><div style="font-size:12px;color:#999;margin-top:3px">人機共筆寫作</div></div>
-    <div class="card" style="text-align:center"><div class="icon-circle purple">📊</div><div style="font-weight:700;color:#2D2D2D;font-size:15px">Sheets</div><div style="font-size:12px;color:#999;margin-top:3px">試算表整合</div></div>
+  <div class="title-main">CH2 <span class="ta">實例示範</span></div>
+  <div class="subtitle" style="margin-bottom:26px">Gemini 全功能實戰演練</div>
+  <div class="g3">
+    <div class="card" style="text-align:center"><div class="ic teal">💬</div><div style="font-weight:700;font-size:14px;color:#2D2D2D">Chat</div><div style="font-size:12px;color:#999;margin-top:3px">純粹對話</div></div>
+    <div class="card" style="text-align:center"><div class="ic orange">✏️</div><div style="font-weight:700;font-size:14px;color:#2D2D2D">Canvas</div><div style="font-size:12px;color:#999;margin-top:3px">人機共筆寫作</div></div>
+    <div class="card" style="text-align:center"><div class="ic purple">📊</div><div style="font-weight:700;font-size:14px;color:#2D2D2D">Sheets</div><div style="font-size:12px;color:#999;margin-top:3px">試算表整合</div></div>
   </div>
 </div>
 </section>
 
-<!-- P2 Gemini Chat 兩種入口 -->
-<section class="slide" data-index="1">
+<!-- P2 Chat 總覽 -->
+<section class="slide">
 <div class="slide-content">
   <div class="badge">第一章節</div>
-  <div class="title-main">Gemini <span class="title-accent">Chat</span></div>
-  <div class="subtitle" style="margin-bottom:22px">純粹對話模式・兩種入口</div>
-  <div class="two-col">
+  <div class="title-main">Gemini <span class="ta">Chat</span></div>
+  <div class="subtitle" style="margin-bottom:20px">純粹對話模式・兩種入口</div>
+  <div class="g2">
     <div class="card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div class="icon-square blue">🔍</div>
-        <div><div class="card-title" style="margin:0">Google Search</div><div style="font-size:12px;color:#3B82F6;font-weight:600">AI 模式</div></div>
-      </div>
-      <ul class="dot-list">
-        <li>🏀 搜尋 NBA 今年戰績前5名</li>
-        <li>📋 平均得失分、勝負場次表格</li>
-        <li>⭐ 明星球員近三年各項數據</li>
-        <li>📄 <strong>可匯出至文件</strong></li>
-      </ul>
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px"><div class="is blue">🔍</div><div><div class="card-title" style="margin:0">Google Search</div><div style="font-size:12px;color:#2CC5B5;font-weight:600">AI 模式</div></div></div>
+      <ul class="dlist"><li>🏀 <span>搜尋 NBA 今年戰績前5名</span></li><li>📋 <span>得失分、勝負場次表格</span></li><li>⭐ <span>明星球員近三年數據</span></li><li>📄 <span>可匯出至文件</span></li></ul>
     </div>
     <div class="card">
-      <div style="display:flex;align-items:center;gap:10px;margin-bottom:12px">
-        <div class="icon-square teal">✨</div>
-        <div><div class="card-title" style="margin:0">Gemini</div><div style="font-size:12px;color:#2CC5B5;font-weight:600">完整版</div></div>
-      </div>
-      <ul class="dot-list">
-        <li>🏀 相同 NBA 戰績查詢</li>
-        <li>📋 雙表格完整輸出</li>
-        <li>📄 <strong>匯出至 Google 文件</strong></li>
-        <li>📊 <strong>匯出至 Google 試算表</strong></li>
-      </ul>
+      <div style="display:flex;align-items:center;gap:11px;margin-bottom:12px"><div class="is teal">✨</div><div><div class="card-title" style="margin:0">Gemini</div><div style="font-size:12px;color:#2CC5B5;font-weight:600">完整版</div></div></div>
+      <ul class="dlist"><li>🏀 <span>相同 NBA 戰績查詢</span></li><li>📋 <span>雙表格完整輸出</span></li><li>📄 <span>匯出至 Google 文件</span></li><li>📊 <span>匯出至 Google 試算表</span></li></ul>
     </div>
   </div>
 </div>
 </section>
 
-<!-- P3 提示詞：NBA -->
-<section class="slide" data-index="2">
+<!-- P3 NBA 提示詞 -->
+<section class="slide">
 <div class="slide-content">
-  <div class="badge badge-teal">提示詞</div>
-  <div class="page-title">🏀 NBA 查詢提示詞</div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT · Google Search AI 模式 / Gemini 完整版</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-nba')">📋 複製</button>
-    </div>
-    <pre id="p-nba" class="prompt-body pb-md">幫我搜尋NBA今年戰績前5名隊伍
-一、以表格列出今年的平均得失分、勝負場次
-二、以表格列出該隊伍明星球員及近三年各項數據</pre>
+  <div class="badge badge-teal">Chat 提示詞範例</div>
+  <div class="page-title">🏀 NBA 戰績查詢</div>
+  <div class="code-wrapper">
+    <button class="copy-btn" onclick="copyCode(this)">📋 複製</button>
+    <div class="code-block short" id="p-nba"></div>
   </div>
-  <div class="two-col">
-    <div class="highlight-box">📄 <strong>Google Search AI 模式</strong><br>可匯出至文件</div>
-    <div class="highlight-box" style="border-color:#F5A623;background:rgba(245,166,35,0.08)">📊 <strong>Gemini 完整版</strong><br>可匯出至 Google 文件 ＋ 試算表</div>
+  <div class="g2" style="margin-top:10px">
+    <div class="hbox"><strong>📄 Google Search AI 模式</strong><br>可匯出至文件</div>
+    <div class="hbox o"><strong>📊 Gemini 完整版</strong><br>可匯出至 Google 文件 ＋ 試算表</div>
   </div>
 </div>
 </section>
 
 <!-- P4 Canvas 總覽 -->
-<section class="slide" data-index="3">
+<section class="slide">
 <div class="slide-content">
   <div class="badge badge-purple">第二章節</div>
-  <div class="title-main">Gemini <span class="title-purple">Canvas</span></div>
+  <div class="title-main">Gemini <span class="tp">Canvas</span></div>
   <div class="subtitle" style="margin-bottom:20px">人機共筆寫作・六大 Demo 實戰</div>
-  <div class="quad-grid">
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square purple">🎬</div><div><div class="card-title">Demo 1</div><div class="card-text">YouTube 影片字幕摘要</div></div></div>
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square teal">📝</div><div><div class="card-title">Demo 2</div><div class="card-text">會議紀錄整理</div></div></div>
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square orange">📈</div><div><div class="card-title">Demo 3-1</div><div class="card-text">郵輪數據圓餅圖</div></div></div>
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square blue">🎛️</div><div><div class="card-title">Demo 3-2</div><div class="card-text">郵輪目標互動模擬</div></div></div>
+  <div class="g4">
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is purple">🎬</div><div><div class="card-title" style="font-size:13px">Demo 1</div><div class="card-text">YouTube 影片字幕摘要</div></div></div>
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is teal">📝</div><div><div class="card-title" style="font-size:13px">Demo 2</div><div class="card-text">會議紀錄整理</div></div></div>
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is orange">📈</div><div><div class="card-title" style="font-size:13px">Demo 3-1</div><div class="card-text">郵輪數據圖表分析</div></div></div>
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is blue">🎛️</div><div><div class="card-title" style="font-size:13px">Demo 3-2</div><div class="card-text">郵輪目標互動模擬</div></div></div>
   </div>
-  <div class="two-col" style="margin-top:12px">
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square red">🖼️</div><div><div class="card-title">Demo 4</div><div class="card-text">15頁專業簡報製作</div></div></div>
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square teal">🗂️</div><div><div class="card-title">Demo 5 + 6</div><div class="card-text">系統雛型 ＆ 報名統計</div></div></div>
+  <div class="g2" style="margin-top:12px">
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is red">🖼️</div><div><div class="card-title" style="font-size:13px">Demo 4</div><div class="card-text">15頁專業簡報製作</div></div></div>
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is teal">🗂️</div><div><div class="card-title" style="font-size:13px">Demo 5 ＋ 6</div><div class="card-text">系統雛型 ＆ 報名統計</div></div></div>
   </div>
 </div>
 </section>
 
 <!-- P5 Demo 1 YouTube -->
-<section class="slide" data-index="4">
+<section class="slide">
 <div class="slide-content">
   <div class="badge badge-purple">Demo 1</div>
-  <div class="page-title">🎬 YouTube 影片字幕摘要</div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT · Gemini Canvas</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-yt')">📋 複製</button>
-    </div>
-    <pre id="p-yt" class="prompt-body pb-md">針對所提供的Youtube影片詳讀後整理
-一、核心概念
-二、步驟、時間(timestamp)、提示詞的表格</pre>
+  <div class="page-title">🎬 YouTube 影片摘要</div>
+  <div class="ref-link-row">
+    <a class="ref-link" href="https://gemini.google.com/share/c110d8b8a220" target="_blank" rel="noopener">🔗 查看成果</a>
   </div>
-  <div class="three-col">
-    <div class="card" style="text-align:center;padding:15px"><div style="font-size:24px;margin-bottom:6px">✏️</div><div style="font-size:13px;font-weight:700;color:#2D2D2D">可共同編輯</div></div>
-    <div class="card" style="text-align:center;padding:15px"><div style="font-size:24px;margin-bottom:6px">📄</div><div style="font-size:13px;font-weight:700;color:#2D2D2D">匯出 Google 文件</div></div>
-    <div class="card" style="text-align:center;padding:15px"><div style="font-size:24px;margin-bottom:6px">🌐</div><div style="font-size:13px;font-weight:700;color:#2D2D2D">建立網頁／資訊圖表</div></div>
+  <div class="code-wrapper">
+    <button class="copy-btn" onclick="copyCode(this)">📋 複製</button>
+    <div class="code-block short" id="p-yt"></div>
   </div>
-  <div class="highlight-box" style="margin-top:10px">💡 還可建立：<span class="tag">測驗</span><span class="tag">學習卡</span><span class="tag">語音摘要</span></div>
+  <div class="g3" style="margin-top:11px">
+    <div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;margin-bottom:6px">✏️</div><div class="card-title" style="font-size:12px">可共同編輯</div></div>
+    <div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;margin-bottom:6px">📄</div><div class="card-title" style="font-size:12px">匯出 Google 文件</div></div>
+    <div class="card" style="text-align:center;padding:14px"><div style="font-size:24px;margin-bottom:6px">🌐</div><div class="card-title" style="font-size:12px">建立網頁資訊圖表</div></div>
+  </div>
+  <div class="hbox" style="margin-top:10px">💡 還可建立：<span class="tag">測驗</span><span class="tag">學習卡</span><span class="tag">語音摘要</span></div>
 </div>
 </section>
 
-<!-- P6 Demo 2 功能說明 -->
-<section class="slide" data-index="5">
+<!-- P6 Demo 2 會議紀錄 -->
+<section class="slide">
 <div class="slide-content">
   <div class="badge badge-teal">Demo 2</div>
-  <div class="page-title">📝 會議紀錄整理・功能說明</div>
-  <div class="two-col" style="margin-bottom:12px">
-    <div class="card">
-      <div class="section-label">角色設定</div>
-      <div style="font-size:14px;color:#444;line-height:1.9">🧑‍💼 <strong>高階執行長特助</strong> ＋ <strong>管理顧問</strong><br>從混亂逐字稿精準提取核心決策、辨識潛在風險</div>
-    </div>
-    <div class="card">
-      <div class="section-label">輸出結構</div>
-      <ul class="dot-list">
-        <li>📌 會議概覽</li>
-        <li>💡 決策摘要 (Key Decisions)</li>
-        <li>🚀 待辦事項 Action Items（表格）</li>
-        <li>🔍 懸而未決事項</li>
-      </ul>
-    </div>
+  <div class="page-title">📝 會議紀錄整理提示詞</div>
+  <div class="ref-link-row">
+    <a class="ref-link" href="https://gemini.google.com/share/182b09f9c036" target="_blank" rel="noopener">🔗 查看成果</a>
   </div>
-  <div class="quad-grid">
-    <div class="highlight-box" style="margin:0">🔖 <strong>防呆標記</strong>　<span class="tag">[建議]</span><span class="tag">[待裁示]</span></div>
-    <div class="highlight-box" style="margin:0;border-color:#8B5CF6;background:rgba(139,92,246,0.07)">✂️ <strong>精準過濾</strong>　冗餘寒暄自動濾除</div>
-    <div class="highlight-box" style="margin:0;border-color:#F5A623;background:rgba(245,166,35,0.07)">📋 <strong>語氣專業</strong>　口語化→商業書面</div>
-    <div class="highlight-box" style="margin:0;border-color:#E53935;background:rgba(229,57,53,0.06)">📊 <strong>結構化排版</strong>　Markdown＋表格</div>
+  <div class="code-wrapper">
+    <button class="copy-btn" onclick="copyCode(this)">📋 複製</button>
+    <div class="code-block tall" id="p-meeting"></div>
   </div>
-  <div style="margin-top:10px;font-size:12px;color:#aaa">→ 下一頁查看完整提示詞</div>
+  <div class="g4" style="margin-top:9px">
+    <div class="hbox" style="margin:0;font-size:12px">🔖 防呆標記：<span class="tag">[建議]</span><span class="tag">[待裁示]</span></div>
+    <div class="hbox o" style="margin:0;font-size:12px">✂️ 自動過濾冗餘寒暄與發散討論</div>
+    <div class="hbox p" style="margin:0;font-size:12px">💼 口語 → 商業書面用語</div>
+    <div class="hbox r" style="margin:0;font-size:12px">📊 Markdown ＋ 表格結構化輸出</div>
+  </div>
 </div>
 </section>
 
-<!-- P7 Demo 2 完整提示詞 -->
-<section class="slide" data-index="6">
+<!-- P7 Demo 3-1 圖表 -->
+<section class="slide">
 <div class="slide-content">
-  <div class="badge badge-teal">Demo 2｜完整提示詞</div>
-  <div class="page-title" style="font-size:clamp(18px,2.6vw,28px);margin-bottom:12px">📝 會議紀錄整理完整提示詞</div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT · Gemini Canvas（Role / Task / Constraints / Output Structure）</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-meeting')">📋 複製</button>
-    </div>
-    <pre id="p-meeting" class="prompt-body pb-xl"># Role
-你是一位擁有多年經驗的「高階執行長特助」與「管理顧問」。你擅長從混亂、冗長的會議逐字稿中，精準提取核心決策、辨識潛在風險，並將其轉化為具備高度可讀性、行動導向的會議紀錄。
-
-# Task
-請閱讀我提供的會議逐字稿，並依照下方的 [Output Structure] 進行整理。你的目標是產出一份「能直接輔助決策且具備後續追蹤價值」的專業紀錄。
-
-# Constraints
-1. **事實為主，建議為輔**：已明確的決策請如實記錄。若會議中對於某項任務「未明確指定負責人」或「未壓定截止時間」，請基於會議脈絡與企業常理，主動提出合理的「建議負責人/部門」與「建議期限」。
-
-2. **防呆標記**：所有由你主動提出的建議內容，務必在文字後方加上 `[建議]` 或 `[待裁示]` 的標記，以便主管審閱。
-
-3. **語氣專業**：將口語化的發言轉化為中立、簡潔、精鍊的商業書面用語。
-
-4. **精準過濾**：自動過濾冗餘的寒暄、發散的討論與重複言論，僅保留關鍵觀點、論據與最終結論。
-
-5. **結構化排版**：使用 Markdown 標題、條列式與表格，確保資訊層次分明。
-
-
-# Output Structure
-## 📌 會議概覽
-- **會議主題**：[填入會議名稱]
-- **會議核心目標**：[用一句話說明本次會議解決的核心問題]
-- **關鍵共識**：[簡述本次會議達成的最重要共識]
-
-## 💡 決策摘要 (Key Decisions)
-*請列出所有已定案的決策，並簡述其背後的考量邏輯。*
-1. **[決策 A]**：考量到...，最終決定...。
-2. **[決策 B]**：...
-
-## 🚀 待辦事項 (Action Items)
-*注意：若原會議未提及負責人或時間，請根據脈絡給予建議並加註 `[建議]`。*
-| 序號 | 具體任務項目 | 負責人/部門 | 截止日期 | 預期產出/驗收標準 |
-| :--- | :--- | :--- | :--- | :--- |
-| 01 | [任務名稱] | [負責人] | [日期] | [產出目標] |
-| 02 | [未定案任務] | [建議部門] `[建議]` | [建議日期] `[待裁示]` | [預計結果] |
-
-## 🔍 關鍵脈絡與懸而未決事項 (Context & Open Issues)
-*記錄具備參考價值的討論重點、潛在風險，以及需後續另外討論的議題。*
-- **[風險提示]**：討論中提到...，未來需注意...。
-- **[未決議題]**：關於...尚未達成共識，建議後續安排...討論。</pre>
+  <div class="badge" style="background:rgba(245,166,35,.15);color:#F5A623">Demo 3-1</div>
+  <div class="page-title">📈 郵輪數據圖表分析</div>
+  <div class="ref-link-row">
+    <a class="ref-link orange" href="https://gemini.google.com/share/c110d8b8a220" target="_blank" rel="noopener">🔗 查看成果</a>
   </div>
-  <div class="scroll-hint">↕ 可捲動查看完整提示詞</div>
-</div>
-</section>
-
-<!-- P8 Demo 3-1 圓餅圖 -->
-<section class="slide" data-index="7">
-<div class="slide-content">
-  <div class="badge" style="background:rgba(245,166,35,0.15);color:#F5A623">Demo 3-1</div>
-  <div class="page-title">📈 郵輪數據圓餅圖</div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT · Gemini Canvas</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-pie')">📋 複製</button>
-    </div>
-    <pre id="p-pie" class="prompt-body pb-sm">針對各港人次比例繪製成圓餅圖，包括萬人次、比例進行標示</pre>
+  <div class="code-wrapper">
+    <button class="copy-btn" onclick="copyCode(this)">📋 複製</button>
+    <div class="code-block short" id="p-cc"></div>
   </div>
-  <div class="two-col">
-    <div class="card" style="text-align:center"><div style="font-size:34px;margin-bottom:8px">🥧</div><div class="card-title">圓餅圖輸出</div><div class="card-text">各港人次比例，含萬人次標示</div></div>
+  <div class="g2" style="margin-top:12px">
+    <div class="card" style="text-align:center;padding:18px"><div style="font-size:34px;margin-bottom:9px">🥧</div><div class="card-title">圓餅圖輸出</div><div class="card-text">各港人次比例<br>含萬人次標示</div></div>
     <div class="card">
-      <div class="section-label">技術說明</div>
-      <ul class="dot-list">
-        <li>🌐 本質：生成一頁式 HTML 網頁</li>
-        <li>📊 呈現數位儀表板效果</li>
-        <li>📋 可複製貼到記事本存成 .html</li>
-        <li>🔧 出現錯誤點「修正錯誤」即可</li>
+      <div class="slabel">技術說明</div>
+      <ul class="dlist" style="font-size:12px">
+        <li>🌐 <span>生成一頁式 HTML 網頁</span></li>
+        <li>📊 <span>呈現數位儀表板效果</span></li>
+        <li>📋 <span>可複製存成 .html 檔</span></li>
+        <li>🔧 <span>出錯點「修正錯誤」即可</span></li>
       </ul>
     </div>
   </div>
 </div>
 </section>
 
-<!-- P9 Demo 3-2 互動模擬 -->
-<section class="slide" data-index="8">
+<!-- P8 Demo 3-2 模擬 -->
+<section class="slide">
 <div class="slide-content">
   <div class="badge badge-blue">Demo 3-2</div>
   <div class="page-title">🎛️ 郵輪目標互動模擬</div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT 1 · 建立互動網頁</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-sim1')">📋 複製</button>
-    </div>
-    <pre id="p-sim1" class="prompt-body pb-md">幫我做一個模擬互動一頁網頁
-可輸入全臺總人次目標，會依原比例建議各港各別應增加的人次、及建議成長比例
-也可手動下修某港目標值，分攤到其他港</pre>
+  <div class="ref-link-row">
+    <a class="ref-link" href="https://gemini.google.com/share/effb39549c4d" target="_blank" rel="noopener">🔗 查看成果</a>
   </div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT 2 · UI 優化調整</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-sim2')">📋 複製</button>
-    </div>
-    <pre id="p-sim2" class="prompt-body pb-md">為利於觀察
-1. 整體網頁高度不要太高，各港高度、間距縮小
-2. 各港的scrollbar以不同色條明顯標示原數據、新調整結果</pre>
+  <div class="plabel">提示詞 1｜建立互動網頁</div>
+  <div class="code-wrapper">
+    <button class="copy-btn" onclick="copyCode(this)">📋 複製</button>
+    <div class="code-block short" id="p-cs1"></div>
   </div>
+  <div class="plabel">提示詞 2｜UI 優化</div>
+  <div class="code-wrapper">
+    <button class="copy-btn" onclick="copyCode(this)">📋 複製</button>
+    <div class="code-block short" id="p-cs2"></div>
+  </div>
+  <div class="hbox" style="margin-top:4px">💡 先建立功能，再用第二段提示詞優化 UI，迭代更有效率！</div>
 </div>
 </section>
 
-<!-- P10 Demo 4 簡報製作 -->
-<section class="slide" data-index="9">
+<!-- P9 Demo 4 簡報 -->
+<section class="slide">
 <div class="slide-content">
   <div class="badge badge-red">Demo 4</div>
-  <div class="page-title">🖼️ 15頁專業簡報製作</div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT 1 · 建立簡報（Google Slide）</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-slide1')">📋 複製</button>
-    </div>
-    <pre id="p-slide1" class="prompt-body pb-md">幫我截取報告中的重點，生成15頁的簡報內容(google Slide)
-包括封面、目錄、各重點頁、結語
-各重點頁應含：標題、內容條列重點及建議意象表達
-使用專業商務執行風 (Executive Corporate)風格</pre>
+  <div class="page-title">🖼️ 15 頁專業簡報製作</div>
+  <div class="ref-link-row">
+    <a class="ref-link" href="https://gemini.google.com/share/84262edef9b8" target="_blank" rel="noopener">🔗 查看成果</a>
   </div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT 2 · 風格迭代</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-slide2')">📋 複製</button>
+  <div class="g2">
+    <div>
+      <div class="plabel">提示詞 1｜生成簡報</div>
+      <div class="code-wrapper"><button class="copy-btn" onclick="copyCode(this)">📋 複製</button><div class="code-block" id="p-sl1"></div></div>
+      <div class="plabel">提示詞 2｜風格迭代</div>
+      <div class="code-wrapper"><button class="copy-btn" onclick="copyCode(this)">📋 複製</button><div class="code-block short" id="p-sl2"></div></div>
     </div>
-    <pre id="p-slide2" class="prompt-body pb-sm">保留這一版
-改為大膽文字排版 (Bold Typography)</pre>
+    <div class="card">
+      <div class="slabel">常用風格</div>
+      <div style="margin-top:5px;line-height:2.1">
+        <span class="sc">極簡主義</span><span class="sc">商務執行風</span><span class="sc">科技前衛</span>
+        <span class="sc">資訊圖表</span><span class="sc">現代扁平</span><span class="sc">工業硬派</span>
+        <span class="sc h">大膽文字排版 ★</span>
+        <span class="sc">自然永續</span><span class="sc">創意幾何</span><span class="sc">學術研究</span>
+      </div>
+    </div>
   </div>
-  <div class="highlight-box">✅ 可匯出為 <strong>Google Slide</strong>　　📌 「保留這版，改為 XXX 風格」可持續迭代　→ 下一頁查看全部風格</div>
 </div>
 </section>
 
-<!-- P11 Demo 4 風格一覽 -->
-<section class="slide" data-index="10">
-<div class="slide-content">
-  <div class="badge badge-red">Demo 4｜風格一覽</div>
-  <div class="page-title">🎨 常用簡報風格（10種）</div>
-  <div class="card" style="text-align:center;padding:26px 30px">
-    <div style="line-height:2.6">
-      <span class="style-chip">極簡主義 (Minimalist)</span>
-      <span class="style-chip" style="border-color:#2CC5B5;color:#2CC5B5;font-weight:700">商務執行風 (Executive Corporate)</span>
-      <span class="style-chip">科技前衛風 (Tech &amp; Futurist)</span>
-      <span class="style-chip">資訊圖表風 (Data-Driven Infographic)</span>
-      <span class="style-chip">現代扁平化 (Modern Flat Design)</span>
-      <span class="style-chip">工業硬派風 (Industrial &amp; Structured)</span>
-      <span class="style-chip" style="border-color:#8B5CF6;color:#8B5CF6;font-weight:700">大膽文字排版 (Bold Typography) ★</span>
-      <span class="style-chip">自然永續風 (Nature &amp; Sustainable)</span>
-      <span class="style-chip">創意幾何風 (Creative Geometric)</span>
-      <span class="style-chip">學術研究風 (Academic &amp; Research)</span>
-    </div>
-  </div>
-  <div class="highlight-box" style="margin-top:14px">💡 使用「保留這一版，改為 <strong>XXX 風格</strong>」即可在不同風格間快速迭代</div>
-</div>
-</section>
-
-<!-- P12 Demo 5 系統雛型 -->
-<section class="slide" data-index="11">
+<!-- P10 Demo 5 系統雛型 -->
+<section class="slide">
 <div class="slide-content">
   <div class="badge badge-teal">Demo 5</div>
-  <div class="page-title" style="margin-bottom:12px">🗂️ 系統需求雛型・三步驟提示詞</div>
-  <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;text-align:left">
-    <div class="step-num">1</div>
-    <div style="font-size:13px;font-weight:700;color:#2D2D2D">分析需求（Chat 模式）</div>
-  </div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT 1</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-sys1')">📋 複製</button>
+  <div class="page-title">🗂️ 系統需求雛型開發</div>
+  <div class="step">
+    <div class="snum">1</div>
+    <div style="flex:1;min-width:0">
+      <div class="stitle">分析需求（Chat 模式）</div>
+      <div class="code-wrapper" style="margin-top:7px;margin-bottom:0"><button class="copy-btn" onclick="copyCode(this)">📋 複製</button><div class="code-block short" id="p-s1"></div></div>
     </div>
-    <pre id="p-sys1" class="prompt-body pb-sm">幫我分析這個檔案內容後
-建議我儀表板開發的規劃
-1. 有年度統計的航次、人次
-2. 就各港別分別分析：航次及比例、人次及比例
-3. 各船公司對各港的貢獻度</pre>
   </div>
-  <div class="two-col">
-    <div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;text-align:left">
-        <div class="step-num">2</div>
-        <div style="font-size:13px;font-weight:700;color:#2D2D2D">圖像化（Banana 生圖）</div>
-      </div>
-      <div class="prompt-block" style="margin-bottom:0">
-        <div class="prompt-header"><span class="prompt-label">PROMPT 2</span><button class="copy-btn" onclick="copyPrompt(this,'p-sys2')">📋 複製</button></div>
-        <pre id="p-sys2" class="prompt-body pb-xs">生成圖片
-將以上內容做成資訊圖表進行雛型展示</pre>
-      </div>
+  <div class="step">
+    <div class="snum">2</div>
+    <div style="flex:1;min-width:0">
+      <div class="stitle">雛型圖像化（Banana 生圖）</div>
+      <div class="code-wrapper" style="margin-top:7px;margin-bottom:0"><button class="copy-btn" onclick="copyCode(this)">📋 複製</button><div class="code-block short" id="p-s2"></div></div>
     </div>
-    <div>
-      <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;text-align:left">
-        <div class="step-num">3</div>
-        <div style="font-size:13px;font-weight:700;color:#2D2D2D">網頁化（Canvas）</div>
-      </div>
-      <div class="prompt-block" style="margin-bottom:0">
-        <div class="prompt-header"><span class="prompt-label">PROMPT 3</span><button class="copy-btn" onclick="copyPrompt(this,'p-sys3')">📋 複製</button></div>
-        <pre id="p-sys3" class="prompt-body pb-xs">將以上內容做成一頁式互動網頁進行雛型展示</pre>
-      </div>
+  </div>
+  <div class="step">
+    <div class="snum">3</div>
+    <div style="flex:1;min-width:0">
+      <div class="stitle">雛型網頁化（Canvas）</div>
+      <div class="code-wrapper" style="margin-top:7px;margin-bottom:0"><button class="copy-btn" onclick="copyCode(this)">📋 複製</button><div class="code-block short" id="p-s3"></div></div>
     </div>
   </div>
 </div>
 </section>
 
-<!-- P13 Demo 6 報名統計 -->
-<section class="slide" data-index="12">
+<!-- P11 Demo 6 報名統計 -->
+<section class="slide">
 <div class="slide-content">
   <div class="badge badge-purple">Demo 6</div>
-  <div class="page-title">📊 報名結果統計</div>
-  <div style="font-size:14px;color:#999;margin-bottom:16px">Gemini in Google Sheets ・ 在試算表右上角按星星啟動</div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT · Gemini in Google Sheets</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-sheet')">📋 複製</button>
-    </div>
-    <pre id="p-sheet" class="prompt-body pb-lg">以下提供給我一篇文字描述
-一、各報名場次統計共幾人
-二、將所有場次一起統計各單位各幾人(各單位人數由大到小排列)
-三、依5/7、5/8各一場次，統計各單位各幾人(各單位人數由大到小排列)</pre>
+  <div class="page-title">📊 報名結果統計<br><span style="font-size:.6em;color:#8B5CF6">Gemini in Google Sheets</span></div>
+  <div class="ref-link-row">
+    <a class="ref-link" href="https://docs.google.com/spreadsheets/d/1KesI2uqwibC4uqeGehHuQu74V0RijHSz6Ur0RSpv0V4/edit?gid=674696612#gid=674696612" target="_blank" rel="noopener">📊 開啟範例試算表</a>
   </div>
-  <div class="two-col">
-    <div class="highlight-box">📄 <strong>匯出至 Google 文件</strong></div>
-    <div class="highlight-box" style="border-color:#F5A623;background:rgba(245,166,35,0.08)">🎨 <strong>化為資訊圖表（Nano Banana 生圖）</strong></div>
+  <div class="plabel">提示詞｜統計分析</div>
+  <div class="code-wrapper"><button class="copy-btn" onclick="copyCode(this)">📋 複製</button><div class="code-block" id="p-reg"></div></div>
+  <div class="g2" style="margin-top:10px">
+    <div class="hbox">⭐ 在試算表右上角按星星啟動 Gemini</div>
+    <div class="hbox o">📄 可匯出分析結果至 Google 文件</div>
   </div>
 </div>
 </section>
 
-<!-- P14 Demo 6 生圖提示詞 -->
-<section class="slide" data-index="13">
+<!-- P12 Demo 6 生圖 -->
+<section class="slide">
 <div class="slide-content">
-  <div class="badge badge-purple">Demo 6｜生圖提示詞</div>
+  <div class="badge badge-teal">Demo 6｜進階應用</div>
   <div class="page-title">🎨 資訊圖表生圖提示詞</div>
-  <div class="prompt-block">
-    <div class="prompt-header">
-      <span class="prompt-label">PROMPT · Gemini Nano Banana（生圖）</span>
-      <button class="copy-btn" onclick="copyPrompt(this,'p-img')">📋 複製</button>
-    </div>
-    <pre id="p-img" class="prompt-body pb-lg">生成圖片
-將附件文字檔核心重點化簡化文字並取代為圖解，化為可愛版專業資訊圖表
-正體中文、解析度8k、每個字的文字筆畫清楚、寬高比16:9
-標題：AI應用實務工作坊-報名統計(20260506 08:00統計)
-右下角：製表人：總公司資訊處</pre>
-  </div>
-  <div class="three-col">
-    <div class="card" style="text-align:center;padding:14px"><div style="font-size:22px;margin-bottom:5px">🖼️</div><div style="font-size:13px;font-weight:600;color:#2D2D2D">可愛版<br>專業圖表</div></div>
-    <div class="card" style="text-align:center;padding:14px"><div style="font-size:22px;margin-bottom:5px">🔤</div><div style="font-size:13px;font-weight:600;color:#2D2D2D">正體中文<br>筆畫清晰</div></div>
-    <div class="card" style="text-align:center;padding:14px"><div style="font-size:22px;margin-bottom:5px">📐</div><div style="font-size:13px;font-weight:600;color:#2D2D2D">8K 畫質<br>16:9 比例</div></div>
+  <div class="plabel">提示詞｜化為可愛版資訊圖表（Gemini Nano Banana）</div>
+  <div class="code-wrapper"><button class="copy-btn" onclick="copyCode(this)">📋 複製</button><div class="code-block" id="p-img"></div></div>
+  <div class="g3" style="margin-top:11px">
+    <div class="card" style="text-align:center;padding:13px"><div style="font-size:22px;margin-bottom:5px">🖼️</div><div style="font-size:12px;font-weight:700;color:#2D2D2D">可愛版<br>專業圖表</div></div>
+    <div class="card" style="text-align:center;padding:13px"><div style="font-size:22px;margin-bottom:5px">🔤</div><div style="font-size:12px;font-weight:700;color:#2D2D2D">正體中文<br>筆畫清晰</div></div>
+    <div class="card" style="text-align:center;padding:13px"><div style="font-size:22px;margin-bottom:5px">📐</div><div style="font-size:12px;font-weight:700;color:#2D2D2D">8K 畫質<br>16:9 比例</div></div>
   </div>
 </div>
 </section>
 
-<!-- P15 總結 -->
-<section class="slide" data-index="14">
+<!-- P13 總結 -->
+<section class="slide">
 <div class="slide-content">
   <div class="badge">課程總結</div>
-  <div class="title-main">今日學會的<span class="title-accent">六大技能</span></div>
-  <div class="quad-grid" style="margin-top:20px">
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square blue">🔍</div><div><div class="card-title">AI 搜尋</div><div class="card-text" style="font-size:13px">Google Search AI 模式即時查詢</div></div></div>
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square teal">📝</div><div><div class="card-title">文件摘要</div><div class="card-text" style="font-size:13px">影片、會議紀錄快速整理</div></div></div>
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square orange">📊</div><div><div class="card-title">數據視覺化</div><div class="card-text" style="font-size:13px">圖表 ＋ 互動網頁一頁生成</div></div></div>
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square red">🖼️</div><div><div class="card-title">簡報製作</div><div class="card-text" style="font-size:13px">10種風格 Google Slide 輸出</div></div></div>
+  <div class="title-main">今日學會的<span class="ta">六大技能</span></div>
+  <div class="g4" style="margin-top:20px">
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is blue">🔍</div><div><div class="card-title">AI 搜尋</div><div class="card-text" style="font-size:12px">Google Search AI 模式即時查詢</div></div></div>
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is teal">📝</div><div><div class="card-title">文件摘要</div><div class="card-text" style="font-size:12px">影片、會議紀錄快速整理</div></div></div>
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is orange">📊</div><div><div class="card-title">數據視覺化</div><div class="card-text" style="font-size:12px">圖表 ＋ 互動網頁一頁生成</div></div></div>
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is red">🖼️</div><div><div class="card-title">簡報製作</div><div class="card-text" style="font-size:12px">10種風格 Google Slide 輸出</div></div></div>
   </div>
-  <div class="two-col" style="margin-top:12px">
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square purple">🗂️</div><div><div class="card-title">系統雛型</div><div class="card-text" style="font-size:13px">Chat→圖像→網頁三步驟快速驗證</div></div></div>
-    <div class="card" style="display:flex;gap:10px;align-items:flex-start"><div class="icon-square teal">📈</div><div><div class="card-title">試算表整合</div><div class="card-text" style="font-size:13px">Gemini in Sheets ＋ 資訊圖表生成</div></div></div>
+  <div class="g2" style="margin-top:12px">
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is purple">🗂️</div><div><div class="card-title">系統雛型</div><div class="card-text" style="font-size:12px">Chat → 圖像 → 網頁 三步驟驗證</div></div></div>
+    <div class="card" style="text-align:left;display:flex;gap:10px;align-items:flex-start;padding:14px 16px"><div class="is teal">📈</div><div><div class="card-title">試算表整合</div><div class="card-text" style="font-size:12px">Gemini in Sheets ＋ 資訊圖表生成</div></div></div>
   </div>
 </div>
 </section>
@@ -504,31 +360,43 @@
 </div>
 
 <script>
-function copyPrompt(btn,id){
-  var text=document.getElementById(id).textContent.trim();
-  var markCopied=function(){btn.textContent='✓ 已複製！';btn.classList.add('copied');setTimeout(function(){btn.textContent='📋 複製';btn.classList.remove('copied');},2400);};
-  var fallback=function(){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;opacity:0;pointer-events:none;';document.body.appendChild(ta);ta.select();document.execCommand('copy');document.body.removeChild(ta);};
-  if(navigator.clipboard){navigator.clipboard.writeText(text).then(markCopied).catch(function(){fallback();markCopied();});}else{fallback();markCopied();}
+var PROMPTS={
+"p-nba":"幫我搜尋NBA今年戰績前5名隊伍\n一、以表格列出今年的平均得失分、勝負場次\n二、以表格列出該隊伍明星球員及近三年各項數據",
+"p-yt":"針對所提供的Youtube影片詳讀後整理\n一、核心概念\n二、步驟、時間(timestamp)、提示詞的表格",
+"p-meeting":"# Role\n你是一位擁有多年經驗的「高階執行長特助」與「管理顧問」。你擅長從混亂、冗長的會議逐字稿中，精準提取核心決策、辨識潛在風險，並將其轉化為具備高度可讀性、行動導向的會議紀錄。\n\n# Task\n請閱讀我提供的會議逐字稿，並依照下方的 [Output Structure] 進行整理。你的目標是產出一份「能直接輔助決策且具備後續追蹤價值」的專業紀錄。\n\n# Constraints\n1. **事實為主，建議為輔**：已明確的決策請如實記錄。若會議中對於某項任務「未明確指定負責人」或「未壓定截止時間」，請基於會議脈絡與企業常理，主動提出合理的「建議負責人/部門」與「建議期限」。\n\n2. **防呆標記**：所有由你主動提出的建議內容，務必在文字後方加上 [建議] 或 [待裁示] 的標記，以便主管審閱。\n\n3. **語氣專業**：將口語化的發言轉化為中立、簡潔、精鍊的商業書面用語。\n\n4. **精準過濾**：自動過濾冗餘的寒暄、發散的討論與重複言論，僅保留關鍵觀點、論據與最終結論。\n\n5. **結構化排版**：使用 Markdown 標題、條列式與表格，確保資訊層次分明。\n\n# Output Structure\n## 📌 會議概覽\n- **會議主題**：[填入會議名稱]\n- **會議核心目標**：[用一句話說明本次會議解決的核心問題]\n- **關鍵共識**：[簡述本次會議達成的最重要共識]\n\n## 💡 決策摘要 (Key Decisions)\n*請列出所有已定案的決策，並簡述其背後的考量邏輯。*\n1. **[決策 A]**：考量到...，最終決定...。\n2. **[決策 B]**：...\n\n## 🚀 待辦事項 (Action Items)\n*注意：若原會議未提及負責人或時間，請根據脈絡給予建議並加註 [建議]。*\n| 序號 | 具體任務項目 | 負責人/部門 | 截止日期 | 預期產出/驗收標準 |\n| :--- | :--- | :--- | :--- | :--- |\n| 01 | [任務名稱] | [負責人] | [日期] | [產出目標] |\n| 02 | [未定案任務] | [建議部門][建議] | [建議日期][待裁示] | [預計結果] |\n\n## 🔍 關鍵脈絡與懸而未決事項 (Context & Open Issues)\n*記錄具備參考價值的討論重點、潛在風險，以及需後續另外討論的議題。*\n- **[風險提示]**：討論中提到...，未來需注意...。\n- **[未決議題]**：關於...尚未達成共識，建議後續安排...討論。",
+"p-cc":"針對各港人次比例繪製成圓餅圖，包括萬人次、比例進行標示",
+"p-cs1":"幫我做一個模擬互動一頁網頁\n可輸入全臺總人次目標，會依原比例建議各港各別應增加的人次、及建議成長比例\n也可手動下修某港目標值，分攤到其他港",
+"p-cs2":"為利於觀察\n1. 整體網頁高度不要太高，各港高度、間距縮小\n2. 各港的scrollbar以不同色條明顯標示原數據、新調整結果",
+"p-sl1":"幫我截取報告中的重點，生成15頁的簡報內容(google Slide)\n包括封面、目錄、各重點頁、結語\n各重點頁應含：標題、內容條列重點及建議意象表達\n使用專業商務執行風 (Executive Corporate)風格",
+"p-sl2":"保留這一版\n改為大膽文字排版 (Bold Typography)",
+"p-s1":"幫我分析這個檔案內容後\n建議我儀表板開發的規劃\n1. 有年度統計的航次、人次\n2. 就各港別分別分析：航次及比例、人次及比例\n3. 各船公司對各港的貢獻度",
+"p-s2":"生成圖片\n將以上內容做成資訊圖表進行雛型展示",
+"p-s3":"將以上內容做成一頁式互動網頁進行雛型展示",
+"p-reg":"以下提供給我一篇文字描述\n一、各報名場次統計共幾人\n二、將所有場次一起統計各單位各幾人(各單位人數由大到小排列)\n三、依5/7、5/8各一場次，統計各單位各幾人(各單位人數由大到小排列)",
+"p-img":"生成圖片\n將附件文字檔核心重點化簡化文字並取代為圖解，化為可愛版專業資訊圖表\n正體中文、解析度8k、每個字的文字筆畫清楚、寬高比16:9\n標題：AI應用實務工作坊-報名統計(20260506 08:00統計)\n右下角：製表人：總公司資訊處"
+};
+Object.keys(PROMPTS).forEach(function(id){var el=document.getElementById(id);if(el)el.textContent=PROMPTS[id];});
+
+function copyCode(btn){
+  var block=btn.parentElement.querySelector('.code-block');
+  var text=block.textContent.trim();
+  function done(){var orig=btn.innerHTML;btn.innerHTML='✓ 已複製';btn.classList.add('copied');setTimeout(function(){btn.innerHTML=orig;btn.classList.remove('copied');},2200);}
+  if(navigator.clipboard){navigator.clipboard.writeText(text).then(done).catch(function(){fb(text);done();});}else{fb(text);done();}
 }
+function fb(text){var ta=document.createElement('textarea');ta.value=text;ta.style.cssText='position:fixed;top:-9999px;left:-9999px;opacity:0';document.body.appendChild(ta);ta.select();try{document.execCommand('copy');}catch(e){}document.body.removeChild(ta);}
+
 var slides=document.querySelectorAll('.slide');
-var pageIndicator=document.getElementById('pageIndicator');
-var totalPagesEl=document.getElementById('totalPages');
-var prevBtn=document.getElementById('prevBtn');
-var nextBtn=document.getElementById('nextBtn');
-var current=0;
-totalPagesEl.textContent=slides.length;
-function goTo(n){slides[current].classList.remove('active');current=Math.max(0,Math.min(n,slides.length-1));slides[current].classList.add('active');updateIndicator();prevBtn.disabled=current===0;nextBtn.disabled=current===slides.length-1;}
-function updateIndicator(){pageIndicator.textContent=current+1;}
-pageIndicator.addEventListener('click',function(){
-  var input=document.createElement('input');input.type='number';input.min=1;input.max=slides.length;input.value=current+1;input.className='page-jump-input';pageIndicator.replaceWith(input);input.select();
-  function commit(){var n=parseInt(input.value,10);input.replaceWith(pageIndicator);if(!isNaN(n))goTo(n-1);else updateIndicator();}
-  input.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();commit();}if(e.key==='Escape'){input.replaceWith(pageIndicator);updateIndicator();}if(e.key==='ArrowLeft'||e.key==='ArrowRight')e.stopPropagation();});
-  input.addEventListener('blur',commit);
-  input.addEventListener('input',function(){if(+input.value<1)input.value=1;if(+input.value>slides.length)input.value=slides.length;});
-});
-prevBtn.addEventListener('click',function(){goTo(current-1);});
-nextBtn.addEventListener('click',function(){goTo(current+1);});
-document.addEventListener('keydown',function(e){if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(current+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(current-1);});
+var pi=document.getElementById('pageIndicator');
+var tp=document.getElementById('totalPages');
+var pb=document.getElementById('prevBtn');
+var nb=document.getElementById('nextBtn');
+var cur=0;
+tp.textContent=slides.length;
+function goTo(n){slides[cur].classList.remove('active');cur=Math.max(0,Math.min(n,slides.length-1));slides[cur].classList.add('active');pi.textContent=cur+1;pb.disabled=cur===0;nb.disabled=cur===slides.length-1;}
+pi.addEventListener('click',function(){var inp=document.createElement('input');inp.type='number';inp.min=1;inp.max=slides.length;inp.value=cur+1;inp.className='page-jump-input';pi.replaceWith(inp);inp.select();function commit(){var n=parseInt(inp.value,10);inp.replaceWith(pi);if(!isNaN(n))goTo(n-1);else pi.textContent=cur+1;}inp.addEventListener('keydown',function(e){if(e.key==='Enter'){e.preventDefault();commit();}if(e.key==='Escape'){inp.replaceWith(pi);pi.textContent=cur+1;}if(e.key==='ArrowLeft'||e.key==='ArrowRight')e.stopPropagation();});inp.addEventListener('blur',commit);});
+pb.addEventListener('click',function(){goTo(cur-1);});
+nb.addEventListener('click',function(){goTo(cur+1);});
+document.addEventListener('keydown',function(e){if(document.querySelector('.page-jump-input'))return;if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(cur+1);if(e.key==='ArrowLeft'||e.key==='ArrowUp')goTo(cur-1);});
 goTo(0);
 </script>
 </body>
