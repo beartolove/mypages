@@ -1,0 +1,675 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>AI課程分享：隨堂痛點與解決方向</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans TC", "Inter", sans-serif;
+      background: #F8F6F1;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slideshow {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 100px;
+      z-index: 1;
+    }
+
+    .slide.active { display: flex; }
+
+    .slide-content {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .nav-bar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      background: white;
+      border-radius: 50px;
+      padding: 10px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #2D2D2D;
+      cursor: pointer;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nav-btn:disabled { color: #ccc; cursor: default; }
+    .nav-btn:disabled:hover { background: none; }
+
+    .page-indicator {
+      font-size: 15px;
+      color: #666;
+      min-width: 30px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 2px 6px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .page-indicator:hover { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+
+    .page-jump-input {
+      width: 48px;
+      border: 2px solid #2CC5B5;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      text-align: center;
+      color: #2D2D2D;
+      background: white;
+      outline: none;
+      padding: 2px 4px;
+    }
+
+    .slide-footer {
+      position: fixed;
+      bottom: 20px; right: 28px;
+      font-size: 14px; font-weight: 600; color: #bbb;
+      letter-spacing: 0.02em;
+      z-index: 99; white-space: nowrap;
+      user-select: none;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.15);
+      color: #F5A623;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 20px;
+    }
+
+    .badge-teal {
+      display: inline-block;
+      background: rgba(44,197,181,0.15);
+      color: #2CC5B5;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 12px;
+    }
+
+    .title-main {
+      font-size: clamp(36px, 5.5vw, 60px);
+      font-weight: 900;
+      color: #2D2D2D;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .title-accent { color: #2CC5B5; }
+    .title-orange { color: #F5A623; }
+
+    .icon-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 14px;
+    }
+    .icon-circle.teal { background: rgba(44,197,181,0.15); }
+    .icon-circle.orange { background: rgba(245,166,35,0.15); }
+    .icon-circle.red { background: rgba(229,57,53,0.12); }
+    .icon-circle.purple { background: rgba(139,92,246,0.12); }
+
+    .icon-square {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .icon-square.teal { background: #2CC5B5; }
+    .icon-square.orange { background: #F5A623; }
+    .icon-square.purple { background: #8B5CF6; }
+    .icon-square.red { background: #E53935; }
+
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .two-col { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+    .quad-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+
+    /* 提示詞複製卡 */
+    .prompt-box {
+      background: #1e1e2e;
+      border-radius: 14px;
+      padding: 20px 24px;
+      text-align: left;
+      position: relative;
+      margin-top: 12px;
+    }
+    .prompt-box pre {
+      font-family: "Noto Sans TC", monospace;
+      font-size: 14px;
+      color: #cdd6f4;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.7;
+      margin: 0;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 12px; right: 12px;
+      background: rgba(44,197,181,0.2);
+      color: #2CC5B5;
+      border: none;
+      border-radius: 8px;
+      padding: 5px 14px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      font-family: "Noto Sans TC", sans-serif;
+      transition: background 0.2s;
+    }
+    .copy-btn:hover { background: rgba(44,197,181,0.35); }
+    .copy-btn.copied { background: rgba(44,197,181,0.5); color: white; }
+
+    /* 連結卡 */
+    .link-card {
+      background: white;
+      border-radius: 14px;
+      padding: 16px 20px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.07);
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      text-decoration: none;
+      color: inherit;
+      transition: box-shadow 0.2s, transform 0.2s;
+    }
+    .link-card:hover { box-shadow: 0 6px 24px rgba(44,197,181,0.18); transform: translateY(-2px); }
+    .link-card .link-icon { font-size: 24px; flex-shrink: 0; }
+    .link-card .link-title { font-size: 15px; font-weight: 700; color: #2D2D2D; }
+    .link-card .link-url { font-size: 12px; color: #2CC5B5; margin-top: 3px; word-break: break-all; }
+
+    /* 步驟序號 */
+    .step-num {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 32px; height: 32px;
+      border-radius: 50%;
+      background: #2CC5B5;
+      color: white;
+      font-weight: 900;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      text-align: left;
+    }
+    .step-row-content { font-size: 16px; color: #2D2D2D; line-height: 1.6; }
+    .step-row-content strong { color: #F5A623; }
+
+    /* 頁面淡入動畫 */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(14px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide.active .slide-content { animation: fadeIn 0.3s ease; }
+
+    /* 標籤清單 */
+    .tag-list { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; margin-top: 16px; }
+    .tag {
+      background: rgba(139,92,246,0.1);
+      color: #8B5CF6;
+      border-radius: 20px;
+      padding: 6px 18px;
+      font-size: 13px;
+      font-weight: 500;
+    }
+    .tag.teal { background: rgba(44,197,181,0.1); color: #2CC5B5; }
+    .tag.orange { background: rgba(245,166,35,0.12); color: #c47d00; }
+
+    /* 文字說明 */
+    .sub-text { font-size: 16px; color: #666; line-height: 1.7; }
+    .section-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: #2D2D2D;
+      margin-bottom: 20px;
+    }
+
+    /* 小標題 */
+    .label-teal {
+      font-size: 13px;
+      font-weight: 700;
+      color: #2CC5B5;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 6px;
+    }
+    .prompt-label {
+      font-size: 13px;
+      font-weight: 700;
+      color: #aaa;
+      margin-bottom: 4px;
+      text-align: left;
+    }
+  </style>
+</head>
+<body>
+<div class="slideshow">
+
+  <!-- ===== P1 封面 ===== -->
+  <section class="slide active" data-index="0">
+    <div class="slide-content">
+      <div class="badge">📅 2026/05/07–05/09</div>
+      <div class="title-main">
+        AI 課程分享<br>
+        <span class="title-accent">隨堂痛點</span>與<span class="title-orange">解決方向</span>
+      </div>
+      <p class="sub-text" style="margin-top:16px;">兩大實戰範例：文件對照 ✦ 資料轉文件簡報</p>
+      <div style="margin-top:32px;display:flex;gap:16px;justify-content:center;flex-wrap:wrap;">
+        <div style="background:rgba(44,197,181,0.1);border-radius:14px;padding:14px 28px;">
+          <div style="font-size:28px;margin-bottom:6px;">📋</div>
+          <div style="font-size:14px;font-weight:700;color:#2CC5B5;">範例 1</div>
+          <div style="font-size:13px;color:#666;">文件對照</div>
+        </div>
+        <div style="background:rgba(245,166,35,0.1);border-radius:14px;padding:14px 28px;">
+          <div style="font-size:28px;margin-bottom:6px;">📊</div>
+          <div style="font-size:14px;font-weight:700;color:#F5A623;">範例 2</div>
+          <div style="font-size:13px;color:#666;">資料轉文件簡報</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P2 範例1 封面 ===== -->
+  <section class="slide" data-index="1">
+    <div class="slide-content">
+      <div class="badge-teal">🎯 範例 1</div>
+      <div class="title-main" style="font-size:clamp(32px,4.5vw,52px);">
+        <span class="title-accent">文件對照</span>
+      </div>
+      <p class="sub-text" style="margin:12px 0 28px;">以「檢查契約」為例，讓 AI 按照你的規則逐項核對</p>
+      <div class="card">
+        <div style="display:flex;flex-direction:column;gap:16px;">
+          <div class="step-row">
+            <div class="step-num">1</div>
+            <div class="step-row-content">完整描述自己的<strong>需求與流程</strong></div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">2</div>
+            <div class="step-row-content">準備相關<strong>資料與文件</strong>（清單 ＋ 契約）</div>
+          </div>
+          <div class="step-row">
+            <div class="step-num">3</div>
+            <div class="step-row-content">下提示詞叫 <strong>AI 員工做</strong>，生成對照表格</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P3 範例1 Step1 需求描述 ===== -->
+  <section class="slide" data-index="2">
+    <div class="slide-content">
+      <div class="badge">Step 1</div>
+      <div class="section-title">試著完整描述自己的<span class="title-accent">需求與流程</span></div>
+      <div class="card" style="text-align:left;">
+        <div class="label-teal">📌 使用情境</div>
+        <p style="font-size:16px;color:#2D2D2D;line-height:1.8;margin-top:8px;">
+          針對<strong>土地契約</strong>的內容，要用我指定的步驟進行檢查是否有問題
+        </p>
+        <div style="margin-top:20px;padding-top:16px;border-top:1px solid #f0f0f0;">
+          <div class="label-teal" style="margin-bottom:10px;">💡 重點提示</div>
+          <div style="display:flex;flex-wrap:wrap;gap:8px;">
+            <span class="tag teal">明確說明文件類型</span>
+            <span class="tag teal">指定檢查步驟</span>
+            <span class="tag teal">說明預期輸出格式</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P4 範例1 Step2 文件 ===== -->
+  <section class="slide" data-index="3">
+    <div class="slide-content">
+      <div class="badge">Step 2</div>
+      <div class="section-title">準備相關<span class="title-accent">資料與文件</span></div>
+      <div style="display:flex;flex-direction:column;gap:14px;">
+        <a class="link-card" href="https://docs.google.com/document/d/1G14ps2Y5WyMyRI04gjgKMXiOOBWypDgX8VVEm_x6qqU/edit?usp=sharing" target="_blank" rel="noopener">
+          <span class="link-icon">📄</span>
+          <div>
+            <div class="link-title">土地租賃契約要項檢查清單</div>
+            <div class="link-url">docs.google.com/document/d/1G14ps2Y5WyMyRI04gjgKMXiOOBWypDgX8VVEm_x6qqU</div>
+          </div>
+        </a>
+        <a class="link-card" href="https://docs.google.com/document/d/1Xo_5JAM8IP5DTyUjoKP7jXDcToPOk6vbhfGYTDp2wVw/edit?usp=sharing" target="_blank" rel="noopener">
+          <span class="link-icon">📝</span>
+          <div>
+            <div class="link-title">要檢查的土地契約</div>
+            <div class="link-url">docs.google.com/document/d/1Xo_5JAM8IP5DTyUjoKP7jXDcToPOk6vbhfGYTDp2wVw</div>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P5 範例1 Step3 提示詞 ===== -->
+  <section class="slide" data-index="4">
+    <div class="slide-content">
+      <div class="badge">Step 3 · Gemini</div>
+      <div class="section-title">依規則進行<span class="title-accent">檢查</span></div>
+      <div class="prompt-label">📌 提示詞（一鍵複製）</div>
+      <div class="prompt-box">
+        <pre id="prompt1">請幫我就第一份文件的契約，以第二份檢查清單進行檢查，最後生成一個對照表格</pre>
+        <button class="copy-btn" onclick="copyPrompt('prompt1', this)">複製</button>
+      </div>
+      <div style="margin-top:20px;" class="card">
+        <div class="label-teal" style="margin-bottom:10px;">🔁 其他適用場景</div>
+        <div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;">
+          <span class="tag">履約事項檢查</span>
+          <span class="tag">規範版本變更的修正意見對照表</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P6 範例2 封面 ===== -->
+  <section class="slide" data-index="5">
+    <div class="slide-content">
+      <div class="badge" style="background:rgba(245,166,35,0.15);color:#F5A623;">🎯 範例 2</div>
+      <div class="title-main" style="font-size:clamp(28px,4vw,48px);">
+        既有資料，轉為<br><span class="title-orange">指定文件</span>及<span class="title-accent">簡報</span>
+      </div>
+      <p class="sub-text" style="margin:12px 0 24px;">以「永續報告書重要摘要」為例</p>
+      <div class="three-col" style="gap:14px;">
+        <div class="card" style="padding:20px;">
+          <div style="font-size:28px;margin-bottom:8px;">🔍</div>
+          <div style="font-weight:700;font-size:15px;color:#2D2D2D;">1. 摘要重點</div>
+          <div style="font-size:13px;color:#999;margin-top:4px;">Gemini Canvas</div>
+        </div>
+        <div class="card" style="padding:20px;">
+          <div style="font-size:28px;margin-bottom:8px;">📄</div>
+          <div style="font-weight:700;font-size:15px;color:#2D2D2D;">2. 轉指定文件</div>
+          <div style="font-size:13px;color:#999;margin-top:4px;">格式化輸出</div>
+        </div>
+        <div class="card" style="padding:20px;">
+          <div style="font-size:28px;margin-bottom:8px;">📊</div>
+          <div style="font-weight:700;font-size:15px;color:#2D2D2D;">3. 轉指定簡報</div>
+          <div style="font-size:13px;color:#999;margin-top:4px;">Google Slides</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P7 範例2 Step2 文件 ===== -->
+  <section class="slide" data-index="6">
+    <div class="slide-content">
+      <div class="badge" style="background:rgba(245,166,35,0.15);color:#c47d00;">Step 2</div>
+      <div class="section-title">準備相關<span class="title-orange">資料與文件</span></div>
+      <a class="link-card" href="https://drive.google.com/file/d/1mi0gFkq5p4LGV5uYu1EKr8EVKu3aMuzY/view?usp=sharing" target="_blank" rel="noopener" style="margin-bottom:20px;">
+        <span class="link-icon">📑</span>
+        <div>
+          <div class="link-title">2023年永續報告書</div>
+          <div class="link-url">drive.google.com/file/d/1mi0gFkq5p4LGV5uYu1EKr8EVKu3aMuzY</div>
+        </div>
+      </a>
+      <div class="card" style="text-align:left;margin-top:4px;">
+        <div class="label-teal" style="margin-bottom:10px;">✅ 執行流程</div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="step-row">
+            <div class="step-num" style="background:#F5A623;">1</div>
+            <div class="step-row-content">上傳永續報告書至 Gemini Canvas</div>
+          </div>
+          <div class="step-row">
+            <div class="step-num" style="background:#F5A623;">2</div>
+            <div class="step-row-content">依序執行三段提示詞</div>
+          </div>
+          <div class="step-row">
+            <div class="step-num" style="background:#F5A623;">3</div>
+            <div class="step-row-content">匯出至 Google 文件 / Google Slides</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P8 Step3-1 摘要重點 ===== -->
+  <section class="slide" data-index="7">
+    <div class="slide-content">
+      <div class="badge">Step 3－① · Gemini Canvas</div>
+      <div class="section-title">🔍 摘要<span class="title-accent">重點</span></div>
+      <div class="prompt-label">📌 提示詞（一鍵複製）</div>
+      <div class="prompt-box">
+        <pre id="prompt2">幫我進行報告摘要
+呈現本公司針對永續的作為重點、作法，盡量包含量化的呈現
+整理成13項重點</pre>
+        <button class="copy-btn" onclick="copyPrompt('prompt2', this)">複製</button>
+      </div>
+      <div style="margin-top:16px;" class="card" style="padding:16px;">
+        <div style="font-size:14px;color:#666;">💡 建議指定「量化呈現」讓摘要更有說服力</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P9 Step3-2 指定格式文件 ===== -->
+  <section class="slide" data-index="8">
+    <div class="slide-content">
+      <div class="badge">Step 3－② · Gemini Canvas</div>
+      <div class="section-title">📄 轉為指定格式<span class="title-accent">文件</span></div>
+      <div class="prompt-label">📌 提示詞（一鍵複製）</div>
+      <div class="prompt-box">
+        <pre id="prompt3">幫我改成指定格式
+
+# 標題
+整篇摘要
+
+## 作為一、
+### (一)
+1. 
+2. 
+3. 
+   - 資料來源頁碼
+### (二)
+### (三)</pre>
+        <button class="copy-btn" onclick="copyPrompt('prompt3', this)">複製</button>
+      </div>
+      <div style="margin-top:14px;display:flex;gap:10px;flex-wrap:wrap;justify-content:center;">
+        <span class="tag teal">📤 右上角分享 icon → 匯出到 Google 文件</span>
+        <span class="tag">📋 可複製後貼到 Word 自行微調格式</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P10 Step3-3 指定格式簡報 ===== -->
+  <section class="slide" data-index="9">
+    <div class="slide-content">
+      <div class="badge">Step 3－③ · Gemini Canvas</div>
+      <div class="section-title">📊 轉為指定格式<span class="title-orange">簡報</span></div>
+      <div class="prompt-label">📌 提示詞（一鍵複製）</div>
+      <div class="prompt-box">
+        <pre id="prompt4">幫我將以上報告內容生成12頁的簡報(Google Slide)
+另外加上3頁各為封面、目錄、結語
+各重點頁應含：標題、內容條列重點及建議意象表達
+使用[專業商務執行風 (Executive Corporate)風格]</pre>
+        <button class="copy-btn" onclick="copyPrompt('prompt4', this)">複製</button>
+      </div>
+      <div style="margin-top:14px;" class="prompt-label">📌 更改風格（一鍵複製）</div>
+      <div class="prompt-box">
+        <pre id="prompt5">保留這一版
+改為[自然永續風 (Nature & Sustainable)]的Google slide</pre>
+        <button class="copy-btn" onclick="copyPrompt('prompt5', this)">複製</button>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P11 常用風格清單 ===== -->
+  <section class="slide" data-index="10">
+    <div class="slide-content">
+      <div class="badge-teal">✨ 常用風格速查</div>
+      <div class="section-title" style="font-size:22px;margin-bottom:16px;">Gemini Canvas 簡報風格清單</div>
+      <div class="tag-list">
+        <span class="tag teal">極簡主義風格 (Minimalist)</span>
+        <span class="tag orange">專業商務執行風 (Executive Corporate)</span>
+        <span class="tag" style="background:rgba(99,102,241,0.1);color:#6366F1;">科技前衛風 (Tech &amp; Futurist)</span>
+        <span class="tag" style="background:rgba(16,185,129,0.1);color:#059669;">數據資訊圖表風 (Data-Driven Infographic)</span>
+        <span class="tag" style="background:rgba(59,130,246,0.1);color:#3B82F6;">現代扁平化 (Modern Flat Design)</span>
+        <span class="tag" style="background:rgba(75,85,99,0.1);color:#4B5563;">工業硬派風格 (Industrial &amp; Structured)</span>
+        <span class="tag" style="background:rgba(236,72,153,0.1);color:#EC4899;">大膽文字排版 (Bold Typography)</span>
+        <span class="tag" style="background:rgba(34,197,94,0.1);color:#16A34A;">自然永續風 (Nature &amp; Sustainable)</span>
+        <span class="tag" style="background:rgba(251,146,60,0.1);color:#EA580C;">創意幾何風 (Creative Geometric)</span>
+        <span class="tag" style="background:rgba(139,92,246,0.1);color:#7C3AED;">學術研究風 (Academic &amp; Research)</span>
+      </div>
+      <div style="margin-top:20px;" class="card" style="padding:16px 20px;">
+        <div style="font-size:14px;color:#666;">
+          💡 使用時將 <code style="background:#f0f0f0;padding:2px 6px;border-radius:4px;color:#2CC5B5;font-size:13px;">[風格名稱]</code> 替換進提示詞即可切換風格
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 頁腳 -->
+  <footer class="slide-footer">🐻 林熊熊分享</footer>
+
+  <!-- 導覽列 -->
+  <nav class="nav-bar">
+    <button class="nav-btn" id="prevBtn">‹</button>
+    <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
+    <span style="color:#ccc">/</span>
+    <span id="totalPages" style="font-size:15px;color:#999"></span>
+    <button class="nav-btn" id="nextBtn">›</button>
+  </nav>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const totalPagesEl = document.getElementById('totalPages');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let current = 0;
+  totalPagesEl.textContent = slides.length;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    updateIndicator();
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+  }
+
+  function updateIndicator() {
+    pageIndicator.textContent = current + 1;
+  }
+
+  pageIndicator.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = 1;
+    input.max = slides.length;
+    input.value = current + 1;
+    input.className = 'page-jump-input';
+    pageIndicator.replaceWith(input);
+    input.select();
+
+    function commit() {
+      const n = parseInt(input.value, 10);
+      input.replaceWith(pageIndicator);
+      if (!isNaN(n)) goTo(n - 1);
+      else updateIndicator();
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { input.replaceWith(pageIndicator); updateIndicator(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+    });
+    input.addEventListener('blur', commit);
+    input.addEventListener('input', () => {
+      if (input.value < 1) input.value = 1;
+      if (input.value > slides.length) input.value = slides.length;
+    });
+  });
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  function copyPrompt(id, btn) {
+    const text = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(text).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✓ 已複製';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove('copied');
+      }, 2000);
+    });
+  }
+
+  goTo(0);
+</script>
+</body>
+</html>
