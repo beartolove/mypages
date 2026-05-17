@@ -1,0 +1,254 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>我的 Gem 快捷導航中心</title>
+    <style>
+        :root {
+            --bg-color: #f8fafc;
+            --card-bg: #ffffff;
+            --text-main: #1e293b;
+            --text-muted: #64748b;
+            --accent-color: #2563eb;
+            --accent-hover: #1d4ed8;
+            --border-radius: 16px;
+            --shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05), 0 2px 4px -2px rgb(0 0 0 / 0.05);
+            --shadow-hover: 0 10px 15px -3px rgb(0 0 0 / 0.1), 0 4px 6px -4px rgb(0 0 0 / 0.1);
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+            background-color: var(--bg-color);
+            color: var(--text-main);
+            line-height: 1.6;
+            padding: 40px 20px;
+            display: flex;
+            justify-content: center;
+        }
+
+        .container {
+            max-width: 1100px;
+            width: 100%;
+        }
+
+        header {
+            text-align: center;
+            margin-bottom: 48px;
+        }
+
+        header h1 {
+            font-size: 2.25rem;
+            font-weight: 800;
+            color: var(--text-main);
+            margin-bottom: 12px;
+            letter-spacing: -0.025em;
+        }
+
+        header p {
+            color: var(--text-muted);
+            font-size: 1.1rem;
+        }
+
+        .category {
+            margin-bottom: 40px;
+        }
+
+        .category-title {
+            font-size: 1.3rem;
+            font-weight: 700;
+            color: var(--text-main);
+            margin-bottom: 20px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .category-title::before {
+            content: "";
+            display: inline-block;
+            width: 4px;
+            height: 18px;
+            background-color: var(--accent-color);
+            border-radius: 2px;
+        }
+
+        .grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+            gap: 24px;
+        }
+
+        .card {
+            background: var(--card-bg);
+            border: 1px solid #e2e8f0;
+            border-radius: var(--border-radius);
+            padding: 24px;
+            box-shadow: var(--shadow);
+            text-decoration: none;
+            color: inherit;
+            transition: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .card:hover {
+            transform: translateY(-4px);
+            box-shadow: var(--shadow-hover);
+            border-color: #bfdbfe;
+        }
+
+        .card-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 12px;
+        }
+
+        .card-icon {
+            font-size: 1.5rem;
+            margin-right: 12px;
+            flex-shrink: 0;
+        }
+
+        .card-title {
+            font-size: 1.1rem;
+            font-weight: 700;
+            color: var(--text-main);
+            transition: color 0.2s ease;
+        }
+
+        .card:hover .card-title {
+            color: var(--accent-color);
+        }
+
+        .card-desc {
+            font-size: 0.925rem;
+            color: var(--text-muted);
+            flex-grow: 1;
+        }
+
+        footer {
+            text-align: center;
+            margin-top: 60px;
+            padding-top: 24px;
+            border-top: 1px solid #e2e8f0;
+            color: var(--text-muted);
+            font-size: 0.875rem;
+        }
+
+        @media (max-width: 640px) {
+            body {
+                padding: 24px 16px;
+            }
+            header h1 {
+                font-size: 1.75rem;
+            }
+            .grid {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <header>
+        <h1>🌐 我的 Gem 快捷導航中心</h1>
+        <p>點擊下方專屬卡片，即可一鍵啟動自訂 AI 協作工具</p>
+    </header>
+
+    <div class="category">
+        <div class="category-title">知識管理與內容創作</div>
+        <div class="grid">
+            <a href="https://gemini.google.com/gem/9b88af2ac681" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-header">
+                    <span class="card-icon">🧰</span>
+                    <span class="card-title">紀錄轉心智圖</span>
+                </div>
+                <p class="card-desc">AI 自媒體博主首席助理，擅長將冗長、碎片化的視訊或 Podcast 逐字稿，轉化為高含金量、邏輯清晰的結構化筆記。</p>
+            </a>
+            <a href="https://gemini.google.com/gem/ab613eea7bcb" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-header">
+                    <span class="card-icon">🧰</span>
+                    <span class="card-title">YT摘要（核心、步驟與提示詞）</span>
+                </div>
+                <p class="card-desc">針對 YouTube 影片進行詳細解讀，並整理出核心概念、時間戳記（Timestamp）與提示詞表格。</p>
+            </a>
+            <a href="https://gemini.google.com/gem/2f6c6975f5dd" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-header">
+                    <span class="card-icon">📝</span>
+                    <span class="card-title">重點整理：Youtuber</span>
+                </div>
+                <p class="card-desc">只需輸入 YouTube 網址，即可快速擷取影片重點。</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="category">
+        <div class="category-title">行政、公文與會議助理</div>
+        <div class="grid">
+            <a href="https://gemini.google.com/gem/78c5dd8bf874" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-header">
+                    <span class="card-icon">🧰</span>
+                    <span class="card-title">公文審閱（系統採購）</span>
+                </div>
+                <p class="card-desc">請上傳公文及重點附件，協助您審閱系統採購相關公文與資料。</p>
+            </a>
+            <a href="https://gemini.google.com/gem/1b90f95c9611" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-header">
+                    <span class="card-icon">🧰</span>
+                    <span class="card-title">會議紀錄幫手</span>
+                </div>
+                <p class="card-desc">提供會議逐字稿，自動梳理並產出結構化的會議紀錄。</p>
+            </a>
+            <a href="https://gemini.google.com/gem/20093c5d1a9b" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-header">
+                    <span class="card-icon">🧰</span>
+                    <span class="card-title">底價助手</span>
+                </div>
+                <p class="card-desc">專門協助審閱與評估底價相關資料。</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="category">
+        <div class="category-title">議事與分工規劃</div>
+        <div class="grid">
+            <a href="https://gemini.google.com/gem/866f812c9d51" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-header">
+                    <span class="card-icon">🧰</span>
+                    <span class="card-title">立委質詢分工表</span>
+                </div>
+                <p class="card-desc">輸入指定的資料列範圍，協助規劃與整理立委質詢的分工表格。</p>
+            </a>
+        </div>
+    </div>
+
+    <div class="category">
+        <div class="category-title">視覺與創意生成</div>
+        <div class="grid">
+            <a href="https://gemini.google.com/gem/3a3fab9292a8" target="_blank" rel="noopener noreferrer" class="card">
+                <div class="card-header">
+                    <span class="card-icon">🧰</span>
+                    <span class="card-title">生成圖片</span>
+                </div>
+                <p class="card-desc">輸入文字敘述，即可為您生成對應圖片（亦可附註標題與作者）。</p>
+            </a>
+        </div>
+    </div>
+
+    <footer>
+        <p>💡 建議將此網頁加入瀏覽器書籤，打造最流暢的 AI 協作工作流！</p>
+    </footer>
+</div>
+
+</body>
+</html>
