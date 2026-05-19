@@ -1,0 +1,631 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>HEIC → JPG 轉換器</title>
+<script src="https://cdn.jsdelivr.net/npm/heic2any/dist/heic2any.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/jszip@3.10.1/dist/jszip.min.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=DM+Mono:wght@400;500&family=Playfair+Display:wght@700&family=DM+Sans:wght@300;400;500&display=swap" rel="stylesheet">
+
+<style>
+  :root {
+    --bg: #0d0d0d;
+    --surface: #161616;
+    --surface2: #1e1e1e;
+    --border: #2a2a2a;
+    --accent: #f5a623;
+    --accent2: #ff6b35;
+    --text: #f0ede8;
+    --muted: #7a7570;
+    --success: #52c97a;
+    --error: #ff5555;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    font-family: 'DM Sans', sans-serif;
+    background: var(--bg);
+    color: var(--text);
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 40px 20px 80px;
+    position: relative;
+    overflow-x: hidden;
+  }
+
+  /* Background texture */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse 60% 40% at 80% 10%, rgba(245,166,35,0.06) 0%, transparent 60%),
+      radial-gradient(ellipse 40% 60% at 10% 80%, rgba(255,107,53,0.05) 0%, transparent 60%);
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .container {
+    width: 100%;
+    max-width: 780px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* Header */
+  header {
+    text-align: center;
+    margin-bottom: 48px;
+  }
+
+  .logo-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 100px;
+    padding: 6px 16px 6px 10px;
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    margin-bottom: 20px;
+  }
+
+  .logo-badge span {
+    width: 6px; height: 6px;
+    border-radius: 50%;
+    background: var(--accent);
+    animation: pulse 2s ease-in-out infinite;
+  }
+
+  @keyframes pulse {
+    0%, 100% { opacity: 1; transform: scale(1); }
+    50% { opacity: 0.5; transform: scale(0.8); }
+  }
+
+  h1 {
+    font-family: 'Playfair Display', serif;
+    font-size: clamp(36px, 6vw, 60px);
+    font-weight: 700;
+    line-height: 1;
+    letter-spacing: -0.02em;
+    margin-bottom: 12px;
+  }
+
+  h1 em {
+    font-style: italic;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+  }
+
+  .subtitle {
+    color: var(--muted);
+    font-size: 15px;
+    font-weight: 300;
+    letter-spacing: 0.02em;
+  }
+
+  /* Quality slider */
+  .quality-bar {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 16px;
+    padding: 20px 24px;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 20px;
+  }
+
+  .quality-label {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--muted);
+    white-space: nowrap;
+  }
+
+  .quality-value {
+    font-family: 'DM Mono', monospace;
+    font-size: 13px;
+    color: var(--accent);
+    min-width: 36px;
+    text-align: right;
+  }
+
+  input[type=range] {
+    flex: 1;
+    -webkit-appearance: none;
+    height: 4px;
+    background: var(--border);
+    border-radius: 2px;
+    outline: none;
+    cursor: pointer;
+  }
+
+  input[type=range]::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 18px;
+    height: 18px;
+    border-radius: 50%;
+    background: var(--accent);
+    box-shadow: 0 0 0 3px rgba(245,166,35,0.2);
+    cursor: pointer;
+    transition: box-shadow 0.2s;
+  }
+
+  input[type=range]:hover::-webkit-slider-thumb {
+    box-shadow: 0 0 0 6px rgba(245,166,35,0.2);
+  }
+
+  /* Drop zone */
+  .drop-zone {
+    border: 2px dashed var(--border);
+    border-radius: 20px;
+    padding: 60px 40px;
+    text-align: center;
+    cursor: pointer;
+    transition: all 0.25s ease;
+    position: relative;
+    background: var(--surface);
+    margin-bottom: 24px;
+  }
+
+  .drop-zone:hover, .drop-zone.dragover {
+    border-color: var(--accent);
+    background: rgba(245,166,35,0.04);
+  }
+
+  .drop-zone.dragover .drop-icon {
+    transform: scale(1.15) translateY(-4px);
+  }
+
+  .drop-icon {
+    font-size: 52px;
+    line-height: 1;
+    margin-bottom: 20px;
+    display: block;
+    transition: transform 0.25s ease;
+  }
+
+  .drop-title {
+    font-size: 18px;
+    font-weight: 500;
+    margin-bottom: 8px;
+  }
+
+  .drop-sub {
+    color: var(--muted);
+    font-size: 13px;
+    font-weight: 300;
+  }
+
+  .drop-sub strong {
+    color: var(--accent);
+    font-weight: 500;
+  }
+
+  #fileInput { display: none; }
+
+  /* File list */
+  #fileList {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    margin-bottom: 24px;
+  }
+
+  .file-item {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    border-radius: 14px;
+    padding: 14px 18px;
+    display: flex;
+    align-items: center;
+    gap: 14px;
+    animation: slideIn 0.2s ease;
+    transition: border-color 0.2s;
+  }
+
+  @keyframes slideIn {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .file-item.done  { border-color: rgba(82,201,122,0.3); }
+  .file-item.error { border-color: rgba(255,85,85,0.3); }
+  .file-item.converting { border-color: rgba(245,166,35,0.3); }
+
+  .file-thumb {
+    width: 44px; height: 44px;
+    border-radius: 8px;
+    background: var(--surface2);
+    overflow: hidden;
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 20px;
+  }
+
+  .file-thumb img {
+    width: 100%; height: 100%;
+    object-fit: cover;
+  }
+
+  .file-info {
+    flex: 1;
+    min-width: 0;
+  }
+
+  .file-name {
+    font-size: 13px;
+    font-weight: 500;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin-bottom: 4px;
+  }
+
+  .file-meta {
+    font-family: 'DM Mono', monospace;
+    font-size: 11px;
+    color: var(--muted);
+  }
+
+  .file-status {
+    font-size: 12px;
+    white-space: nowrap;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+  }
+
+  .file-status.waiting  { color: var(--muted); }
+  .file-status.converting { color: var(--accent); }
+  .file-status.done   { color: var(--success); }
+  .file-status.error  { color: var(--error); }
+
+  .spinner {
+    width: 14px; height: 14px;
+    border: 2px solid rgba(245,166,35,0.3);
+    border-top-color: var(--accent);
+    border-radius: 50%;
+    animation: spin 0.7s linear infinite;
+  }
+
+  @keyframes spin { to { transform: rotate(360deg); } }
+
+  .dl-btn {
+    background: transparent;
+    border: 1px solid var(--border);
+    color: var(--success);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    padding: 5px 12px;
+    border-radius: 100px;
+    cursor: pointer;
+    transition: all 0.15s;
+    letter-spacing: 0.05em;
+  }
+
+  .dl-btn:hover {
+    background: rgba(82,201,122,0.1);
+    border-color: var(--success);
+  }
+
+  /* Action buttons */
+  .actions {
+    display: flex;
+    gap: 12px;
+  }
+
+  .btn-convert {
+    flex: 1;
+    background: linear-gradient(135deg, var(--accent), var(--accent2));
+    border: none;
+    color: #0d0d0d;
+    font-family: 'DM Sans', sans-serif;
+    font-size: 15px;
+    font-weight: 500;
+    padding: 16px 32px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: 0.01em;
+  }
+
+  .btn-convert:hover:not(:disabled) {
+    transform: translateY(-2px);
+    box-shadow: 0 12px 40px rgba(245,166,35,0.3);
+  }
+
+  .btn-convert:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+  }
+
+  .btn-zip {
+    background: var(--surface);
+    border: 1px solid var(--border);
+    color: var(--text);
+    font-family: 'DM Sans', sans-serif;
+    font-size: 14px;
+    font-weight: 400;
+    padding: 16px 24px;
+    border-radius: 14px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    white-space: nowrap;
+  }
+
+  .btn-zip:hover:not(:disabled) {
+    border-color: var(--accent);
+    color: var(--accent);
+  }
+
+  .btn-zip:disabled {
+    opacity: 0.3;
+    cursor: not-allowed;
+  }
+
+  /* Progress summary */
+  #summary {
+    margin-top: 20px;
+    text-align: center;
+    font-family: 'DM Mono', monospace;
+    font-size: 12px;
+    color: var(--muted);
+    letter-spacing: 0.06em;
+    min-height: 18px;
+  }
+
+  #summary.success { color: var(--success); }
+
+  /* Footer */
+  footer {
+    margin-top: 60px;
+    text-align: center;
+    font-size: 12px;
+    color: #3a3a3a;
+    font-family: 'DM Mono', monospace;
+    letter-spacing: 0.05em;
+  }
+
+  .clear-btn {
+    background: none;
+    border: none;
+    color: var(--muted);
+    font-size: 11px;
+    font-family: 'DM Mono', monospace;
+    cursor: pointer;
+    text-decoration: underline;
+    letter-spacing: 0.05em;
+    padding: 4px;
+    transition: color 0.15s;
+  }
+
+  .clear-btn:hover { color: var(--error); }
+</style>
+</head>
+<body>
+<div class="container">
+
+  <header>
+    <div class="logo-badge"><span></span> iPhone 圖片工具</div>
+    <h1>HEIC <em>→</em> JPG</h1>
+    <p class="subtitle">拖曳或選取圖檔，在瀏覽器內完成轉換 · 不上傳至任何伺服器</p>
+  </header>
+
+  <!-- Quality -->
+  <div class="quality-bar">
+    <span class="quality-label">JPG 品質</span>
+    <input type="range" id="quality" min="10" max="100" value="92" step="1">
+    <span class="quality-value" id="qualityVal">92%</span>
+  </div>
+
+  <!-- Drop zone -->
+  <div class="drop-zone" id="dropZone">
+    <span class="drop-icon">🖼️</span>
+    <div class="drop-title">拖曳 HEIC 檔案到這裡</div>
+    <div class="drop-sub">或 <strong>點擊選取</strong>，支援批次多選</div>
+    <input type="file" id="fileInput" accept=".heic,.heif,image/heic,image/heif" multiple>
+  </div>
+
+  <!-- File list -->
+  <div id="fileList"></div>
+
+  <!-- Actions -->
+  <div class="actions">
+    <button class="btn-convert" id="convertBtn" disabled>開始轉換</button>
+    <button class="btn-zip" id="zipBtn" disabled>全部打包 ZIP ↓</button>
+  </div>
+
+  <div id="summary"></div>
+
+  <div style="text-align:center;margin-top:16px;">
+    <button class="clear-btn" id="clearBtn" style="display:none">清除全部</button>
+  </div>
+
+</div>
+
+<footer>所有轉換在本機瀏覽器完成，圖片不會離開你的裝置。</footer>
+
+<script>
+  const dropZone = document.getElementById('dropZone');
+  const fileInput = document.getElementById('fileInput');
+  const fileList  = document.getElementById('fileList');
+  const convertBtn = document.getElementById('convertBtn');
+  const zipBtn    = document.getElementById('zipBtn');
+  const clearBtn  = document.getElementById('clearBtn');
+  const summary   = document.getElementById('summary');
+  const qualitySlider = document.getElementById('quality');
+  const qualityVal    = document.getElementById('qualityVal');
+
+  let files = []; // [{file, el, blob, name}]
+
+  qualitySlider.addEventListener('input', () => {
+    qualityVal.textContent = qualitySlider.value + '%';
+  });
+
+  // Drag & drop
+  dropZone.addEventListener('click', () => fileInput.click());
+  dropZone.addEventListener('dragover', e => { e.preventDefault(); dropZone.classList.add('dragover'); });
+  dropZone.addEventListener('dragleave', () => dropZone.classList.remove('dragover'));
+  dropZone.addEventListener('drop', e => {
+    e.preventDefault();
+    dropZone.classList.remove('dragover');
+    addFiles([...e.dataTransfer.files]);
+  });
+  fileInput.addEventListener('change', () => addFiles([...fileInput.files]));
+
+  function addFiles(newFiles) {
+    const filtered = newFiles.filter(f =>
+      f.name.toLowerCase().endsWith('.heic') ||
+      f.name.toLowerCase().endsWith('.heif') ||
+      f.type === 'image/heic' || f.type === 'image/heif'
+    );
+
+    if (!filtered.length) {
+      showSummary('⚠ 請選擇 .heic 或 .heif 格式的圖檔', false);
+      return;
+    }
+
+    filtered.forEach(file => {
+      const id = Date.now() + Math.random();
+      const baseName = file.name.replace(/\.(heic|heif)$/i, '.jpg');
+      const sizeMB = (file.size / 1048576).toFixed(1);
+
+      const el = document.createElement('div');
+      el.className = 'file-item';
+      el.innerHTML = `
+        <div class="file-thumb">🗂️</div>
+        <div class="file-info">
+          <div class="file-name">${file.name}</div>
+          <div class="file-meta">${sizeMB} MB</div>
+        </div>
+        <div class="file-status waiting">等待轉換</div>
+      `;
+      fileList.appendChild(el);
+
+      files.push({ file, el, blob: null, name: baseName });
+    });
+
+    updateUI();
+    fileInput.value = '';
+  }
+
+  function updateUI() {
+    const hasFiles = files.length > 0;
+    const allDone = files.length > 0 && files.every(f => f.blob);
+    convertBtn.disabled = !hasFiles || files.every(f => f.blob);
+    zipBtn.disabled = !allDone;
+    clearBtn.style.display = hasFiles ? 'inline' : 'none';
+  }
+
+  // Convert
+  convertBtn.addEventListener('click', async () => {
+    convertBtn.disabled = true;
+    const quality = parseInt(qualitySlider.value) / 100;
+    let done = 0, errors = 0;
+    const pending = files.filter(f => !f.blob);
+    showSummary('轉換中…', false);
+
+    for (const item of pending) {
+      setStatus(item.el, 'converting', '<div class="spinner"></div> 轉換中');
+
+      try {
+        const result = await heic2any({
+          blob: item.file,
+          toType: 'image/jpeg',
+          quality
+        });
+
+        const blob = Array.isArray(result) ? result[0] : result;
+        item.blob = blob;
+
+        // Thumb
+        const url = URL.createObjectURL(blob);
+        const thumb = item.el.querySelector('.file-thumb');
+        thumb.innerHTML = `<img src="${url}" alt="">`;
+
+        const jpgKB = (blob.size / 1024).toFixed(0);
+        item.el.querySelector('.file-meta').textContent =
+          `${(item.file.size/1048576).toFixed(1)} MB → ${jpgKB} KB`;
+
+        // Download link
+        const dlBtn = document.createElement('button');
+        dlBtn.className = 'dl-btn';
+        dlBtn.textContent = '下載';
+        dlBtn.addEventListener('click', () => downloadBlob(blob, item.name));
+
+        setStatus(item.el, 'done', '✓ 完成');
+        item.el.querySelector('.file-status').appendChild(document.createTextNode(' '));
+        item.el.querySelector('.file-status').appendChild(dlBtn);
+        item.el.classList.add('done');
+        done++;
+      } catch (err) {
+        console.error(err);
+        setStatus(item.el, 'error', '✕ 失敗');
+        item.el.classList.add('error');
+        errors++;
+      }
+    }
+
+    const msg = errors
+      ? `完成 ${done} 張，失敗 ${errors} 張`
+      : `全部 ${done} 張轉換完成 🎉`;
+    showSummary(msg, !errors);
+    updateUI();
+  });
+
+  // ZIP download
+  zipBtn.addEventListener('click', async () => {
+    zipBtn.disabled = true;
+    zipBtn.textContent = '打包中…';
+    const zip = new JSZip();
+    files.forEach(f => { if (f.blob) zip.file(f.name, f.blob); });
+    const content = await zip.generateAsync({ type: 'blob' });
+    downloadBlob(content, `photos_${Date.now()}.zip`);
+    zipBtn.textContent = '全部打包 ZIP ↓';
+    zipBtn.disabled = false;
+  });
+
+  clearBtn.addEventListener('click', () => {
+    files = [];
+    fileList.innerHTML = '';
+    summary.textContent = '';
+    summary.className = '';
+    updateUI();
+  });
+
+  function setStatus(el, cls, html) {
+    const s = el.querySelector('.file-status');
+    s.className = `file-status ${cls}`;
+    s.innerHTML = html;
+  }
+
+  function downloadBlob(blob, name) {
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = name;
+    a.click();
+  }
+
+  function showSummary(msg, success) {
+    summary.textContent = msg;
+    summary.className = success ? 'success' : '';
+  }
+</script>
+</body>
+</html>
