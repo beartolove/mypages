@@ -1,0 +1,716 @@
+<!DOCTYPE html>
+<html lang="zh-Hant" class="scroll-smooth">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI 時代工程與管理創新應用課程核心總結</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome Icons for High Tech Aesthetic -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Google Fonts: Inter & Noto Sans TC -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Noto+Sans+TC:wght@300;400;500;700;900&display=swap" rel="stylesheet">
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    fontFamily: {
+                        sans: ['Inter', 'Noto Sans TC', 'sans-serif'],
+                    },
+                    colors: {
+                        brand: {
+                            50: '#eef2ff',
+                            100: '#e0e7ff',
+                            500: '#6366f1',
+                            600: '#4f46e5',
+                            700: '#4338ca',
+                            cyan: '#06b6d4',
+                            emerald: '#10b981',
+                        }
+                    },
+                    boxShadow: {
+                        'neon-cyan': '0 0 15px rgba(6, 182, 212, 0.15)',
+                        'neon-brand': '0 0 20px rgba(99, 102, 241, 0.2)',
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        /* Custom scrollbar to match theme */
+        ::-webkit-scrollbar {
+            width: 8px;
+            height: 8px;
+        }
+        ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        .dark ::-webkit-scrollbar-track {
+            background: #0f172a;
+        }
+        html:not(.dark) ::-webkit-scrollbar-track {
+            background: #f1f5f9;
+        }
+        ::-webkit-scrollbar-thumb {
+            background: #334155;
+            border-radius: 4px;
+        }
+        ::-webkit-scrollbar-thumb:hover {
+            background: #475569;
+        }
+        /* Custom Animation */
+        @keyframes pulse-slow {
+            0%, 100% { opacity: 0.3; transform: scale(1); }
+            50% { opacity: 0.6; transform: scale(1.05); }
+        }
+        .animate-pulse-slow {
+            animation: pulse-slow 8s infinite ease-in-out;
+        }
+        /* Grid matrix background pattern */
+        .tech-grid {
+            background-size: 30px 30px;
+            background-image: linear-gradient(to right, rgba(99, 102, 241, 0.04) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(99, 102, 241, 0.04) 1px, transparent 1px);
+        }
+        .dark .tech-grid {
+            background-image: linear-gradient(to right, rgba(6, 182, 212, 0.05) 1px, transparent 1px),
+                              linear-gradient(to bottom, rgba(6, 182, 212, 0.05) 1px, transparent 1px);
+        }
+        /* Highlight state for quick search */
+        .highlight {
+            background-color: rgba(245, 158, 11, 0.3);
+            border-bottom: 2px solid #f59e0b;
+            color: inherit;
+            padding: 2px 0;
+            border-radius: 2px;
+        }
+    </style>
+</head>
+<body class="dark bg-slate-950 text-slate-100 font-sans transition-colors duration-300 antialiased tech-grid">
+
+    <!-- Ambient glowing backgrounds -->
+    <div class="fixed top-[-10%] left-[-10%] w-[50%] h-[50%] rounded-full bg-brand-600/10 blur-[120px] pointer-events-none animate-pulse-slow z-0"></div>
+    <div class="fixed bottom-[-10%] right-[-10%] w-[50%] h-[50%] rounded-full bg-brand-cyan/10 blur-[120px] pointer-events-none animate-pulse-slow z-0" style="animation-delay: 4s;"></div>
+
+    <!-- Sticky Navigation Bar -->
+    <header class="sticky top-0 z-50 backdrop-blur-md bg-slate-950/80 dark:bg-slate-950/80 border-b border-slate-800/80 transition-colors duration-300">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="flex items-center justify-between h-16">
+                <!-- Logo / Title -->
+                <div class="flex items-center space-x-3">
+                    <div class="flex items-center justify-center w-10 h-10 rounded-lg bg-gradient-to-br from-brand-600 to-brand-cyan shadow-neon-brand">
+                        <i class="fa-solid fa-microchip text-white text-lg"></i>
+                    </div>
+                    <div>
+                        <span class="text-sm font-semibold tracking-wider text-brand-cyan uppercase">AI Engineering</span>
+                        <h1 class="text-base font-bold text-slate-100 hidden sm:block">導入日常工作與專案管理課程總結</h1>
+                        <h1 class="text-base font-bold text-slate-100 sm:hidden">AI 課程總結</h1>
+                    </div>
+                </div>
+
+                <!-- Interactive controls -->
+                <div class="flex items-center space-x-4">
+                    <!-- Search Input Box -->
+                    <div class="relative hidden md:block">
+                        <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                            <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                        </span>
+                        <input type="text" id="searchInput" placeholder="搜尋課程內容..." 
+                            class="w-60 pl-9 pr-3 py-1.5 text-xs rounded-full bg-slate-900 border border-slate-800 text-slate-200 placeholder-slate-500 focus:outline-none focus:border-brand-cyan focus:ring-1 focus:ring-brand-cyan transition-all">
+                    </div>
+
+                    <!-- Dark Mode Toggle Button -->
+                    <button onclick="toggleTheme()" class="p-2 rounded-lg bg-slate-900 border border-slate-800 hover:border-brand-cyan text-slate-400 hover:text-brand-cyan transition-all" title="切換深淺色主題">
+                        <i id="themeIcon" class="fa-solid fa-sun"></i>
+                    </button>
+
+                    <!-- Fast Scroll to Top -->
+                    <a href="#top" class="hidden sm:inline-flex items-center space-x-2 px-3.5 py-1.5 rounded-lg bg-gradient-to-r from-brand-600 to-brand-700 hover:from-brand-500 hover:to-brand-600 text-white text-xs font-semibold shadow-md transition-all">
+                        <i class="fa-solid fa-arrow-up"></i>
+                        <span>返回頂部</span>
+                    </a>
+                </div>
+            </div>
+        </div>
+    </header>
+
+    <!-- Hero Banner with Core Concept -->
+    <section id="top" class="relative pt-12 pb-16 overflow-hidden border-b border-slate-900">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10">
+            <!-- Breadcrumb / Tag -->
+            <div class="inline-flex items-center space-x-2 px-3 py-1 rounded-full bg-slate-900 border border-slate-800 text-slate-400 text-xs mb-6">
+                <span class="flex h-2 w-2 rounded-full bg-brand-emerald animate-pulse"></span>
+                <span>工程與管理單位同仁專屬實務指引</span>
+            </div>
+
+            <!-- Page Title Grid -->
+            <div class="grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
+                <div class="lg:col-span-7">
+                    <h2 class="text-3xl sm:text-4xl lg:text-5xl font-black tracking-tight text-white leading-tight">
+                        AI 時代的 <br>
+                        <span class="bg-gradient-to-r from-brand-cyan via-brand-500 to-brand-emerald bg-clip-text text-transparent">工程與管理創新</span> <br>
+                        課程核心總結
+                    </h2>
+                    
+                    <p class="mt-6 text-base text-slate-400 leading-relaxed max-w-xl">
+                        本課程旨在引導工程與管理單位的同仁將 AI 工具導入日常工作與專案管理中，提升工作效率並解決實務痛點。
+                    </p>
+
+                    <!-- Core Quote Highlight Box -->
+                    <div class="mt-8 p-6 rounded-2xl bg-gradient-to-r from-slate-900 to-slate-900/40 border border-slate-800/80 shadow-lg relative overflow-hidden group hover:border-brand-500/50 transition-all duration-300">
+                        <div class="absolute top-0 right-0 w-32 h-32 bg-brand-500/5 rounded-full blur-2xl pointer-events-none"></div>
+                        <div class="flex items-start space-x-4">
+                            <span class="text-brand-cyan text-4xl font-serif leading-none">“</span>
+                            <div>
+                                <p class="text-lg font-bold text-slate-100 tracking-wide leading-snug">
+                                    AI 不會取代人，但使用 AI 的人將取代不會用的人
+                                </p>
+                                <p class="mt-2 text-xs text-brand-emerald font-semibold uppercase tracking-wider flex items-center">
+                                    <i class="fa-solid fa-shield-halved mr-1.5"></i> 核心思維變革
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Custom Interactive AI Synergy Dashboard component -->
+                <div class="lg:col-span-5 bg-slate-900/60 border border-slate-800 p-6 rounded-2xl shadow-neon-cyan">
+                    <h3 class="text-sm font-bold text-brand-cyan uppercase tracking-wider mb-4 flex items-center">
+                        <i class="fa-solid fa-circle-nodes mr-2"></i> AI 與人類協同價值分工
+                    </h3>
+                    <div class="space-y-4 text-xs">
+                        <div class="p-3.5 rounded-lg bg-slate-950 border border-slate-800">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="font-bold text-brand-cyan flex items-center">
+                                    <i class="fa-solid fa-bolt mr-1.5"></i> AI 擅長優勢 (工具價值)
+                                </span>
+                                <span class="text-slate-500">快速初篩與自動產出</span>
+                            </div>
+                            <ul class="space-y-1 text-slate-400 pl-4 list-disc">
+                                <li>快速處理繁瑣數據</li>
+                                <li>影像與聲音辨識、強大 OCR</li>
+                                <li>10秒快速初步生成模型、排版與圖樣</li>
+                            </ul>
+                        </div>
+                        <div class="p-3.5 rounded-lg bg-slate-950 border border-slate-800">
+                            <div class="flex justify-between items-center mb-1.5">
+                                <span class="font-bold text-brand-emerald flex items-center">
+                                    <i class="fa-solid fa-user-check mr-1.5"></i> 人類無可替代價值 (決策核心)
+                                </span>
+                                <span class="text-slate-500">專業判斷與責任擔當</span>
+                            </div>
+                            <ul class="space-y-1 text-slate-400 pl-4 list-disc">
+                                <li>現場實務判斷、專業經驗把關</li>
+                                <li>創意發想與客製化細部調整</li>
+                                <li>對 AI 給出結果的正確審查與承擔責任</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Main Content Area -->
+    <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12 relative z-10">
+        
+        <!-- Mobile Search Assist (Only shows on mobile) -->
+        <div class="block md:hidden mb-8">
+            <div class="relative">
+                <span class="absolute inset-y-0 left-0 flex items-center pl-3 pointer-events-none text-slate-400">
+                    <i class="fa-solid fa-magnifying-glass text-xs"></i>
+                </span>
+                <input type="text" id="mobileSearchInput" placeholder="搜尋課程內容..." 
+                    class="w-full pl-9 pr-3 py-2.5 text-sm rounded-xl bg-slate-900 border border-slate-800 text-slate-200 focus:outline-none focus:border-brand-cyan transition-all">
+            </div>
+        </div>
+
+        <!-- Sidebar / Main Layout Split -->
+        <div class="grid grid-cols-1 lg:grid-cols-12 gap-12">
+            
+            <!-- Left Sticky Sidebar: Course Outline Selector -->
+            <div class="lg:col-span-4 lg:sticky lg:top-24 h-fit space-y-6">
+                <div class="bg-slate-900/50 border border-slate-800 rounded-2xl p-6 shadow-sm">
+                    <h3 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-4 flex items-center justify-between">
+                        <span><i class="fa-solid fa-list-ol mr-2"></i> 課程大綱目錄</span>
+                        <span class="px-2 py-0.5 rounded-full bg-slate-800 text-brand-cyan text-[10px]">精準導覽</span>
+                    </h3>
+                    
+                    <nav class="space-y-1" aria-label="Course outline map">
+                        <a href="#section-1" class="outline-nav-link group flex items-start p-3 rounded-xl hover:bg-slate-850 border border-transparent hover:border-slate-800 transition-all text-left">
+                            <span class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-slate-950 text-brand-cyan text-xs font-bold border border-slate-800 group-hover:border-brand-cyan/40 transition-all">一</span>
+                            <div class="ml-3">
+                                <p class="text-sm font-semibold text-slate-200 group-hover:text-brand-cyan transition-all">擁抱 AI 浪潮與釐清實務需求</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">長官致詞篇</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#section-2" class="outline-nav-link group flex items-start p-3 rounded-xl hover:bg-slate-850 border border-transparent hover:border-slate-800 transition-all text-left">
+                            <span class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-slate-950 text-brand-cyan text-xs font-bold border border-slate-800 group-hover:border-brand-cyan/40 transition-all">二</span>
+                            <div class="ml-3">
+                                <p class="text-sm font-semibold text-slate-200 group-hover:text-brand-cyan transition-all">建立正確心態與實務經驗優勢</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">課程前言篇</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#section-3" class="outline-nav-link group flex items-start p-3 rounded-xl hover:bg-slate-850 border border-transparent hover:border-slate-800 transition-all text-left">
+                            <span class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-slate-950 text-brand-cyan text-xs font-bold border border-slate-800 group-hover:border-brand-cyan/40 transition-all">三</span>
+                            <div class="ml-3">
+                                <p class="text-sm font-semibold text-slate-200 group-hover:text-brand-cyan transition-all">快速產出與人類關鍵決策價值</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">生成式 AI 應用篇</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#section-4" class="outline-nav-link group flex items-start p-3 rounded-xl hover:bg-slate-850 border border-transparent hover:border-slate-800 transition-all text-left">
+                            <span class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-slate-950 text-brand-cyan text-xs font-bold border border-slate-800 group-hover:border-brand-cyan/40 transition-all">四</span>
+                            <div class="ml-3">
+                                <p class="text-sm font-semibold text-slate-200 group-hover:text-brand-cyan transition-all">影像聲音辨識、強大 OCR 實戰</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">進階 AI 應用篇</p>
+                            </div>
+                        </a>
+                        
+                        <a href="#section-5" class="outline-nav-link group flex items-start p-3 rounded-xl hover:bg-slate-850 border border-transparent hover:border-slate-800 transition-all text-left">
+                            <span class="flex-shrink-0 flex items-center justify-center w-7 h-7 rounded-lg bg-slate-950 text-brand-cyan text-xs font-bold border border-slate-800 group-hover:border-brand-cyan/40 transition-all">五</span>
+                            <div class="ml-3">
+                                <p class="text-sm font-semibold text-slate-200 group-hover:text-brand-cyan transition-all">資產數位化與專家經驗傳承</p>
+                                <p class="text-[11px] text-slate-500 mt-0.5">企業專屬 AI 知識庫篇</p>
+                            </div>
+                        </a>
+                    </nav>
+                </div>
+
+                <!-- Live Quick Facts / Key Metric Summary Banner -->
+                <div class="bg-gradient-to-br from-brand-600/10 to-brand-cyan/5 border border-slate-800/80 rounded-2xl p-5 text-center relative overflow-hidden">
+                    <div class="absolute -right-8 -bottom-8 w-24 h-24 bg-brand-cyan/10 rounded-full blur-xl"></div>
+                    <i class="fa-solid fa-graduation-cap text-brand-cyan text-2xl mb-2"></i>
+                    <p class="text-xs font-bold uppercase tracking-widest text-brand-cyan">實務共識重點</p>
+                    <p class="text-sm text-slate-300 mt-2 font-medium">「AI 的價值在於快速處理繁瑣數據、視覺辨識與初步生成，但人類的專業判斷、創意發想與承擔責任的能力仍是不可或缺的關鍵。」</p>
+                </div>
+            </div>
+
+            <!-- Right Column: Detailed Verbatim Sections (詳細段落說明) -->
+            <div class="lg:col-span-8 space-y-16">
+                
+                <!-- Section Header (Verbatim text title) -->
+                <div class="border-b border-slate-800 pb-4">
+                    <h3 class="text-xl font-black text-slate-100 uppercase tracking-widest flex items-center">
+                        <span class="w-1.5 h-6 bg-brand-cyan mr-3 rounded-full"></span>
+                        詳細段落說明
+                    </h3>
+                </div>
+
+                <!-- 一、長官致詞 -->
+                <section id="section-1" class="section-container scroll-mt-24 bg-slate-900/30 border border-slate-900 rounded-2xl p-6 sm:p-8 hover:border-slate-800/80 transition-all group relative">
+                    <div class="absolute top-0 left-0 w-2 h-0 bg-brand-cyan group-hover:h-full transition-all duration-300 rounded-l-2xl"></div>
+                    
+                    <!-- Section Title Block -->
+                    <div class="flex items-start justify-between mb-8">
+                        <div>
+                            <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand-cyan bg-brand-cyan/10 rounded-md uppercase">課程大綱一</span>
+                            <h4 class="text-lg sm:text-xl font-bold text-white mt-2">
+                                一、長官致詞：擁抱 AI 浪潮與釐清實務需求
+                            </h4>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800/50">01</div>
+                    </div>
+
+                    <!-- Inner Content Verbatim Cards -->
+                    <div class="space-y-6">
+                        <!-- Card 1 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">擁抱 AI 趨勢</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                主席引用黃仁勳的名言指出，AI 本身不會取代人類，但<strong class="text-brand-cyan font-bold">「會 AI 的人將取代不會 AI 的人」</strong>。呼籲高階主管與同仁必須一起學習，跟上世代腳步，避免未來在工作領域遇到障礙。
+                            </p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">釐清需求與應用</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                導入 AI 並非只用一句話就能讓系統自動完成工作，而是需要使用者能明確描述自身需求與痛點（例如工程監造管理中的繁瑣環節），釐清流程後，才能藉由 AI 找出所需資料並產出最佳應用。
+                            </p>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">學習態度</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                鼓勵同仁在兩天的課程中抱持開放、不怕問錯的心態，將 AI 工具視為日常與工作必備的得力助手。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 二、課程前言 -->
+                <section id="section-2" class="section-container scroll-mt-24 bg-slate-900/30 border border-slate-900 rounded-2xl p-6 sm:p-8 hover:border-slate-800/80 transition-all group relative">
+                    <div class="absolute top-0 left-0 w-2 h-0 bg-brand-cyan group-hover:h-full transition-all duration-300 rounded-l-2xl"></div>
+                    
+                    <!-- Section Title Block -->
+                    <div class="flex items-start justify-between mb-8">
+                        <div>
+                            <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand-cyan bg-brand-cyan/10 rounded-md uppercase">課程大綱二</span>
+                            <h4 class="text-lg sm:text-xl font-bold text-white mt-2">
+                                二、課程前言：建立正確心態與實務經驗的優勢
+                            </h4>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800/50">02</div>
+                    </div>
+
+                    <!-- Inner Content Verbatim Cards -->
+                    <div class="space-y-6">
+                        <!-- Card 1 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">講師背景與心態建立</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                講師分享自己熱衷於 AI 研究（甚至使用高階的 5090 顯示卡進行運算），並強調學習 AI 要當作「打電動」一樣抱持好玩、不怕玩壞的心態去嘗試。
+                            </p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">AI 的高效展現</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                展示了 AI 極高的處理效率，例如僅花 10 秒鐘就能自動生成出港務局的標誌 (Logo)。
+                            </p>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">實務經驗的優勢</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                面對 AI 時代，擁有豐富實務經驗的前輩反而更具優勢，因為新進的大學生雖然會使用工具，但缺乏現場經驗與判斷力。有經驗的工程人員能利用 AI 迅速補足缺乏的技能（如繪圖、程式），並對 AI 給出的結果進行專業判斷。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 三、生成式 AI 應用 -->
+                <section id="section-3" class="section-container scroll-mt-24 bg-slate-900/30 border border-slate-900 rounded-2xl p-6 sm:p-8 hover:border-slate-800/80 transition-all group relative">
+                    <div class="absolute top-0 left-0 w-2 h-0 bg-brand-cyan group-hover:h-full transition-all duration-300 rounded-l-2xl"></div>
+                    
+                    <!-- Section Title Block -->
+                    <div class="flex items-start justify-between mb-8">
+                        <div>
+                            <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand-cyan bg-brand-cyan/10 rounded-md uppercase">課程大綱三</span>
+                            <h4 class="text-lg sm:text-xl font-bold text-white mt-2">
+                                三、生成式 AI 應用：快速產出與人類的關鍵決策價值
+                            </h4>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800/50">03</div>
+                    </div>
+
+                    <!-- Inner Content Verbatim Cards -->
+                    <div class="space-y-6">
+                        <!-- Card 1 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">工程與設計的快速生成</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                講師示範透過 AI，能在短短 10 秒內快速產出 3D 建築模型、室內設計配置圖，甚至是工程報價單。
+                            </p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all relative overflow-hidden">
+                            <div class="absolute right-3 top-3 px-2 py-0.5 rounded bg-brand-emerald/15 text-[10px] text-brand-emerald font-semibold border border-brand-emerald/20">核心亮點</div>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">人類的關鍵價值（判斷與當責）</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                Embora AI 能快速建模或排版，但它生成的內容（如報價單單位、結構承重）經常存在錯誤。AI 的工具角色不能取代人類的專業審查與決策，最終必須由具備專業知識的工程師或設計師來確認圖面是否能落實施工、解決潛在危險，並承擔最終責任。
+                            </p>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">雲端與地端佈署</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                提到了 AI 應用可分為連網的雲端作業與地端佈署。考量到資安或無網路環境（如偏遠地區、戰爭情況）的限制，企業也能切換至地端伺服器來運行 AI 以保護機密。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 四、進階 AI 應用 -->
+                <section id="section-4" class="section-container scroll-mt-24 bg-slate-900/30 border border-slate-900 rounded-2xl p-6 sm:p-8 hover:border-slate-800/80 transition-all group relative">
+                    <div class="absolute top-0 left-0 w-2 h-0 bg-brand-cyan group-hover:h-full transition-all duration-300 rounded-l-2xl"></div>
+                    
+                    <!-- Section Title Block -->
+                    <div class="flex items-start justify-between mb-8">
+                        <div>
+                            <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand-cyan bg-brand-cyan/10 rounded-md uppercase">課程大綱四</span>
+                            <h4 class="text-lg sm:text-xl font-bold text-white mt-2">
+                                四、進階 AI 應用：影像聲音辨識、強大 OCR 與實戰案例
+                            </h4>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800/50">04</div>
+                    </div>
+
+                    <!-- Inner Content Verbatim Cards -->
+                    <div class="space-y-6">
+                        <!-- Card 1 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">影像與聲音辨識應用</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                介紹 AI 在工廠或工程現場的感測應用，例如透過視覺辨識起重機鋼纜的磨損程度或斷裂數，或利用聲音辨識及早發現設備的異常聲響。利用熱顯像儀結合 AI 進行及時偵測，能在設備起火前（如變電箱溫度異常）提早預警，避免災害與鉅額損失。
+                            </p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">強大的 OCR（光學字元辨識）技術</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                OCR 是 AI 應用的重要前置環節。現在的設備能在不到一秒內，精準辨識各國語言及手寫字體（如報關單、手寫日誌），大幅節省人工輸入的時間。
+                            </p>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">專案實戰分享</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                講師分享前往廢棄醫院進行測量的實際案例。由於現場環境危險且部分區域屬違建，團隊利用 360 度相機快速掃描，並交由 AI 在三天內產出 200 床的平面規劃圖與提案，大幅降低了人工探勘的風險與時間成本。
+                            </p>
+                        </div>
+
+                        <!-- Card 4 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">工具開源與資安考量</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                指出許多監控土方車輛的功能，都能以低成本的開源工具搭配手機 APP 定位完成，但導入公務機關時，首要克服的是資訊安全 (ISO) 與隱私保護問題。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+
+                <!-- 五、企業專屬 AI 知識庫 -->
+                <section id="section-5" class="section-container scroll-mt-24 bg-slate-900/30 border border-slate-900 rounded-2xl p-6 sm:p-8 hover:border-slate-800/80 transition-all group relative">
+                    <div class="absolute top-0 left-0 w-2 h-0 bg-brand-cyan group-hover:h-full transition-all duration-300 rounded-l-2xl"></div>
+                    
+                    <!-- Section Title Block -->
+                    <div class="flex items-start justify-between mb-8">
+                        <div>
+                            <span class="px-2.5 py-1 text-[10px] font-bold tracking-wider text-brand-cyan bg-brand-cyan/10 rounded-md uppercase">課程大綱五</span>
+                            <h4 class="text-lg sm:text-xl font-bold text-white mt-2">
+                                五、企業專屬 AI 知識庫：資產數位化與專家經驗傳承
+                            </h4>
+                        </div>
+                        <div class="text-3xl font-black text-slate-800/50">05</div>
+                    </div>
+
+                    <!-- Inner Content Verbatim Cards -->
+                    <div class="space-y-6">
+                        <!-- Card 1 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">建立專屬 AI 知識庫（痛點提問）</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                針對同仁提問如何讓 AI 協助審查「施工計畫書」，講師建議可將工程會規範、操作手冊等資料作為特定範圍餵給 AI，製作成專屬的「AI 小工具」，讓 AI 根據限定資料進行精準比對與初步審查。
+                            </p>
+                        </div>
+
+                        <!-- Card 2 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all">
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">港務公司資產數位化（歷史資料）</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                長官提到內部面臨大量歷史圖說（藍曬圖）、水下探測報告與會議紀錄散落各處且未被利用的痛點。講師回應，這正是導入 AI 的絕佳契機，可先運用 AI 進行檔案自動分類、命名與重點擷取。
+                            </p>
+                        </div>
+
+                        <!-- Card 3 -->
+                        <div class="p-5 rounded-xl bg-slate-950 border border-slate-850/60 hover:border-slate-800 transition-all relative overflow-hidden">
+                            <div class="absolute right-3 top-3 px-2 py-0.5 rounded bg-brand-cyan/15 text-[10px] text-brand-cyan font-semibold border border-brand-cyan/20">長期策略</div>
+                            <div class="flex items-center space-x-3 mb-3">
+                                <span class="w-2.5 h-2.5 rounded-full bg-brand-cyan"></span>
+                                <h5 class="text-base font-bold text-slate-100">傳承專家「Know-how」</h5>
+                            </div>
+                            <p class="text-sm text-slate-300 leading-relaxed pl-5">
+                                課程特別強調，資深前輩的豐富經驗是最寶貴的資產。企業應透過高階訪談，將這些「Know-how」轉化為文字餵給 AI，形成內部各部門專屬的「AI 助理」或知識庫，打破世代斷層。未來這套完備的港務系統甚至還能成為向全球輸出的重要技術資產。
+                            </p>
+                        </div>
+                    </div>
+                </section>
+                
+            </div>
+        </div>
+    </main>
+
+    <!-- Tech Blueprint Style Footer -->
+    <footer class="mt-20 border-t border-slate-900 bg-slate-950 py-12 relative overflow-hidden">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 relative z-10 text-center">
+            <div class="flex justify-center space-x-3 mb-4">
+                <div class="w-2 h-2 rounded-full bg-brand-cyan animate-ping"></div>
+                <div class="w-2 h-2 rounded-full bg-brand-500"></div>
+                <div class="w-2 h-2 rounded-full bg-brand-emerald"></div>
+            </div>
+            <p class="text-xs text-slate-500 tracking-wider">
+                AI 時代工程與管理創新應用課程 · 核心要點數位藍圖
+            </p>
+            <p class="text-[10px] text-slate-600 mt-2">
+                以尖端 AI 工程技術風格重新設計與排版 · Verbatim 完美重現
+            </p>
+        </div>
+    </footer>
+
+    <!-- Script for Dynamic Theme Switching & Real-time Text Search Highlight -->
+    <script>
+        // System Theme Toggle
+        function toggleTheme() {
+            const body = document.body;
+            const themeIcon = document.getElementById('themeIcon');
+            
+            if (body.classList.contains('dark')) {
+                body.classList.remove('dark');
+                body.classList.remove('bg-slate-950', 'text-slate-100');
+                body.classList.add('bg-slate-50', 'text-slate-800');
+                themeIcon.className = 'fa-solid fa-moon';
+            } else {
+                body.classList.add('dark');
+                body.classList.remove('bg-slate-50', 'text-slate-800');
+                body.classList.add('bg-slate-950', 'text-slate-100');
+                themeIcon.className = 'fa-solid fa-sun';
+            }
+        }
+
+        // Live scrollspy effect for Left Side Navigation Matrix
+        window.addEventListener('DOMContentLoaded', () => {
+            const observer = new IntersectionObserver(entries => {
+                entries.forEach(entry => {
+                    const id = entry.target.getAttribute('id');
+                    const navLink = document.querySelector(`.outline-nav-link[href="#${id}"]`);
+                    
+                    if (navLink) {
+                        if (entry.intersectionRatio > 0.15) {
+                            // Clear all active states
+                            document.querySelectorAll('.outline-nav-link').forEach(link => {
+                                link.classList.remove('bg-slate-900/80', 'border-brand-cyan/40', 'shadow-neon-cyan');
+                            });
+                            // Set current active
+                            navLink.classList.add('bg-slate-900/80', 'border-brand-cyan/40', 'shadow-neon-cyan');
+                        }
+                    }
+                });
+            }, { threshold: [0.15, 0.5], rootMargin: "0px 0px -40% 0px" });
+
+            // Track all section elements
+            document.querySelectorAll('section.section-container').forEach(section => {
+                observer.observe(section);
+            });
+        });
+
+        // Verbatim text preservation - Real-time highlight filtering system
+        function performSearch(query) {
+            // Remove previous highlights
+            removeHighlights(document.body);
+
+            if (!query || query.trim() === "") return;
+
+            const searchStr = query.trim().toLowerCase();
+            
+            // Highlight matching parts
+            highlightText(document.body, searchStr);
+        }
+
+        function highlightText(element, query) {
+            if (element.nodeType === 3) { // Text Node
+                const text = element.nodeValue;
+                const lowerText = text.toLowerCase();
+                const index = lowerText.indexOf(query);
+                
+                if (index >= 0) {
+                    const span = document.createElement('span');
+                    span.className = 'highlight';
+                    
+                    const before = text.substring(0, index);
+                    const match = text.substring(index, index + query.length);
+                    const after = text.substring(index + query.length);
+                    
+                    span.textContent = match;
+                    
+                    const parent = element.parentNode;
+                    // Protect interactive zones from being split if possible
+                    if (parent && parent.tagName !== 'SCRIPT' && parent.tagName !== 'STYLE' && parent.tagName !== 'INPUT' && parent.tagName !== 'BUTTON') {
+                        const beforeNode = document.createTextNode(before);
+                        const afterNode = document.createTextNode(after);
+                        
+                        parent.insertBefore(beforeNode, element);
+                        parent.insertBefore(span, element);
+                        parent.insertBefore(afterNode, element);
+                        parent.removeChild(element);
+                    }
+                }
+            } else if (element.nodeType === 1 && element.childNodes && !/(style|script|input|textarea)/i.test(element.tagName)) {
+                for (let i = 0; i < element.childNodes.length; i++) {
+                    highlightText(element.childNodes[i], query);
+                    // Adjust pointer in case child count changed due to insertions
+                    if (element.childNodes[i].nodeType === 1 && element.childNodes[i].classList.contains('highlight')) {
+                        i += 2; 
+                    }
+                }
+            }
+        }
+
+        function removeHighlights(element) {
+            const highlights = element.querySelectorAll('.highlight');
+            highlights.forEach(highlight => {
+                const parent = highlight.parentNode;
+                if (parent) {
+                    const textNode = document.createTextNode(highlight.textContent);
+                    parent.replaceChild(textNode, highlight);
+                    parent.normalize(); // Normalize merges adjacent text nodes
+                }
+            });
+        }
+
+        // Connect both Desktop & Mobile searches
+        document.getElementById('searchInput').addEventListener('input', (e) => {
+            performSearch(e.target.value);
+        });
+        document.getElementById('mobileSearchInput').addEventListener('input', (e) => {
+            performSearch(e.target.value);
+        });
+    </script>
+</body>
+</html>
