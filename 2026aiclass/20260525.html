@@ -11,14 +11,14 @@
     body::before{content:'';position:fixed;inset:0;background-image:linear-gradient(rgba(0,0,0,0.05) 1px,transparent 1px),linear-gradient(90deg,rgba(0,0,0,0.05) 1px,transparent 1px);background-size:40px 40px;pointer-events:none;z-index:0;}
 
     .slideshow{position:relative;width:100vw;height:100vh;display:flex;align-items:center;justify-content:center;}
-    .slide{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:34px 20px 92px;z-index:1;}
+    .slide{position:absolute;inset:0;display:none;align-items:center;justify-content:center;padding:32px 20px 90px;z-index:1;}
     .slide.active{display:flex;}
     .slide-content{max-width:940px;width:100%;text-align:center;}
-    @keyframes fadeIn{from{opacity:0;transform:translateY(14px);}to{opacity:1;transform:translateY(0);}}
-    .slide.active .slide-content{animation:fadeIn 0.32s ease;}
+    @keyframes fadeIn{from{opacity:0;transform:translateY(12px);}to{opacity:1;transform:translateY(0);}}
+    .slide.active .slide-content{animation:fadeIn 0.3s ease;}
 
-    /* Nav */
-    .nav-bar{position:fixed;bottom:26px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:white;border-radius:50px;padding:9px 26px;box-shadow:0 4px 20px rgba(0,0,0,0.12);z-index:100;}
+    /* ── Nav ── */
+    .nav-bar{position:fixed;bottom:24px;left:50%;transform:translateX(-50%);display:flex;align-items:center;gap:14px;background:white;border-radius:50px;padding:9px 26px;box-shadow:0 4px 20px rgba(0,0,0,0.12);z-index:100;}
     .nav-btn{background:none;border:none;font-size:24px;color:#2D2D2D;cursor:pointer;width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;transition:background 0.2s;}
     .nav-btn:hover{background:rgba(44,197,181,0.15);color:#2CC5B5;}
     .nav-btn:disabled{color:#ccc;cursor:default;}
@@ -26,97 +26,100 @@
     .page-indicator{font-size:15px;color:#666;min-width:30px;text-align:center;cursor:pointer;border-radius:8px;padding:2px 6px;transition:background 0.15s;user-select:none;}
     .page-indicator:hover{background:rgba(44,197,181,0.12);color:#2CC5B5;}
     .page-jump-input{width:48px;border:2px solid #2CC5B5;border-radius:8px;font-size:15px;font-weight:600;text-align:center;color:#2D2D2D;background:white;outline:none;padding:2px 4px;}
-    .slide-footer{position:fixed;bottom:16px;right:24px;font-size:14px;font-weight:600;color:#bbb;z-index:99;white-space:nowrap;user-select:none;}
+    .slide-footer{position:fixed;bottom:14px;right:22px;font-size:14px;font-weight:600;color:#bbb;z-index:99;white-space:nowrap;user-select:none;}
 
-    /* Typography */
-    .badge{display:inline-block;background:rgba(245,166,35,0.15);color:#F5A623;border-radius:20px;padding:5px 18px;font-size:13px;font-weight:600;margin-bottom:16px;}
-    .title-main{font-size:clamp(32px,5vw,56px);font-weight:900;color:#2D2D2D;line-height:1.2;margin-bottom:12px;}
-    .title-accent{color:#2CC5B5;}.title-red{color:#E53935;}.title-orange{color:#F5A623;}
-    .subtitle{font-size:16px;color:#666;line-height:1.65;}
+    /* ── Typography ── */
+    .badge{display:inline-block;background:rgba(245,166,35,0.15);color:#F5A623;border-radius:20px;padding:5px 18px;font-size:13px;font-weight:600;margin-bottom:14px;}
+    .badge.blue{background:rgba(59,130,246,0.12);color:#3B82F6;}
+    .badge.green{background:rgba(16,185,129,0.12);color:#10B981;}
+    .title-main{font-size:clamp(30px,5vw,54px);font-weight:900;color:#2D2D2D;line-height:1.2;margin-bottom:11px;}
+    .title-accent{color:#2CC5B5;}.title-red{color:#E53935;}.title-orange{color:#F5A623;}.title-blue{color:#3B82F6;}
+    .subtitle{font-size:15.5px;color:#666;line-height:1.65;}
 
-    /* Cards */
-    .card{background:white;border-radius:18px;padding:22px 24px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
-    .card-title{font-size:15px;font-weight:700;color:#2D2D2D;margin-bottom:7px;}
-    .card-body{font-size:13.5px;color:#555;line-height:1.65;}
+    /* ── Cards ── */
+    .card{background:white;border-radius:17px;padding:20px 22px;box-shadow:0 4px 20px rgba(0,0,0,0.08);}
+    .card-title{font-size:14.5px;font-weight:700;color:#2D2D2D;margin-bottom:6px;}
+    .card-body{font-size:13px;color:#555;line-height:1.65;}
 
-    /* Grids */
-    .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-top:18px;}
-    .two-col{display:grid;grid-template-columns:repeat(2,1fr);gap:14px;margin-top:18px;}
-    .quad-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-top:16px;}
+    /* ── Grids ── */
+    .three-col{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:16px;}
+    .two-col{display:grid;grid-template-columns:repeat(2,1fr);gap:13px;margin-top:16px;}
+    .quad-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px;margin-top:14px;}
 
-    /* Icons */
-    .icon-circle{width:60px;height:60px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:26px;margin:0 auto 10px;}
-    .icon-circle.teal{background:rgba(44,197,181,0.15);}.icon-circle.orange{background:rgba(245,166,35,0.15);}.icon-circle.red{background:rgba(229,57,53,0.12);}.icon-circle.purple{background:rgba(139,92,246,0.15);}
-    .icon-square{width:46px;height:46px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:21px;color:white;margin-bottom:10px;}
-    .icon-square.teal{background:#2CC5B5;}.icon-square.orange{background:#F5A623;}.icon-square.purple{background:#8B5CF6;}.icon-square.red{background:#E53935;}
+    /* ── Icons ── */
+    .icon-circle{width:56px;height:56px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:24px;margin:0 auto 9px;}
+    .ic-teal{background:rgba(44,197,181,0.15);}.ic-orange{background:rgba(245,166,35,0.15);}.ic-red{background:rgba(229,57,53,0.12);}.ic-purple{background:rgba(139,92,246,0.15);}.ic-blue{background:rgba(59,130,246,0.13);}
+    .icon-square{width:44px;height:44px;border-radius:11px;display:flex;align-items:center;justify-content:center;font-size:20px;color:white;margin-bottom:9px;}
+    .is-teal{background:#2CC5B5;}.is-orange{background:#F5A623;}.is-purple{background:#8B5CF6;}.is-red{background:#E53935;}.is-blue{background:#3B82F6;}.is-green{background:#10B981;}
 
-    /* Highlights */
-    .ht{color:#2CC5B5;font-weight:700;}.ho{color:#F5A623;font-weight:700;}.hr{color:#E53935;font-weight:700;}.hp{color:#8B5CF6;font-weight:700;}
-    .star-tag{display:inline-block;background:rgba(44,197,181,0.12);color:#2CC5B5;border-radius:7px;padding:2px 9px;font-size:11px;font-weight:700;margin-right:4px;}
+    /* ── Colours ── */
+    .ht{color:#2CC5B5;font-weight:700;}.ho{color:#F5A623;font-weight:700;}.hr{color:#E53935;font-weight:700;}.hp{color:#8B5CF6;font-weight:700;}.hb{color:#3B82F6;font-weight:700;}.hg{color:#10B981;font-weight:700;}
+    .star-tag{display:inline-block;background:rgba(44,197,181,0.12);color:#2CC5B5;border-radius:6px;padding:2px 8px;font-size:11px;font-weight:700;margin-right:3px;}
 
-    /* Steps */
-    .step-badge{display:inline-flex;align-items:center;justify-content:center;width:24px;height:24px;border-radius:50%;background:#2CC5B5;color:white;font-size:11px;font-weight:700;margin-right:8px;flex-shrink:0;}
-    .step-row{display:flex;align-items:flex-start;text-align:left;margin-bottom:10px;font-size:13.5px;color:#444;line-height:1.6;}
-
-    /* Links */
-    a.sl{color:#2CC5B5;font-weight:600;text-decoration:none;border-bottom:1.5px solid rgba(44,197,181,0.35);transition:color 0.15s;}
+    /* ── Links ── */
+    a.sl{color:#2CC5B5;font-weight:600;text-decoration:none;border-bottom:1.5px solid rgba(44,197,181,0.3);transition:color 0.15s;}
     a.sl:hover{color:#18a090;}
+    a.bl{color:#3B82F6;font-weight:600;text-decoration:none;border-bottom:1.5px solid rgba(59,130,246,0.3);}
+    a.bl:hover{color:#2563EB;}
 
-    /* Tool card */
-    .tool-card{background:rgba(44,197,181,0.07);border:1.5px solid rgba(44,197,181,0.2);border-radius:14px;padding:18px 20px;text-align:left;}
-    .tool-card.pu{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.2);}
+    /* ── Tool cards ── */
+    .tool-card{background:rgba(44,197,181,0.07);border:1.5px solid rgba(44,197,181,0.2);border-radius:13px;padding:16px 18px;text-align:left;}
+    .tool-card.pu{background:rgba(139,92,246,0.07);border-color:rgba(139,92,246,0.18);}
+    .tool-card.bl{background:rgba(59,130,246,0.07);border-color:rgba(59,130,246,0.18);}
 
-    /* ═══ Code block with copy button ═══ */
-    .code-wrap{position:relative;margin-top:13px;}
-    .code-block{background:#1E1E2E;color:#CDD6F4;border-radius:12px;padding:15px 18px 15px 18px;font-family:'Courier New',monospace;font-size:13px;text-align:left;line-height:1.8;white-space:pre-wrap;word-break:break-word;}
+    /* ── Code blocks with copy ── */
+    .code-wrap{position:relative;margin-top:12px;}
+    .code-block{background:#1E1E2E;color:#CDD6F4;border-radius:11px;padding:14px 16px;font-family:'Courier New',monospace;font-size:12.5px;text-align:left;line-height:1.8;white-space:pre-wrap;word-break:break-word;}
     .code-comment{color:#6C7086;}
     .code-link{color:#89DCEB;text-decoration:underline;}
-    .copy-btn{
-      position:absolute;top:8px;right:8px;
-      background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);
-      color:#aaa;border-radius:7px;padding:4px 11px;font-size:11.5px;font-weight:600;
-      cursor:pointer;transition:all 0.18s;white-space:nowrap;font-family:"Noto Sans TC",sans-serif;
-    }
+    .copy-btn{position:absolute;top:7px;right:7px;background:rgba(255,255,255,0.08);border:1px solid rgba(255,255,255,0.15);color:#aaa;border-radius:7px;padding:4px 11px;font-size:11px;font-weight:600;cursor:pointer;transition:all 0.18s;white-space:nowrap;font-family:"Noto Sans TC",sans-serif;}
     .copy-btn:hover{background:rgba(44,197,181,0.25);color:#2CC5B5;border-color:#2CC5B5;}
     .copy-btn.copied{background:rgba(44,197,181,0.2);color:#2CC5B5;border-color:#2CC5B5;}
 
-    /* Compare card */
-    .cmp-card{border-radius:15px;padding:20px 18px;text-align:left;}
-    .cmp-card.pos{background:rgba(44,197,181,0.1);}.cmp-card.neg{background:rgba(229,57,53,0.08);}
-    .cmp-label{font-size:11px;color:#999;margin-bottom:7px;font-weight:600;}
-    .cmp-val{font-size:17px;font-weight:700;line-height:1.5;}
-    .cmp-val.teal{color:#2CC5B5;}.cmp-val.red{color:#E53935;}
+    /* ── Step rows ── */
+    .step-badge{display:inline-flex;align-items:center;justify-content:center;width:23px;height:23px;border-radius:50%;background:#2CC5B5;color:white;font-size:11px;font-weight:700;margin-right:8px;flex-shrink:0;}
+    .step-badge.blue{background:#3B82F6;}
+    .step-row{display:flex;align-items:flex-start;text-align:left;margin-bottom:9px;font-size:13px;color:#444;line-height:1.6;}
+
+    /* ── Divider label ── */
+    .section-label{display:flex;align-items:center;gap:10px;margin:14px 0 10px;text-align:left;}
+    .section-label span{font-size:11px;font-weight:700;color:#aaa;white-space:nowrap;}
+    .section-label::before,.section-label::after{content:'';flex:1;height:1px;background:rgba(0,0,0,0.08);}
   </style>
 </head>
 <body>
 <div class="slideshow">
 
-<!-- ═══ P1 封面 ═══ -->
+<!-- ══════════════════════════════════════════
+     P1  封面
+══════════════════════════════════════════ -->
 <section class="slide active">
   <div class="slide-content">
     <div class="badge">🚀 2026 TIPC AI 課程系列</div>
     <h1 class="title-main"><span class="title-accent">AI 課程分享</span><br>課前引導</h1>
-    <p class="subtitle" style="margin-top:12px">為何學 AI？怎麼用 AI？<br>從觀念到實作，帶你出發</p>
-    <div style="margin-top:26px;display:flex;gap:12px;justify-content:center;flex-wrap:wrap;">
-      <span style="background:rgba(44,197,181,0.12);color:#2CC5B5;border-radius:20px;padding:6px 16px;font-size:13px;font-weight:600;">📅 2026.05.25</span>
-      <a href="https://sites.google.com/view/tipcai/" target="_blank" style="background:rgba(245,166,35,0.12);color:#F5A623;border-radius:20px;padding:6px 16px;font-size:13px;font-weight:600;text-decoration:none;">🏢 TIPC AI 入口 ↗</a>
+    <p class="subtitle" style="margin-top:11px">為何學 AI？怎麼用 AI？<br>從觀念到實作，帶你出發</p>
+    <div style="margin-top:24px;display:flex;gap:11px;justify-content:center;flex-wrap:wrap;">
+      <span style="background:rgba(44,197,181,0.12);color:#2CC5B5;border-radius:20px;padding:6px 15px;font-size:13px;font-weight:600;">📅 2026.05.25</span>
+      <a href="https://sites.google.com/view/tipcai/" target="_blank" style="background:rgba(245,166,35,0.12);color:#F5A623;border-radius:20px;padding:6px 15px;font-size:13px;font-weight:600;text-decoration:none;">🏢 TIPC AI 入口 ↗</a>
     </div>
   </div>
 </section>
 
-<!-- ═══ P2 一、時代所趨 & 政策支援 ═══ -->
+<!-- ══════════════════════════════════════════
+     P2  一、時代所趨 & 政策支援
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">一、為何要學 AI？</div>
-    <h2 class="title-main" style="font-size:clamp(24px,4vw,44px)">AI 已是<span class="title-accent">普及科技</span></h2>
+    <h2 class="title-main" style="font-size:clamp(22px,4vw,44px)">AI 已是<span class="title-accent">普及科技</span></h2>
     <div class="two-col">
       <div class="card" style="text-align:left;">
-        <div class="icon-circle teal" style="margin-left:0">🌐</div>
+        <div class="icon-circle ic-teal" style="margin-left:0">🌐</div>
         <div class="card-title">① 時代所趨</div>
-        <div class="card-body">AI 跟電腦、網路、手機一樣，成為每個人都會用到的<span class="ht">普及科技</span>，趨勢不可逆。</div>
+        <div class="card-body">AI 跟電腦、網路、手機一樣，正在成為每個人都會用到的<span class="ht">普及科技</span>，趨勢不可逆。</div>
       </div>
       <div class="card" style="text-align:left;">
-        <div class="icon-circle orange" style="margin-left:0">🏛️</div>
+        <div class="icon-circle ic-orange" style="margin-left:0">🏛️</div>
         <div class="card-title">② 政策支援</div>
         <div class="card-body">行政院蘇俊榮人事長<span class="ho">親自推廣</span>，交通部下亦有相關政策配套，公部門全面啟動。</div>
       </div>
@@ -124,47 +127,51 @@
   </div>
 </section>
 
-<!-- ═══ P3 個人競爭力 ═══ -->
+<!-- ══════════════════════════════════════════
+     P3  個人競爭力
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">一、為何要學 AI？</div>
-    <h2 class="title-main" style="font-size:clamp(24px,4vw,44px)">③ <span class="title-accent">個人競爭力</span>升級</h2>
-    <p class="subtitle" style="margin-bottom:4px;font-size:13px;color:#999">「AI 不會取代人，但 <span class="hr">不會 AI 的人</span> 會被時代淘汰」</p>
+    <h2 class="title-main" style="font-size:clamp(22px,3.8vw,44px)">③ <span class="title-accent">個人競爭力</span>升級</h2>
+    <p class="subtitle" style="margin-bottom:4px;font-size:12px;color:#999">「AI 不會取代人，但 <span class="hr">不會 AI 的人</span> 會被時代淘汰」</p>
     <div class="three-col">
       <div class="card" style="text-align:left;">
-        <div class="icon-square teal" style="margin:0 0 9px 0">⚡</div>
+        <div class="icon-square is-teal" style="margin:0 0 8px 0">⚡</div>
         <div class="card-title">增加效率</div>
         <div class="card-body">會做的事更省時<br><span class="ht">70% 工作</span>交給 AI</div>
       </div>
       <div class="card" style="text-align:left;">
-        <div class="icon-square orange" style="margin:0 0 9px 0">🧠</div>
+        <div class="icon-square is-orange" style="margin:0 0 8px 0">🧠</div>
         <div class="card-title">增加能力</div>
         <div class="card-body">跨領域能力突破<br>原本做不到的<span class="ho">做到了</span></div>
       </div>
       <div class="card" style="text-align:left;">
-        <div class="icon-square purple" style="margin:0 0 9px 0">💰</div>
+        <div class="icon-square is-purple" style="margin:0 0 8px 0">💰</div>
         <div class="card-title">增加收入</div>
         <div class="card-body">一人公司思維<br><span class="hp">被動收入</span>可能性</div>
       </div>
     </div>
-    <p style="margin-top:14px;font-size:13px;color:#888">從「會使用 AI 工具」→ 進階到「<span class="ht">把 AI 當員工</span>」</p>
+    <p style="margin-top:12px;font-size:12.5px;color:#888">從「會使用 AI 工具」→ 進階到「<span class="ht">把 AI 當員工</span>」</p>
   </div>
 </section>
 
-<!-- ═══ P4 二、All in AI + 常見Q ═══ -->
+<!-- ══════════════════════════════════════════
+     P4  二、All in AI + 常見 Q
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">二、投資自己：All in AI</div>
-    <h2 class="title-main" style="font-size:clamp(22px,3.8vw,42px)">All in <span class="title-accent">AI</span></h2>
-    <p class="subtitle" style="margin-bottom:16px">花錢、花時間在 AI 工具與課程，是在<span class="ho">投資你自己的未來</span></p>
+    <h2 class="title-main" style="font-size:clamp(22px,3.8vw,44px)">All in <span class="title-accent">AI</span></h2>
+    <p class="subtitle" style="margin-bottom:14px">花錢、花時間在 AI 工具與課程，是在<span class="ho">投資你自己的未來</span></p>
     <div class="two-col" style="margin-top:0">
       <div class="card" style="text-align:left;">
-        <div style="font-size:22px;margin-bottom:8px">⏰</div>
+        <div style="font-size:22px;margin-bottom:7px">⏰</div>
         <div class="card-title">忙都沒時間了還學 AI？</div>
-        <div class="card-body">AI 是<span class="ht">未來的必修學分</span><br>All in AI 觀念：<strong>強迫自己改用 AI 做事</strong></div>
+        <div class="card-body">AI 是<span class="ht">未來的必修學分</span><br>觀念：<strong>強迫自己改用 AI 做事</strong></div>
       </div>
       <div class="card" style="text-align:left;">
-        <div style="font-size:22px;margin-bottom:8px">💳</div>
+        <div style="font-size:22px;margin-bottom:7px">💳</div>
         <div class="card-title">每月要買多少種 AI？</div>
         <div class="card-body">
           <span class="ht">策略①</span> 買 1 種，適應它的缺點<br>
@@ -175,43 +182,47 @@
   </div>
 </section>
 
-<!-- ═══ P5 AI 10倍放大器 ═══ -->
+<!-- ══════════════════════════════════════════
+     P5  AI 10倍放大器
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">常見問題</div>
-    <h2 class="title-main" style="font-size:clamp(22px,3.8vw,42px)">AI 會幫我做完<span class="title-red">所有</span>工作？</h2>
-    <div class="card" style="margin-top:20px;padding:28px 36px;">
-      <div style="font-size:52px;margin-bottom:10px">🔭</div>
-      <p style="font-size:21px;font-weight:900;color:#2D2D2D;margin-bottom:12px">AI 是 <span class="title-accent">10 倍放大器</span></p>
-      <p style="font-size:14px;color:#666;margin-bottom:16px">但你的基本能力幾分，決定放大的上限</p>
-      <div style="display:flex;gap:9px;flex-wrap:wrap;justify-content:center;">
-        <span style="background:rgba(44,197,181,0.1);color:#2CC5B5;padding:5px 13px;border-radius:20px;font-size:13px;font-weight:600;">✍️ 表達力</span>
-        <span style="background:rgba(245,166,35,0.1);color:#F5A623;padding:5px 13px;border-radius:20px;font-size:13px;font-weight:600;">⚖️ 判斷力</span>
-        <span style="background:rgba(139,92,246,0.1);color:#8B5CF6;padding:5px 13px;border-radius:20px;font-size:13px;font-weight:600;">🎯 經驗力</span>
-        <span style="background:rgba(229,57,53,0.1);color:#E53935;padding:5px 13px;border-radius:20px;font-size:13px;font-weight:600;">📚 領域力</span>
-        <span style="background:rgba(44,197,181,0.1);color:#2CC5B5;padding:5px 13px;border-radius:20px;font-size:13px;font-weight:600;">🛠️ 工具力</span>
+    <h2 class="title-main" style="font-size:clamp(22px,3.8vw,44px)">AI 會幫我做完<span class="title-red">所有</span>工作？</h2>
+    <div class="card" style="margin-top:18px;padding:26px 34px;">
+      <div style="font-size:48px;margin-bottom:9px">🔭</div>
+      <p style="font-size:20px;font-weight:900;color:#2D2D2D;margin-bottom:11px">AI 是 <span class="title-accent">10 倍放大器</span></p>
+      <p style="font-size:13px;color:#666;margin-bottom:14px">但你的基本能力幾分，決定放大的上限</p>
+      <div style="display:flex;gap:8px;flex-wrap:wrap;justify-content:center;">
+        <span style="background:rgba(44,197,181,0.1);color:#2CC5B5;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;">✍️ 表達力</span>
+        <span style="background:rgba(245,166,35,0.1);color:#F5A623;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;">⚖️ 判斷力</span>
+        <span style="background:rgba(139,92,246,0.1);color:#8B5CF6;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;">🎯 經驗力</span>
+        <span style="background:rgba(229,57,53,0.1);color:#E53935;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;">📚 領域力</span>
+        <span style="background:rgba(44,197,181,0.1);color:#2CC5B5;padding:4px 12px;border-radius:20px;font-size:12.5px;font-weight:600;">🛠️ 工具力</span>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ P6 公司資源 ═══ -->
+<!-- ══════════════════════════════════════════
+     P6  公司資源
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">公司提供的資源</div>
-    <h2 class="title-main" style="font-size:clamp(22px,3.8vw,42px)">善用<span class="title-accent">免費資源</span></h2>
+    <h2 class="title-main" style="font-size:clamp(22px,3.8vw,44px)">善用<span class="title-accent">免費資源</span></h2>
     <div class="two-col">
       <div class="card" style="text-align:left;">
-        <div class="icon-square teal" style="margin:0 0 9px 0">🌱</div>
+        <div class="icon-square is-teal" style="margin:0 0 8px 0">🌱</div>
         <div class="card-title">AI 種子學員</div>
         <div class="card-body">企業版 AI 工具<span class="ht">免費使用</span></div>
       </div>
       <div class="card" style="text-align:left;">
-        <div class="icon-square orange" style="margin:0 0 9px 0">🎓</div>
+        <div class="icon-square is-orange" style="margin:0 0 8px 0">🎓</div>
         <div class="card-title">每個人都可以參加</div>
         <div class="card-body">
-          【資訊ｘ人資】免費實體＋線上課程<br>搜尋「<span class="ho">TIPC AI</span>」或點以下連結：
-          <div style="margin-top:10px;display:flex;flex-direction:column;gap:7px;">
+          【資訊ｘ人資】免費實體＋線上課程<br>搜尋「<span class="ho">TIPC AI</span>」或點連結：
+          <div style="margin-top:9px;display:flex;flex-direction:column;gap:7px;">
             <a href="https://sites.google.com/view/tipcai/" target="_blank" class="sl">🔗 TIPC AI 課程入口</a>
             <a href="https://www.youtube.com/@TIPCAI%E5%AD%B8%E9%99%A2" target="_blank" class="sl">▶️ YouTube 線上課程頻道</a>
             <a href="https://sites.google.com/twport.com.tw/course-information/" target="_blank" class="sl">📅 2026 年度完整課表</a>
@@ -222,25 +233,27 @@
   </div>
 </section>
 
-<!-- ═══ P7 三、AI=新人 ═══ -->
+<!-- ══════════════════════════════════════════
+     P7  三、AI = 新人特性
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">三、了解 AI 員工</div>
     <h1 class="title-main" style="font-size:clamp(24px,4.5vw,50px)">AI ＝ <span class="title-accent">超強新人</span></h1>
-    <p class="subtitle" style="margin-bottom:16px">雇了一位很厲害的新人給你用——但要先搞清楚他的特性</p>
+    <p class="subtitle" style="margin-bottom:14px">雇了一位很厲害的新人給你用——但要先搞清楚他的特性</p>
     <div class="three-col">
       <div class="card" style="text-align:left;">
-        <div class="icon-circle teal" style="margin-left:0">🎯</div>
+        <div class="icon-circle ic-teal" style="margin-left:0">🎯</div>
         <div class="card-title">專長不同</div>
         <div class="card-body">文字厲害、眼睛利、會畫圖⋯各有所長，要選對工具</div>
       </div>
       <div class="card" style="text-align:left;">
-        <div class="icon-circle orange" style="margin-left:0">😴</div>
+        <div class="icon-circle ic-orange" style="margin-left:0">😴</div>
         <div class="card-title">會偷懶有幻覺</div>
-        <div class="card-body">算力有限、不思考就莽撞，還可能<span class="hr">推論錯誤、記錯內容</span></div>
+        <div class="card-body">算力有限、不思考就莽撞，可能<span class="hr">推論錯誤、記錯內容</span></div>
       </div>
       <div class="card" style="text-align:left;">
-        <div class="icon-circle purple" style="margin-left:0">🧩</div>
+        <div class="icon-circle ic-purple" style="margin-left:0">🧩</div>
         <div class="card-title">記性有好有壞</div>
         <div class="card-body">上下文長度影響記憶，任務愈聚焦效果愈好</div>
       </div>
@@ -248,163 +261,167 @@
   </div>
 </section>
 
-<!-- ═══ P8 四大技能 ═══ -->
+<!-- ══════════════════════════════════════════
+     P8  四大核心技能
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">核心技能</div>
     <h2 class="title-main" style="font-size:clamp(22px,3.8vw,44px)">你應該學會<span class="title-accent">這 4 件事</span></h2>
     <div class="quad-grid">
-      <div class="card" style="text-align:left;display:flex;align-items:flex-start;gap:11px;">
-        <div class="icon-square teal" style="margin:0;flex-shrink:0">🎯</div>
+      <div class="card" style="text-align:left;display:flex;align-items:flex-start;gap:10px;">
+        <div class="icon-square is-teal" style="margin:0;flex-shrink:0">🎯</div>
         <div><div class="card-title">選對人</div><div class="card-body">依任務選模型（快速 / 思考）與功能（對話 / 協作 / 生圖）</div></div>
       </div>
-      <div class="card" style="text-align:left;display:flex;align-items:flex-start;gap:11px;">
-        <div class="icon-square orange" style="margin:0;flex-shrink:0">💬</div>
+      <div class="card" style="text-align:left;display:flex;align-items:flex-start;gap:10px;">
+        <div class="icon-square is-orange" style="margin:0;flex-shrink:0">💬</div>
         <div><div class="card-title"><span class="star-tag">⭐</span>講清楚</div><div class="card-body">明確描述：需求目的、步驟與條件、資料來源</div></div>
       </div>
-      <div class="card" style="text-align:left;display:flex;align-items:flex-start;gap:11px;">
-        <div class="icon-square purple" style="margin:0;flex-shrink:0">📎</div>
+      <div class="card" style="text-align:left;display:flex;align-items:flex-start;gap:10px;">
+        <div class="icon-square is-purple" style="margin:0;flex-shrink:0">📎</div>
         <div><div class="card-title"><span class="star-tag">⭐</span>給參考</div><div class="card-body">提供原始資料、格式範例、背景來源讓 AI 有依據</div></div>
       </div>
-      <div class="card" style="text-align:left;display:flex;align-items:flex-start;gap:11px;">
-        <div class="icon-square red" style="margin:0;flex-shrink:0">🪜</div>
+      <div class="card" style="text-align:left;display:flex;align-items:flex-start;gap:10px;">
+        <div class="icon-square is-red" style="margin:0;flex-shrink:0">🪜</div>
         <div><div class="card-title"><span class="star-tag">⭐</span>拆步驟</div><div class="card-body">人跟 AI 注意力都有限，任務分次給、聚焦有限範圍</div></div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ P9 示範1(上) 模型比較 ═══ -->
+<!-- ══════════════════════════════════════════
+     P9  示範1(上) 模型比較
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">四、實例示範 1｜社群文章撰寫（上）</div>
     <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)">先試試<span class="title-accent">不同模型</span>的差異</h2>
-    <p style="font-size:13px;color:#888;margin-bottom:2px">登入 <a href="https://gemini.google.com/app" target="_blank" class="sl">Google Gemini</a>（使用 Google 帳號）</p>
+    <p style="font-size:12.5px;color:#888;margin-bottom:2px">登入 <a href="https://gemini.google.com/app" target="_blank" class="sl">Google Gemini</a>（使用 Google 帳號）</p>
     <div class="two-col">
       <div class="card" style="text-align:left;">
-        <div style="font-size:26px;margin-bottom:7px">⚡</div>
+        <div style="font-size:24px;margin-bottom:6px">⚡</div>
         <div class="card-title">快思模型</div>
-        <div class="card-body" style="color:#aaa;font-size:12px;margin-bottom:5px">flash / fast / 快速</div>
+        <div class="card-body" style="color:#bbb;font-size:11.5px;margin-bottom:5px">flash / fast / 快速</div>
         <div class="card-body">速度快、適合日常任務，思考深度較有限</div>
       </div>
       <div class="card" style="text-align:left;">
-        <div style="font-size:26px;margin-bottom:7px">🧠</div>
+        <div style="font-size:24px;margin-bottom:6px">🧠</div>
         <div class="card-title">慢想模型</div>
-        <div class="card-body" style="color:#aaa;font-size:12px;margin-bottom:5px">thinking / 思考型</div>
+        <div class="card-body" style="color:#bbb;font-size:11.5px;margin-bottom:5px">thinking / 思考型</div>
         <div class="card-body">推理更嚴謹，適合複雜或需精準判斷的任務</div>
       </div>
     </div>
     <div class="code-wrap">
-      <div class="code-block" id="p9code">幫我寫一篇關於鼠害防治的貼文</div>
-      <button class="copy-btn" onclick="copyCode('p9code',this)">複製</button>
+      <div class="code-block" id="c01">幫我寫一篇關於鼠害防治的貼文</div>
+      <button class="copy-btn" onclick="cp('c01',this)">複製</button>
     </div>
-    <div class="card" style="margin-top:12px;padding:13px 18px;background:rgba(245,166,35,0.07);text-align:left;">
-      <p style="font-size:12.5px;color:#666">思考：① 兩種模型結果有何不同？　② 這樣的結果有什麼問題？　③ 如何完整描述需求、條件、步驟、資料來源？</p>
+    <div class="card" style="margin-top:11px;padding:12px 16px;background:rgba(245,166,35,0.07);text-align:left;">
+      <p style="font-size:12px;color:#666">思考：① 兩種模型結果有何不同？　② 這樣的結果有什麼問題？　③ 如何完整描述需求、條件、步驟、來源？</p>
     </div>
   </div>
 </section>
 
-<!-- ═══ P10 示範1(下) 講清楚三要素 ═══ -->
+<!-- ══════════════════════════════════════════
+     P10  示範1(下) 講清楚三要素
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">四、實例示範 1｜社群文章撰寫（下）</div>
     <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)"><span class="star-tag" style="font-size:14px">⭐</span>講清楚：<span class="title-accent">三要素</span></h2>
-    <div class="three-col" style="margin-top:14px">
+    <div class="three-col" style="margin-top:13px">
       <div class="card" style="text-align:left;">
-        <div style="font-size:20px;margin-bottom:7px">🎯</div>
+        <div style="font-size:20px;margin-bottom:6px">🎯</div>
         <div class="card-title">一句話目的</div>
         <div class="card-body">把公司的<span class="ht">新聞稿轉成 FB 文章</span></div>
       </div>
       <div class="card" style="text-align:left;">
-        <div style="font-size:20px;margin-bottom:7px">📋</div>
+        <div style="font-size:20px;margin-bottom:6px">📋</div>
         <div class="card-title">步驟與條件</div>
-        <div class="card-body">
-          ① 轉為 FB 文章：約 <span class="ht">140 字</span>、附標題、口氣親民、<span class="ht">附 hashtag</span><br><br>
-          ② 一起生成 <span class="ho">FB 貼文插圖</span>
-        </div>
+        <div class="card-body">① 轉為 FB 文章：約 <span class="ht">140 字</span>、附標題、口氣親民、<span class="ht">附 hashtag</span><br><br>② 一起生成 <span class="ho">FB 貼文插圖</span></div>
       </div>
       <div class="card" style="text-align:left;">
-        <div style="font-size:20px;margin-bottom:7px">🔗</div>
+        <div style="font-size:20px;margin-bottom:6px">🔗</div>
         <div class="card-title">資料來源</div>
-        <div class="card-body">
-          <a href="https://www.twport.com.tw/news/News?a=29&id=10929" target="_blank" class="sl">🗞️ 鼠害防治新聞稿</a>
-        </div>
+        <div class="card-body"><a href="https://www.twport.com.tw/news/News?a=29&id=10929" target="_blank" class="sl">🗞️ 鼠害防治新聞稿</a></div>
       </div>
     </div>
-    <div class="two-col" style="margin-top:12px">
+    <div class="two-col" style="margin-top:11px">
       <div class="tool-card"><span class="ht">📝 共同編輯</span>：使用 <strong>Canvas</strong> 功能</div>
       <div class="tool-card pu"><span class="hp">🎨 生成圖片</span>：使用 <strong>Gemini Nano Banana</strong> 功能</div>
     </div>
   </div>
 </section>
 
-<!-- ═══ P11 Gemini Canvas Prompt ═══ -->
+<!-- ══════════════════════════════════════════
+     P11  Gemini Canvas Prompt
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">四、實例示範 1｜Gemini Canvas</div>
     <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)">完整 <span class="title-accent">Prompt</span> 範例</h2>
     <div class="code-wrap">
-      <div class="code-block" id="p11code"><a href="https://www.twport.com.tw/news/News?a=29&id=10929" target="_blank" class="code-link">https://www.twport.com.tw/news/News?a=29&id=10929</a>
+      <div class="code-block" id="c02"><a href="https://www.twport.com.tw/news/News?a=29&id=10929" target="_blank" class="code-link">https://www.twport.com.tw/news/News?a=29&id=10929</a>
 以上是最近的公司新聞稿
 把新聞稿轉為 FB 文章
 
 文字約 140 字，附上標題
 口氣親民，用字不要太官方、太艱澀
 最後附上 hashtag</div>
-      <button class="copy-btn" onclick="copyCode('p11code',this)">複製</button>
+      <button class="copy-btn" onclick="cp('c02',this)">複製</button>
     </div>
-    <div class="card" style="margin-top:12px;padding:14px 18px;background:rgba(229,57,53,0.06);text-align:left;">
-      <p style="font-size:12.5px;color:#E53935;font-weight:700;margin-bottom:6px">⚠️ 萬一 AI 說「無法讀取網頁」？→ <strong>拆步驟</strong>，先執行：</p>
+    <div class="card" style="margin-top:11px;padding:13px 16px;background:rgba(229,57,53,0.06);text-align:left;">
+      <p style="font-size:12px;color:#E53935;font-weight:700;margin-bottom:5px">⚠️ 萬一「無法讀取網頁」→ 拆步驟，先執行：</p>
       <div class="code-wrap" style="margin-top:0">
-        <div class="code-block" id="p11code2" style="padding:11px 14px;font-size:12px;"><a href="https://www.twport.com.tw/news/News?a=29&id=10929" target="_blank" class="code-link">https://www.twport.com.tw/news/News?a=29&id=10929</a>
+        <div class="code-block" id="c03" style="padding:10px 13px;font-size:12px;"><a href="https://www.twport.com.tw/news/News?a=29&id=10929" target="_blank" class="code-link">https://www.twport.com.tw/news/News?a=29&id=10929</a>
 先讀取以上文章內容</div>
-        <button class="copy-btn" onclick="copyCode('p11code2',this)" style="top:5px;right:6px;padding:3px 9px;font-size:11px;">複製</button>
+        <button class="copy-btn" onclick="cp('c03',this)" style="top:5px;right:5px;padding:3px 9px;font-size:10.5px;">複製</button>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ P12 Gemini Banana 建立圖像 ═══ -->
+<!-- ══════════════════════════════════════════
+     P12  Gemini Banana 建立圖像
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">四、實例示範 1｜Gemini Nano Banana</div>
     <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)">🎨 建立 <span class="title-accent">FB 宣傳海報</span></h2>
-    <div class="card" style="text-align:left;margin-top:16px;padding:18px 22px;">
-      <p style="font-size:13px;color:#666;margin-bottom:10px">先上傳原新聞稿內的圖片，再輸入以下提示詞：</p>
+    <div class="card" style="text-align:left;margin-top:14px;padding:16px 20px;">
+      <p style="font-size:12.5px;color:#666;margin-bottom:9px">先上傳原新聞稿內的圖片，再輸入以下提示詞：</p>
       <div class="code-wrap" style="margin-top:0">
-        <div class="code-block" id="p12code">將這兩張圖片合併做成 FB 宣傳海報，日式雜誌插畫風格
+        <div class="code-block" id="c04">將這兩張圖片合併做成 FB 宣傳海報，日式雜誌插畫風格
 正體中文、16:9
 標題：米奇退散！港區防鼠開外掛</div>
-        <button class="copy-btn" onclick="copyCode('p12code',this)">複製</button>
+        <button class="copy-btn" onclick="cp('c04',this)">複製</button>
       </div>
     </div>
-    <div class="card" style="margin-top:12px;padding:14px 20px;background:rgba(139,92,246,0.07);border:1.5px solid rgba(139,92,246,0.18);">
-      <p style="font-size:13px;color:#555;line-height:1.65">💡 Nano Banana 支援<span class="hp">正體中文</span>，能理解真實世界語境<br>但一樣要描述清楚：<strong>風格、比例、標題文字</strong></p>
+    <div class="card" style="margin-top:11px;padding:13px 18px;background:rgba(139,92,246,0.07);border:1.5px solid rgba(139,92,246,0.18);">
+      <p style="font-size:13px;color:#555;line-height:1.65">💡 Nano Banana 支援<span class="hp">正體中文</span>，能理解真實世界語境<br>要描述清楚：<strong>風格、比例、標題文字</strong></p>
     </div>
   </div>
 </section>
 
-<!-- ═══ P13 示範2 會議紀錄(上) — 三要素 ═══ -->
+<!-- ══════════════════════════════════════════
+     P13  示範2 會議紀錄 三要素
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">四、實例示範 2｜會議紀錄（上）</div>
     <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)"><span class="star-tag" style="font-size:14px">⭐</span>講清楚：<span class="title-accent">三要素</span></h2>
-    <div class="three-col" style="margin-top:14px">
+    <div class="three-col" style="margin-top:13px">
       <div class="card" style="text-align:left;">
-        <div style="font-size:20px;margin-bottom:7px">🎯</div>
+        <div style="font-size:20px;margin-bottom:6px">🎯</div>
         <div class="card-title">一句話目的</div>
         <div class="card-body">把<span class="ht">會議逐字稿</span>轉成<span class="ht">會議紀錄</span></div>
       </div>
       <div class="card" style="text-align:left;">
-        <div style="font-size:20px;margin-bottom:7px">📋</div>
+        <div style="font-size:20px;margin-bottom:6px">📋</div>
         <div class="card-title">步驟與條件</div>
-        <div class="card-body">
-          ① 包含主席裁示重點<br>分工表（項目・期限・分工）<br>未明確 → 標示<span class="ho">【建議】</span><br><br>
-          ② 照指定格式整理
-        </div>
+        <div class="card-body">① 包含主席裁示重點、分工表<br>未明確 → 標示<span class="ho">【建議】</span><br><br>② 照指定格式整理</div>
       </div>
       <div class="card" style="text-align:left;">
-        <div style="font-size:20px;margin-bottom:7px">🔗</div>
+        <div style="font-size:20px;margin-bottom:6px">🔗</div>
         <div class="card-title">資料來源</div>
         <div class="card-body">
           <a href="https://drive.google.com/file/d/1d5WOfmDOHRhWl43GwDbkXVY7dXFWFvZA/view?usp=sharing" target="_blank" class="sl">📄 會議逐字稿</a><br><br>
@@ -415,100 +432,243 @@
   </div>
 </section>
 
-<!-- ═══ P14 示範2 會議紀錄 Prompt ═══ -->
+<!-- ══════════════════════════════════════════
+     P14  示範2 會議紀錄 Prompt
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">四、實例示範 2｜Gemini Canvas Prompt</div>
     <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)">引用<span class="title-accent">兩個附件</span>來源</h2>
-    <p style="font-size:13px;color:#888;margin-bottom:2px">先後上傳 ①逐字稿 ②格式參考，再輸入：</p>
+    <p style="font-size:12.5px;color:#888;margin-bottom:2px">先後上傳 ①逐字稿 ②格式參考，再輸入：</p>
     <div class="code-wrap">
-      <div class="code-block" id="p14code">把會議逐字稿轉成會議紀錄
+      <div class="code-block" id="c05">把會議逐字稿轉成會議紀錄
 
 會議紀錄應包括主席裁示重點，分工表（含項目、期限、分工）
 若期限、分工未明確就標示【建議】
 
 會議逐字稿如第 1 個附件
 照第 2 個附件的指定會議格式整理</div>
-      <button class="copy-btn" onclick="copyCode('p14code',this)">複製</button>
+      <button class="copy-btn" onclick="cp('c05',this)">複製</button>
     </div>
-    <div class="two-col" style="margin-top:12px">
+    <div class="two-col" style="margin-top:11px">
       <a href="https://drive.google.com/file/d/1d5WOfmDOHRhWl43GwDbkXVY7dXFWFvZA/view?usp=sharing" target="_blank" style="text-decoration:none">
-        <div class="card" style="padding:13px 16px;background:rgba(44,197,181,0.07);cursor:pointer;border:1.5px solid rgba(44,197,181,0.2);">
-          <span style="font-size:13px;color:#2CC5B5;font-weight:600;">📄 附件① 會議逐字稿 ↗</span>
+        <div class="card" style="padding:12px 15px;background:rgba(44,197,181,0.07);border:1.5px solid rgba(44,197,181,0.2);cursor:pointer;">
+          <span style="font-size:12.5px;color:#2CC5B5;font-weight:600;">📄 附件① 會議逐字稿 ↗</span>
         </div>
       </a>
       <a href="https://drive.google.com/file/d/1shTSO05Y8Xx6SA4LbT4iMq2kGG5o9avf/view?usp=sharing" target="_blank" style="text-decoration:none">
-        <div class="card" style="padding:13px 16px;background:rgba(139,92,246,0.07);cursor:pointer;border:1.5px solid rgba(139,92,246,0.2);">
-          <span style="font-size:13px;color:#8B5CF6;font-weight:600;">📝 附件② 會議紀錄格式 ↗</span>
+        <div class="card" style="padding:12px 15px;background:rgba(139,92,246,0.07);border:1.5px solid rgba(139,92,246,0.18);cursor:pointer;">
+          <span style="font-size:12.5px;color:#8B5CF6;font-weight:600;">📝 附件② 會議紀錄格式 ↗</span>
         </div>
       </a>
     </div>
   </div>
 </section>
 
-<!-- ═══ P15 認識工具：Canvas & Nano Banana ═══ -->
+<!-- ══════════════════════════════════════════
+     P15  認識工具 Canvas & Nano Banana
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">認識工具</div>
     <h2 class="title-main" style="font-size:clamp(20px,3.8vw,42px)">兩個<span class="title-accent">超實用工具</span></h2>
     <div class="two-col">
-      <div class="tool-card" style="padding:20px 22px;">
-        <div style="font-size:28px;margin-bottom:9px">📝</div>
-        <div class="card-title" style="font-size:16px;color:#2CC5B5;margin-bottom:10px">Canvas（共同編輯）</div>
+      <div class="tool-card" style="padding:18px 20px;">
+        <div style="font-size:26px;margin-bottom:8px">📝</div>
+        <div class="card-title" style="font-size:15px;color:#2CC5B5;margin-bottom:9px">Canvas（共同編輯）</div>
         <div class="card-body">
-          與你<strong>共同寫作</strong>，而非一問一答<br><br>
+          與你<strong>共同寫作</strong>，而非一問一答<br>
           右下工具可變更<span class="ht">語氣、文章長度</span><br>
-          可輸出 <span class="ht">Google Doc / Google Slide</span><br><br>
-          也可用來寫程式，例如<strong>一頁式網頁</strong>（html + css + js）
+          可輸出 <span class="ht">Google Doc / Slide</span><br>
+          也可用來寫程式：<strong>一頁式網頁</strong>（html+css+js）
         </div>
-        <div class="code-wrap" style="margin-top:10px">
-          <div class="code-block" id="p15code" style="font-size:12px;padding:11px 14px;">把會議紀錄轉為 Google Slide 簡報</div>
-          <button class="copy-btn" onclick="copyCode('p15code',this)" style="top:5px;right:6px;padding:3px 9px;font-size:11px;">複製</button>
+        <div class="code-wrap" style="margin-top:9px">
+          <div class="code-block" id="c06" style="font-size:12px;padding:10px 13px;">把會議紀錄轉為 Google Slide 簡報</div>
+          <button class="copy-btn" onclick="cp('c06',this)" style="top:4px;right:5px;padding:3px 8px;font-size:10.5px;">複製</button>
         </div>
       </div>
-      <div class="tool-card pu" style="padding:20px 22px;">
-        <div style="font-size:28px;margin-bottom:9px">🎨</div>
-        <div class="card-title" style="font-size:16px;color:#8B5CF6;margin-bottom:10px">Nano Banana（建立圖像）</div>
+      <div class="tool-card pu" style="padding:18px 20px;">
+        <div style="font-size:26px;margin-bottom:8px">🎨</div>
+        <div class="card-title" style="font-size:15px;color:#8B5CF6;margin-bottom:9px">Nano Banana（建立圖像）</div>
         <div class="card-body">
-          用來<strong>生成圖片</strong><br><br>
-          支援<span class="hp">正體中文</span>、理解真實世界語境<br><br>
-          描述要清楚：<strong>風格・比例・文字內容</strong>
+          用來<strong>生成圖片</strong><br>
+          支援<span class="hp">正體中文</span>、理解真實世界語境<br>
+          要描述清楚：<strong>風格・比例・文字內容</strong>
         </div>
       </div>
     </div>
   </div>
 </section>
 
-<!-- ═══ P16 五、下節課預告 ═══ -->
+<!-- ══════════════════════════════════════════
+     P16  五、下節課預告
+══════════════════════════════════════════ -->
 <section class="slide">
   <div class="slide-content">
     <div class="badge">五、下節課預告</div>
     <h2 class="title-main" style="font-size:clamp(22px,3.8vw,44px)">下節課<span class="title-accent">精彩預告</span> 🎬</h2>
-    <div class="three-col" style="margin-top:20px">
+    <div class="three-col" style="margin-top:18px">
       <div class="card" style="text-align:left;">
-        <div class="icon-circle teal" style="margin-left:0">💻</div>
+        <div class="icon-circle ic-teal" style="margin-left:0">💻</div>
         <div class="card-title">柯伯暉</div>
         <div class="card-body"><span class="ht">Gemini Canvas</span><br>寫程式實戰</div>
       </div>
       <div class="card" style="text-align:left;">
-        <div class="icon-circle orange" style="margin-left:0">📊</div>
+        <div class="icon-circle ic-orange" style="margin-left:0">📊</div>
         <div class="card-title">蔡淑惠</div>
-        <div class="card-body"><span class="ho">Gemini Canvas</span> ＋ <span class="ho">NotebookLM</span><br>整理金融投資</div>
+        <div class="card-body"><span class="ho">Gemini Canvas</span> ＋<br><span class="ho">NotebookLM</span><br>整理金融投資</div>
       </div>
       <div class="card" style="text-align:left;">
-        <div class="icon-circle purple" style="margin-left:0">🎨</div>
+        <div class="icon-circle ic-purple" style="margin-left:0">🎨</div>
         <div class="card-title">陳宗揚</div>
         <div class="card-body"><span class="hp">Gemini Nano Banana</span><br>生圖實戰</div>
       </div>
     </div>
-    <div class="card" style="margin-top:16px;padding:14px 28px;display:inline-block;background:rgba(44,197,181,0.08);">
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     P17  六、Google全家桶 ─ 示範3 試算表三要素
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="slide-content">
+    <div class="badge blue">六、Google 全家桶無所不在</div>
+    <h2 class="title-main" style="font-size:clamp(20px,3.5vw,42px)">🔢 示範 3：<span class="title-blue">試算表統計</span></h2>
+    <p style="font-size:12.5px;color:#888;margin-bottom:2px">使用 <strong>Gemini in Google Sheet</strong></p>
+    <div class="three-col" style="margin-top:12px">
+      <div class="card" style="text-align:left;">
+        <div style="font-size:20px;margin-bottom:6px">🎯</div>
+        <div class="card-title">一句話目的</div>
+        <div class="card-body">將<span class="hb">試算表</span>進行統計分析</div>
+      </div>
+      <div class="card" style="text-align:left;">
+        <div style="font-size:20px;margin-bottom:6px">📋</div>
+        <div class="card-title">步驟與條件</div>
+        <div class="card-body">① 統計各港年度母港、掛靠港人次<br><br>② 各郵輪公司在基隆港的貢獻度 → <span class="hb">圓餅圖</span>（萬人次＋比例標示）</div>
+      </div>
+      <div class="card" style="text-align:left;">
+        <div style="font-size:20px;margin-bottom:6px">🔗</div>
+        <div class="card-title">資料來源</div>
+        <div class="card-body"><a href="https://drive.google.com/drive/folders/1d3Mgr6CR2RkPJWQRaGzYU3X4LWnQQKRM?usp=sharing" target="_blank" class="bl">📁 Google Sheet 資料夾</a></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     P18  示範3 Prompt + 結果說明
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="slide-content">
+    <div class="badge blue">六、Google 全家桶｜Gemini in Google Sheet</div>
+    <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)">打開 Google Sheet 後輸入：</h2>
+    <div class="code-wrap">
+      <div class="code-block" id="c07">將試算表進行統計
+
+(1)統計各港的年度母港、掛靠港作業各別人次
+(2)統計各家郵輪公司在基隆港的貢獻度製作成圓餅圖，並以萬人次、比例進行標示</div>
+      <button class="copy-btn" onclick="cp('c07',this)">複製</button>
+    </div>
+    <div class="two-col" style="margin-top:12px">
+      <a href="https://drive.google.com/drive/folders/1d3Mgr6CR2RkPJWQRaGzYU3X4LWnQQKRM?usp=sharing" target="_blank" style="text-decoration:none">
+        <div class="card" style="padding:12px 15px;background:rgba(59,130,246,0.07);border:1.5px solid rgba(59,130,246,0.2);cursor:pointer;">
+          <span style="font-size:12.5px;color:#3B82F6;font-weight:600;">📁 Google Sheet 資料夾 ↗</span>
+        </div>
+      </a>
+      <div class="card" style="padding:12px 15px;text-align:left;">
+        <p style="font-size:12.5px;color:#555">💡 結果可<strong>手動插入</strong>至新的工作表</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     P19  Gemini in Chrome 安裝步驟
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="slide-content">
+    <div class="badge blue">六、Google 全家桶｜Gemini in Chrome</div>
+    <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)">🔧 安裝<span class="title-blue">「問問 Gemini」</span></h2>
+    <div class="card" style="margin-top:16px;padding:20px 26px;text-align:left;">
+      <div class="step-row">
+        <span class="step-badge blue">1</span>
+        <span>將 <strong>Chrome 更新至最新版</strong></span>
+      </div>
+      <div class="step-row">
+        <span class="step-badge blue">2</span>
+        <span>按 <strong>Win + R</strong>，輸入並執行以下指令：</span>
+      </div>
+      <div class="code-wrap" style="margin-top:0;margin-left:31px">
+        <div class="code-block" id="c08">"C:\Program Files\Google\Chrome\Application\chrome.exe" --variations-override-country=us</div>
+        <button class="copy-btn" onclick="cp('c08',this)">複製</button>
+      </div>
+    </div>
+    <div class="card" style="margin-top:11px;padding:13px 18px;background:rgba(59,130,246,0.07);border:1.5px solid rgba(59,130,246,0.18);">
+      <p style="font-size:13px;color:#3B82F6;font-weight:600;">執行後重啟 Chrome，即可在網址列右側看到 <strong>Gemini 圖示</strong> ✨</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     P20  示範4 購物比價
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="slide-content">
+    <div class="badge blue">六、Google 全家桶｜示範 4：購物比價</div>
+    <h2 class="title-main" style="font-size:clamp(20px,3.5vw,40px)">🛒 <span class="title-blue">Gemini in Chrome</span> 跨分頁比價</h2>
+    <div class="two-col" style="margin-top:14px">
+      <div class="card" style="text-align:left;">
+        <div style="font-size:19px;margin-bottom:6px">🎯</div>
+        <div class="card-title">目的 & 步驟</div>
+        <div class="card-body">
+          目的：針對<span class="hb">乳清蛋白</span>進行詢價、評比<br><br>
+          ① Google 搜尋「乳清蛋白」<br>找各購物網站，有興趣的開到分頁<br><br>
+          ② 以 <strong>@</strong> 加入各分頁後進行比較
+        </div>
+      </div>
+      <div class="card" style="text-align:left;">
+        <div style="font-size:19px;margin-bottom:6px">💬</div>
+        <div class="card-title">Prompt 範例</div>
+        <div class="card-body" style="margin-bottom:8px">在 Gemini in Chrome 加入各分頁後輸入：</div>
+        <div class="code-wrap" style="margin-top:0">
+          <div class="code-block" id="c09" style="font-size:12px;padding:11px 13px;">針對乳清蛋白進行詢價、評比
+
+比較這幾個產品的規格、優缺點，並整理成表格</div>
+          <button class="copy-btn" onclick="cp('c09',this)" style="top:4px;right:5px;padding:3px 8px;font-size:10.5px;">複製</button>
+        </div>
+      </div>
+    </div>
+    <div class="card" style="margin-top:11px;padding:13px 18px;background:rgba(59,130,246,0.07);border:1.5px solid rgba(59,130,246,0.18);">
+      <p style="font-size:13px;color:#555">💡 <span class="hb">Gemini in Chrome</span> 可跨分頁讀取內容，不需複製貼上，直接讓 AI 幫你比較 ✨</p>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════════════════════════════════
+     P21  結語
+══════════════════════════════════════════ -->
+<section class="slide">
+  <div class="slide-content">
+    <div class="badge">課前引導 小結</div>
+    <h1 class="title-main">從今天開始<br><span class="title-accent">把 AI 當員工用</span></h1>
+    <p class="subtitle" style="margin:14px 0">選對人 → 講清楚 → 給參考 → 拆步驟</p>
+    <div style="display:flex;gap:10px;justify-content:center;flex-wrap:wrap;">
+      <span style="background:rgba(44,197,181,0.12);color:#2CC5B5;border-radius:20px;padding:6px 15px;font-size:13px;font-weight:600;">🎯 選對工具</span>
+      <span style="background:rgba(245,166,35,0.12);color:#F5A623;border-radius:20px;padding:6px 15px;font-size:13px;font-weight:600;">💬 明確溝通</span>
+      <span style="background:rgba(139,92,246,0.12);color:#8B5CF6;border-radius:20px;padding:6px 15px;font-size:13px;font-weight:600;">📎 給足參考</span>
+      <span style="background:rgba(229,57,53,0.1);color:#E53935;border-radius:20px;padding:6px 15px;font-size:13px;font-weight:600;">🪜 分步執行</span>
+      <span style="background:rgba(59,130,246,0.1);color:#3B82F6;border-radius:20px;padding:6px 15px;font-size:13px;font-weight:600;">🌐 Google 全家桶</span>
+    </div>
+    <div class="card" style="margin-top:22px;padding:14px 28px;display:inline-block;background:rgba(44,197,181,0.08);">
       <p style="font-size:13px;color:#555">搜尋 <a href="https://sites.google.com/view/tipcai/" target="_blank" class="sl">TIPC AI</a> 找到更多免費課程資源 🐻</p>
     </div>
   </div>
 </section>
 
+<!-- ══════════════════════════════════════════
+     Footer & Nav
+══════════════════════════════════════════ -->
 <footer class="slide-footer">🐻 林熊熊分享</footer>
-
 <nav class="nav-bar">
   <button class="nav-btn" id="prevBtn">‹</button>
   <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
@@ -516,83 +676,69 @@
   <span id="totalPages" style="font-size:15px;color:#999"></span>
   <button class="nav-btn" id="nextBtn">›</button>
 </nav>
-</div>
+</div><!-- .slideshow -->
 
 <script>
-  // ── 翻頁邏輯 ──
-  const slides = document.querySelectorAll('.slide');
-  const pageIndicator = document.getElementById('pageIndicator');
-  const totalPagesEl  = document.getElementById('totalPages');
-  const prevBtn = document.getElementById('prevBtn');
-  const nextBtn = document.getElementById('nextBtn');
-  let current = 0;
-  totalPagesEl.textContent = slides.length;
+/* ── 翻頁邏輯 ── */
+const slides = document.querySelectorAll('.slide');
+const pageIndicator = document.getElementById('pageIndicator');
+const totalPagesEl  = document.getElementById('totalPages');
+const prevBtn = document.getElementById('prevBtn');
+const nextBtn = document.getElementById('nextBtn');
+let current = 0;
+totalPagesEl.textContent = slides.length;
 
-  function goTo(n) {
-    slides[current].classList.remove('active');
-    current = Math.max(0, Math.min(n, slides.length - 1));
-    slides[current].classList.add('active');
-    updateIndicator();
-    prevBtn.disabled = current === 0;
-    nextBtn.disabled = current === slides.length - 1;
+function goTo(n){
+  slides[current].classList.remove('active');
+  current = Math.max(0,Math.min(n,slides.length-1));
+  slides[current].classList.add('active');
+  pageIndicator.textContent = current+1;
+  prevBtn.disabled = current===0;
+  nextBtn.disabled = current===slides.length-1;
+}
+
+pageIndicator.addEventListener('click',()=>{
+  const input=document.createElement('input');
+  input.type='number';input.min=1;input.max=slides.length;
+  input.value=current+1;input.className='page-jump-input';
+  pageIndicator.replaceWith(input);input.select();
+  function commit(){
+    const n=parseInt(input.value,10);
+    input.replaceWith(pageIndicator);
+    if(!isNaN(n))goTo(n-1);else pageIndicator.textContent=current+1;
   }
-  function updateIndicator() { pageIndicator.textContent = current + 1; }
-
-  pageIndicator.addEventListener('click', () => {
-    const input = document.createElement('input');
-    input.type='number'; input.min=1; input.max=slides.length;
-    input.value=current+1; input.className='page-jump-input';
-    pageIndicator.replaceWith(input); input.select();
-    function commit() {
-      const n = parseInt(input.value, 10);
-      input.replaceWith(pageIndicator);
-      if (!isNaN(n)) goTo(n-1); else updateIndicator();
-    }
-    input.addEventListener('keydown', e => {
-      if (e.key==='Enter'){e.preventDefault();commit();}
-      if (e.key==='Escape'){input.replaceWith(pageIndicator);updateIndicator();}
-      if (e.key==='ArrowLeft'||e.key==='ArrowRight') e.stopPropagation();
-    });
-    input.addEventListener('blur', commit);
-    input.addEventListener('input', () => {
-      if (input.value<1) input.value=1;
-      if (input.value>slides.length) input.value=slides.length;
-    });
+  input.addEventListener('keydown',e=>{
+    if(e.key==='Enter'){e.preventDefault();commit();}
+    if(e.key==='Escape'){input.replaceWith(pageIndicator);pageIndicator.textContent=current+1;}
+    if(e.key==='ArrowLeft'||e.key==='ArrowRight')e.stopPropagation();
   });
+  input.addEventListener('blur',commit);
+  input.addEventListener('input',()=>{if(input.value<1)input.value=1;if(input.value>slides.length)input.value=slides.length;});
+});
 
-  prevBtn.addEventListener('click', () => goTo(current-1));
-  nextBtn.addEventListener('click', () => goTo(current+1));
-  document.addEventListener('keydown', e => {
-    if (e.key==='ArrowRight'||e.key==='ArrowDown') goTo(current+1);
-    if (e.key==='ArrowLeft' ||e.key==='ArrowUp')   goTo(current-1);
+prevBtn.addEventListener('click',()=>goTo(current-1));
+nextBtn.addEventListener('click',()=>goTo(current+1));
+document.addEventListener('keydown',e=>{
+  if(e.key==='ArrowRight'||e.key==='ArrowDown')goTo(current+1);
+  if(e.key==='ArrowLeft' ||e.key==='ArrowUp')  goTo(current-1);
+});
+goTo(0);
+
+/* ── 一鍵複製 ── */
+function cp(id,btn){
+  const el=document.getElementById(id);
+  const text=(el.innerText||el.textContent).trim();
+  navigator.clipboard.writeText(text).then(()=>flash(btn)).catch(()=>{
+    const ta=document.createElement('textarea');
+    ta.value=text;document.body.appendChild(ta);ta.select();
+    document.execCommand('copy');document.body.removeChild(ta);
+    flash(btn);
   });
-  goTo(0);
-
-  // ── 複製按鈕 ──
-  function copyCode(id, btn) {
-    const el = document.getElementById(id);
-    // 取純文字，去除 HTML 標籤
-    const text = el.innerText || el.textContent;
-    navigator.clipboard.writeText(text.trim()).then(() => {
-      btn.textContent = '已複製 ✓';
-      btn.classList.add('copied');
-      setTimeout(() => {
-        btn.textContent = '複製';
-        btn.classList.remove('copied');
-      }, 2000);
-    }).catch(() => {
-      // fallback
-      const ta = document.createElement('textarea');
-      ta.value = text.trim();
-      document.body.appendChild(ta);
-      ta.select();
-      document.execCommand('copy');
-      document.body.removeChild(ta);
-      btn.textContent = '已複製 ✓';
-      btn.classList.add('copied');
-      setTimeout(() => { btn.textContent = '複製'; btn.classList.remove('copied'); }, 2000);
-    });
-  }
+}
+function flash(btn){
+  btn.textContent='已複製 ✓';btn.classList.add('copied');
+  setTimeout(()=>{btn.textContent='複製';btn.classList.remove('copied');},2000);
+}
 </script>
 </body>
 </html>
