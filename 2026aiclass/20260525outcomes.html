@@ -1,0 +1,885 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>TIPC AI課程：Google Gemini應用 - 臺中場 | 2026/05/25</title>
+<style>
+/* ══════════════════════════════════════════
+   CSS VARIABLES — Light Theme
+══════════════════════════════════════════ */
+:root {
+  --bg:         #f4f6ff;
+  --bg-card:    #ffffff;
+  --bg-section: #eef1fb;
+  --text:       #1e293b;
+  --text-sub:   #475569;
+  --text-muted: #94a3b8;
+  --border:     rgba(0,0,0,0.07);
+  --shadow-sm:  0 2px 12px rgba(99,102,241,0.08);
+  --shadow-md:  0 6px 30px rgba(99,102,241,0.12);
+  --shadow-lg:  0 16px 60px rgba(99,102,241,0.16);
+
+  --grad-main:  linear-gradient(135deg,#6366f1 0%,#8b5cf6 40%,#ec4899 100%);
+  --grad-1:     linear-gradient(135deg,#6366f1,#8b5cf6);
+  --grad-2:     linear-gradient(135deg,#3b82f6,#06b6d4);
+  --grad-3:     linear-gradient(135deg,#10b981,#34d399);
+  --grad-4:     linear-gradient(135deg,#f59e0b,#fbbf24);
+
+  --header-h:   64px;
+  --font-size:  16px;
+}
+
+* { margin:0; padding:0; box-sizing:border-box; }
+
+html { scroll-behavior: smooth; font-size: var(--font-size); }
+
+body {
+  font-family: 'Segoe UI','PingFang TC','Microsoft JhengHei',sans-serif;
+  background: var(--bg);
+  color: var(--text);
+  line-height: 1.6;
+  padding-top: var(--header-h);
+}
+
+/* ══════════════════════════════════════════
+   FIXED HEADER
+══════════════════════════════════════════ */
+#site-header {
+  position: fixed; top:0; left:0; right:0; z-index:1000;
+  height: var(--header-h);
+  background: rgba(255,255,255,0.92);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  box-shadow: 0 2px 20px rgba(99,102,241,0.08);
+  display: flex; align-items: center;
+  padding: 0 24px;
+  gap: 20px;
+}
+
+.header-brand {
+  font-size: 14px; font-weight: 700;
+  background: var(--grad-main);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  white-space: nowrap; flex-shrink: 0;
+}
+
+/* desktop nav */
+.header-nav {
+  display: flex; align-items: center; gap: 4px;
+  flex: 1; justify-content: center;
+}
+.header-nav a {
+  padding: 6px 14px; border-radius: 999px;
+  font-size: 13px; font-weight: 500; color: var(--text-sub);
+  text-decoration: none;
+  transition: background 0.2s, color 0.2s;
+  white-space: nowrap;
+}
+.header-nav a:hover { background: rgba(99,102,241,0.1); color: #6366f1; }
+
+/* font controls */
+.font-controls {
+  display: flex; align-items: center; gap: 4px; flex-shrink: 0;
+}
+.font-btn {
+  width: 30px; height: 30px; border-radius: 8px;
+  border: 1px solid var(--border);
+  background: transparent; cursor: pointer;
+  font-size: 15px; font-weight: 700; color: var(--text-sub);
+  display: flex; align-items: center; justify-content: center;
+  transition: background 0.2s;
+}
+.font-btn:hover { background: rgba(99,102,241,0.1); color: #6366f1; }
+
+/* hamburger */
+.hamburger {
+  display: none; flex-direction: column; justify-content: center; gap: 5px;
+  width: 36px; height: 36px; cursor: pointer; margin-left: auto;
+  background: none; border: none; padding: 4px;
+}
+.hamburger span {
+  display: block; height: 2px; border-radius: 2px;
+  background: var(--text); transition: transform 0.3s, opacity 0.3s;
+}
+.hamburger.open span:nth-child(1) { transform: translateY(7px) rotate(45deg); }
+.hamburger.open span:nth-child(2) { opacity: 0; }
+.hamburger.open span:nth-child(3) { transform: translateY(-7px) rotate(-45deg); }
+
+/* mobile nav drawer */
+.mobile-nav {
+  display: none; position: fixed;
+  top: var(--header-h); left:0; right:0; z-index:999;
+  background: rgba(255,255,255,0.97);
+  backdrop-filter: blur(12px);
+  border-bottom: 1px solid var(--border);
+  padding: 16px 24px;
+  flex-direction: column; gap: 4px;
+  box-shadow: 0 8px 24px rgba(0,0,0,0.08);
+}
+.mobile-nav.open { display: flex; }
+.mobile-nav a {
+  padding: 12px 16px; border-radius: 10px;
+  font-size: 15px; font-weight: 500; color: var(--text-sub);
+  text-decoration: none; transition: background 0.2s;
+}
+.mobile-nav a:hover { background: rgba(99,102,241,0.08); color: #6366f1; }
+
+@media (max-width: 720px) {
+  .header-nav { display: none; }
+  .hamburger { display: flex; }
+  .font-controls { margin-left: auto; }
+}
+
+/* ══════════════════════════════════════════
+   LAYOUT
+══════════════════════════════════════════ */
+.container { max-width: 1100px; margin: 0 auto; padding: 0 24px; }
+
+section { padding: 72px 0; }
+section:nth-child(even) { background: var(--bg-section); }
+
+.divider {
+  height: 1px;
+  background: linear-gradient(90deg,transparent,rgba(99,102,241,0.15),transparent);
+  max-width: 700px; margin: 0 auto;
+}
+
+/* ══════════════════════════════════════════
+   SECTION HEADER
+══════════════════════════════════════════ */
+.section-header { text-align: center; margin-bottom: 48px; }
+.section-tag {
+  display: inline-block; padding: 4px 14px; border-radius: 999px;
+  font-size: 11px; font-weight: 700; letter-spacing: 0.1em; text-transform: uppercase;
+  margin-bottom: 12px;
+}
+.tag-purple { background:rgba(99,102,241,0.1);  color:#6366f1;  border:1px solid rgba(99,102,241,0.25); }
+.tag-green  { background:rgba(16,185,129,0.1);  color:#059669;  border:1px solid rgba(16,185,129,0.25); }
+.tag-amber  { background:rgba(245,158,11,0.1);  color:#d97706;  border:1px solid rgba(245,158,11,0.25); }
+.tag-blue   { background:rgba(59,130,246,0.1);  color:#2563eb;  border:1px solid rgba(59,130,246,0.25); }
+
+.section-header h2 {
+  font-size: clamp(22px,3.5vw,34px); font-weight: 800; color: var(--text); margin-bottom: 8px;
+}
+.section-header p { color: var(--text-muted); font-size: 15px; }
+
+/* ══════════════════════════════════════════
+   HERO
+══════════════════════════════════════════ */
+.hero {
+  background: linear-gradient(145deg,#eef0ff 0%,#f5f0ff 40%,#fdf0ff 100%);
+  padding: 80px 0 64px;
+  text-align: center;
+  position: relative;
+  overflow: hidden;
+}
+.hero::before {
+  content:'';
+  position:absolute; inset:0;
+  background: radial-gradient(ellipse 60% 40% at 50% 0%,rgba(99,102,241,0.12),transparent);
+  pointer-events:none;
+}
+.hero-badge {
+  display: inline-block;
+  background: rgba(99,102,241,0.12); border:1px solid rgba(99,102,241,0.25);
+  color: #6366f1; padding: 6px 18px; border-radius: 999px;
+  font-size: 13px; font-weight: 600; margin-bottom: 8px;
+}
+.hero-maker {
+  font-size: 13px; color: var(--text-muted); margin-bottom: 24px; letter-spacing: 0.03em;
+}
+.hero h1 {
+  font-size: clamp(28px,5vw,52px); font-weight: 900; line-height: 1.2;
+  background: var(--grad-main);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  margin-bottom: 12px;
+}
+.hero-sub { font-size: 16px; color: var(--text-sub); margin-bottom: 44px; }
+.hero-stats { display:flex; justify-content:center; gap:48px; flex-wrap:wrap; }
+.hero-stat { text-align:center; }
+.hero-stat .num {
+  font-size: 44px; font-weight: 900; line-height: 1;
+  background: var(--grad-main);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+}
+.hero-stat .label { font-size: 13px; color: var(--text-muted); margin-top: 4px; }
+
+/* ══════════════════════════════════════════
+   OVERALL SCORE BAR
+══════════════════════════════════════════ */
+.overall-bar {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 36px;
+  display: flex; align-items: center; gap: 28px;
+  margin-bottom: 44px; box-shadow: var(--shadow-md);
+  flex-wrap: wrap;
+}
+.overall-score {
+  font-size: 56px; font-weight: 900; line-height: 1;
+  background: var(--grad-main);
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent; background-clip: text;
+  flex-shrink: 0;
+}
+.overall-info { flex:1; min-width:200px; }
+.overall-info h3 { font-size:18px; font-weight:700; color:var(--text); margin-bottom:6px; }
+.overall-info p { color:var(--text-muted); font-size:14px; }
+.stars { color:#f59e0b; font-size:22px; letter-spacing:2px; margin-top:6px; }
+
+/* ══════════════════════════════════════════
+   SCORE CARDS
+══════════════════════════════════════════ */
+.score-grid {
+  display: grid; grid-template-columns: repeat(auto-fit,minmax(240px,1fr)); gap: 20px;
+}
+.score-card {
+  background: var(--bg-card); border: 1px solid var(--border);
+  border-radius: 20px; padding: 28px 24px;
+  box-shadow: var(--shadow-sm);
+  transition: transform 0.3s, box-shadow 0.3s;
+  position: relative; overflow: hidden;
+}
+.score-card::before {
+  content:''; position:absolute; top:0; left:0; right:0; height:4px;
+}
+.score-card.dim-1::before { background: var(--grad-1); }
+.score-card.dim-2::before { background: var(--grad-2); }
+.score-card.dim-3::before { background: var(--grad-3); }
+.score-card.dim-4::before { background: var(--grad-4); }
+.score-card:hover { transform: translateY(-4px); box-shadow: var(--shadow-lg); }
+
+.card-icon { font-size:28px; margin-bottom:10px; }
+.card-title { font-size:13px; font-weight:600; color:var(--text-muted); margin-bottom:14px; letter-spacing:.02em; }
+.card-score-row { display:flex; align-items:flex-end; gap:6px; margin-bottom:20px; }
+.card-score-big { font-size:48px; font-weight:900; line-height:1; }
+.dim-1 .card-score-big { background:var(--grad-1); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.dim-2 .card-score-big { background:var(--grad-2); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.dim-3 .card-score-big { background:var(--grad-3); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.dim-4 .card-score-big { background:var(--grad-4); -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text; }
+.card-score-max { font-size:15px; color:var(--text-muted); margin-bottom:6px; }
+
+.sub-items { display:flex; flex-direction:column; gap:10px; }
+.sub-label-row { display:flex; justify-content:space-between; font-size:12px; margin-bottom:4px; }
+.sub-label { color:var(--text-muted); }
+.sub-score { font-weight:700; }
+.dim-1 .sub-score { color:#6366f1; }
+.dim-2 .sub-score { color:#2563eb; }
+.dim-3 .sub-score { color:#059669; }
+.dim-4 .sub-score { color:#d97706; }
+
+.progress-bar { height:6px; border-radius:999px; background:rgba(0,0,0,0.06); overflow:hidden; }
+.progress-fill { height:100%; border-radius:999px; width:0%; transition:width 1.2s cubic-bezier(.4,0,.2,1); }
+.dim-1 .progress-fill { background:var(--grad-1); }
+.dim-2 .progress-fill { background:var(--grad-2); }
+.dim-3 .progress-fill { background:var(--grad-3); }
+.dim-4 .progress-fill { background:var(--grad-4); }
+
+/* ══════════════════════════════════════════
+   QUALITATIVE
+══════════════════════════════════════════ */
+.qual-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(300px,1fr)); gap:32px; }
+.qual-col-header { display:flex; align-items:center; gap:10px; margin-bottom:20px; }
+.qual-col-icon { font-size:24px; }
+.qual-col-title { font-size:18px; font-weight:700; }
+.qual-positive .qual-col-title { color:#059669; }
+.qual-negative .qual-col-title { color:#d97706; }
+
+.qual-item {
+  border-radius:14px; padding:18px 20px; margin-bottom:14px;
+  transition: transform 0.2s;
+}
+.qual-item:hover { transform:translateX(4px); }
+.qual-positive .qual-item {
+  background:rgba(16,185,129,0.06); border:1px solid rgba(16,185,129,0.15);
+  border-left:3px solid #10b981;
+}
+.qual-negative .qual-item {
+  background:rgba(245,158,11,0.06); border:1px solid rgba(245,158,11,0.15);
+  border-left:3px solid #f59e0b;
+}
+.qual-keyword { font-size:11px; font-weight:700; letter-spacing:.06em; text-transform:uppercase; margin-bottom:6px; }
+.qual-positive .qual-keyword { color:#059669; }
+.qual-negative .qual-keyword { color:#d97706; }
+.qual-text { font-size:14px; color:var(--text-sub); line-height:1.6; }
+
+/* ══════════════════════════════════════════
+   SUGGESTIONS
+══════════════════════════════════════════ */
+.suggestions-grid { display:grid; grid-template-columns:repeat(auto-fit,minmax(230px,1fr)); gap:20px; }
+.suggestion-card {
+  background:var(--bg-card); border:1px solid var(--border);
+  border-radius:16px; padding:24px 20px;
+  box-shadow:var(--shadow-sm); text-align:center;
+  transition:transform 0.3s, box-shadow 0.3s;
+}
+.suggestion-card:hover { transform:translateY(-4px); box-shadow:var(--shadow-lg); }
+.suggestion-num {
+  width:40px; height:40px; border-radius:50%;
+  background:var(--grad-main);
+  display:flex; align-items:center; justify-content:center;
+  font-size:16px; font-weight:800; color:white;
+  margin:0 auto 14px;
+}
+.suggestion-title { font-size:15px; font-weight:700; color:var(--text); margin-bottom:8px; }
+.suggestion-text { font-size:13px; color:var(--text-muted); line-height:1.6; }
+
+/* ══════════════════════════════════════════
+   YOUTUBE THUMBNAIL + LINK
+══════════════════════════════════════════ */
+.yt-card {
+  display: block; text-decoration: none;
+  border-radius: 20px; overflow: hidden;
+  position: relative; box-shadow: var(--shadow-lg);
+  border: 1px solid var(--border);
+  transition: transform 0.3s, box-shadow 0.3s;
+  max-width: 860px; margin: 0 auto;
+}
+.yt-card:hover { transform: translateY(-4px) scale(1.005); box-shadow: 0 24px 80px rgba(99,102,241,0.2); }
+.yt-thumb {
+  width:100%; display:block;
+  aspect-ratio: 16/9; object-fit:cover;
+  background: #1a1a2e;
+}
+.yt-overlay {
+  position:absolute; inset:0;
+  background: linear-gradient(to top,rgba(0,0,0,0.6) 0%,transparent 50%);
+  display:flex; align-items:center; justify-content:center;
+  transition: background 0.3s;
+}
+.yt-card:hover .yt-overlay { background: linear-gradient(to top,rgba(0,0,0,0.7) 0%,rgba(0,0,0,0.1) 100%); }
+.yt-play {
+  width:72px; height:72px; border-radius:50%;
+  background:rgba(255,255,255,0.95);
+  display:flex; align-items:center; justify-content:center;
+  box-shadow: 0 8px 32px rgba(0,0,0,0.3);
+  transition: transform 0.3s, background 0.3s;
+}
+.yt-card:hover .yt-play { transform:scale(1.1); background:#ff0000; }
+.yt-play svg { width:28px; height:28px; fill:#1a1a2e; margin-left:4px; transition:fill 0.3s; }
+.yt-card:hover .yt-play svg { fill:white; }
+.yt-info {
+  position:absolute; bottom:0; left:0; right:0;
+  padding:20px 24px;
+  display:flex; align-items:flex-end; gap:12px;
+}
+.yt-logo { width:32px; height:32px; flex-shrink:0; }
+.yt-text {}
+.yt-label { font-size:11px; color:rgba(255,255,255,0.7); font-weight:600; letter-spacing:.06em; text-transform:uppercase; margin-bottom:2px; }
+.yt-title { font-size:15px; color:white; font-weight:700; }
+.yt-hint { text-align:center; margin-top:14px; font-size:13px; color:var(--text-muted); }
+.yt-hint a { color:#6366f1; font-weight:600; text-decoration:none; }
+.yt-hint a:hover { text-decoration:underline; }
+
+/* ══════════════════════════════════════════
+   PHOTOS
+══════════════════════════════════════════ */
+.photo-masonry { columns:3; column-gap:14px; }
+.photo-item {
+  break-inside:avoid; margin-bottom:14px;
+  border-radius:14px; overflow:hidden; position:relative; cursor:pointer;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow 0.3s;
+}
+.photo-item:hover { box-shadow: var(--shadow-md); }
+.photo-item img {
+  width:100%; display:block; border-radius:14px;
+  transition:transform 0.4s, filter 0.4s;
+  background:rgba(0,0,0,0.04); min-height:80px;
+}
+.photo-item:hover img { transform:scale(1.03); filter:brightness(1.05); }
+.photo-item .photo-overlay {
+  position:absolute; inset:0;
+  background:linear-gradient(to top,rgba(0,0,0,0.4) 0%,transparent 50%);
+  opacity:0; transition:opacity 0.3s; border-radius:14px;
+  display:flex; align-items:flex-end; padding:12px;
+}
+.photo-item:hover .photo-overlay { opacity:1; }
+.photo-overlay span { font-size:12px; color:rgba(255,255,255,0.85); font-weight:600; }
+
+@media (max-width:640px) { .photo-masonry { columns:2; } }
+
+/* ══════════════════════════════════════════
+   LIGHTBOX
+══════════════════════════════════════════ */
+.lightbox {
+  display:none; position:fixed; inset:0;
+  background:rgba(0,0,0,0.92); z-index:9999;
+  align-items:center; justify-content:center; padding:20px;
+}
+.lightbox.active { display:flex; }
+.lightbox img { max-width:90vw; max-height:90vh; border-radius:12px; object-fit:contain; box-shadow:0 0 80px rgba(0,0,0,0.8); }
+.lightbox-close { position:absolute; top:20px; right:28px; font-size:36px; color:white; cursor:pointer; background:none; border:none; line-height:1; }
+.lightbox-prev,.lightbox-next {
+  position:absolute; top:50%; transform:translateY(-50%);
+  background:rgba(255,255,255,0.15); border:1px solid rgba(255,255,255,0.25);
+  color:white; font-size:24px; width:48px; height:48px; border-radius:50%; cursor:pointer;
+  display:flex; align-items:center; justify-content:center; transition:background 0.2s;
+}
+.lightbox-prev:hover,.lightbox-next:hover { background:rgba(255,255,255,0.25); }
+.lightbox-prev { left:20px; }
+.lightbox-next { right:20px; }
+
+/* ══════════════════════════════════════════
+   FOOTER
+══════════════════════════════════════════ */
+footer {
+  text-align:center; padding:40px 0;
+  color:var(--text-muted); font-size:13px;
+  border-top:1px solid var(--border);
+  background: var(--bg-card);
+}
+footer .footer-logo {
+  font-size:18px; font-weight:800;
+  background:var(--grad-main);
+  -webkit-background-clip:text; -webkit-text-fill-color:transparent; background-clip:text;
+  display:block; margin-bottom:8px;
+}
+
+/* ══════════════════════════════════════════
+   SCROLL ANIMATION
+══════════════════════════════════════════ */
+.fade-up { opacity:0; transform:translateY(30px); transition:opacity 0.7s,transform 0.7s; }
+.fade-up.visible { opacity:1; transform:translateY(0); }
+</style>
+</head>
+<body>
+
+<!-- ════════════ HEADER ════════════ -->
+<header id="site-header">
+  <div class="header-brand">TIPC AI 課程 · 臺中場</div>
+
+  <nav class="header-nav">
+    <a href="#quant">量化分析</a>
+    <a href="#qual">質性意見</a>
+    <a href="#suggest">學員建議</a>
+    <a href="#video">課程影片</a>
+    <a href="#gallery">精彩回顧</a>
+  </nav>
+
+  <div class="font-controls">
+    <button class="font-btn" id="font-minus" title="縮小字型">－</button>
+    <button class="font-btn" id="font-plus"  title="放大字型">＋</button>
+  </div>
+
+  <button class="hamburger" id="hamburger" aria-label="選單">
+    <span></span><span></span><span></span>
+  </button>
+</header>
+
+<!-- mobile nav drawer -->
+<nav class="mobile-nav" id="mobile-nav">
+  <a href="#quant"   onclick="closeMobileNav()">量化分析</a>
+  <a href="#qual"    onclick="closeMobileNav()">質性意見</a>
+  <a href="#suggest" onclick="closeMobileNav()">學員建議</a>
+  <a href="#video"   onclick="closeMobileNav()">課程影片</a>
+  <a href="#gallery" onclick="closeMobileNav()">精彩回顧</a>
+</nav>
+
+<!-- ════════════ HERO ════════════ -->
+<div class="hero">
+  <div class="container">
+    <div class="hero-badge">📅 2026 年 5 月 25 日 · 臺中場</div>
+    <p class="hero-maker">— TIPC 總公司資訊處 敬製 —</p>
+    <h1>TIPC AI課程<br>Google Gemini 企業應用</h1>
+    <p class="hero-sub">課後問卷成果報告 · 34 位學員參與回饋</p>
+    <div class="hero-stats">
+      <div class="hero-stat">
+        <div class="num" data-count="34" data-int="true">0</div>
+        <div class="label">問卷回收數</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" data-count="9.59">0</div>
+        <div class="label">整體滿意度</div>
+      </div>
+      <div class="hero-stat">
+        <div class="num" data-count="9.76">0</div>
+        <div class="label">最高單項得分</div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ════════════ QUANTITATIVE ════════════ -->
+<div id="quant">
+<div class="container">
+<section>
+  <div class="section-header fade-up">
+    <div class="section-tag tag-purple">Quantitative Analysis</div>
+    <h2>量化滿意度分析</h2>
+    <p>各項評估採 10 分制，共 34 位學員填答</p>
+  </div>
+
+  <div class="overall-bar fade-up">
+    <div class="overall-score" data-count="9.59">0</div>
+    <div class="overall-info">
+      <h3>課程整體滿意度</h3>
+      <p>34 位學員一致給予高度肯定，各維度平均分數均超過 9.5 分</p>
+      <div class="stars">★★★★★</div>
+    </div>
+  </div>
+
+  <div class="score-grid">
+    <div class="score-card dim-1 fade-up">
+      <div class="card-icon">🎓</div>
+      <div class="card-title">課程與講師專業度</div>
+      <div class="card-score-row">
+        <div class="card-score-big" data-count="9.68">0</div>
+        <div class="card-score-max">/ 10</div>
+      </div>
+      <div class="sub-items">
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">講師專業知識程度</span><span class="sub-score">9.76</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="97.6"></div></div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">教學表達方式與技巧</span><span class="sub-score">9.59</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="95.9"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-card dim-2 fade-up">
+      <div class="card-icon">⏱️</div>
+      <div class="card-title">課程安排與時間掌控</div>
+      <div class="card-score-row">
+        <div class="card-score-big" data-count="9.58">0</div>
+        <div class="card-score-max">/ 10</div>
+      </div>
+      <div class="sub-items">
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">課程時數安排</span><span class="sub-score">9.62</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="96.2"></div></div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">講師時間掌控</span><span class="sub-score">9.53</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="95.3"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-card dim-3 fade-up">
+      <div class="card-icon">🤝</div>
+      <div class="card-title">學員互動與實質幫助</div>
+      <div class="card-score-row">
+        <div class="card-score-big" data-count="9.71">0</div>
+        <div class="card-score-max">/ 10</div>
+      </div>
+      <div class="sub-items">
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">講師與學員互動效果</span><span class="sub-score">9.62</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="96.2"></div></div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">課程內容對我有幫助</span><span class="sub-score">9.82</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="98.2"></div></div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">應繼續辦理此課程</span><span class="sub-score">9.79</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="97.9"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <div class="score-card dim-4 fade-up">
+      <div class="card-icon">🏛️</div>
+      <div class="card-title">行政環境與設備</div>
+      <div class="card-score-row">
+        <div class="card-score-big" data-count="9.50">0</div>
+        <div class="card-score-max">/ 10</div>
+      </div>
+      <div class="sub-items">
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">教學場地及設備滿意度</span><span class="sub-score">9.35</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="93.5"></div></div>
+        </div>
+        <div class="sub-item">
+          <div class="sub-label-row"><span class="sub-label">現場助教人員服務態度</span><span class="sub-score">9.65</span></div>
+          <div class="progress-bar"><div class="progress-fill" data-width="96.5"></div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ════════════ QUALITATIVE ════════════ -->
+<div id="qual" style="background:var(--bg-section)">
+<div class="container">
+<section>
+  <div class="section-header fade-up">
+    <div class="section-tag tag-green">Qualitative Analysis</div>
+    <h2>質性意見分析</h2>
+    <p>約 60% 學員填寫開放式回饋，以下為彙整後的主要聲音</p>
+  </div>
+  <div class="qual-grid fade-up">
+    <div class="qual-positive">
+      <div class="qual-col-header">
+        <div class="qual-col-icon">✨</div>
+        <div class="qual-col-title">最令學員驚豔的亮點</div>
+      </div>
+      <div class="qual-item">
+        <div class="qual-keyword">功能整合性</div>
+        <div class="qual-text">Gemini 企業版的完整功能令人驚豔，包括圖片生成、Canvas 編輯與整合多網頁分析，極為實用。</div>
+      </div>
+      <div class="qual-item">
+        <div class="qual-keyword">即學即用</div>
+        <div class="qual-text">課程提供的「提示詞 (Prompt)」範本讓學員可以快速複製操作，大幅降低上手門檻。</div>
+      </div>
+      <div class="qual-item">
+        <div class="qual-keyword">軟體連動</div>
+        <div class="qual-text">NotebookLM 與 Gemini 的連動教學被認為是極大亮點，能有效啟發全新的工作方式與想法。</div>
+      </div>
+      <div class="qual-item">
+        <div class="qual-keyword">實質收穫</div>
+        <div class="qual-text">學員表示能生成插圖與簡報，並初步掌握 AI 程式基礎應用，帶走了可立即使用的技能。</div>
+      </div>
+    </div>
+    <div class="qual-negative">
+      <div class="qual-col-header">
+        <div class="qual-col-icon">💡</div>
+        <div class="qual-col-title">常見困難與改善空間</div>
+      </div>
+      <div class="qual-item">
+        <div class="qual-keyword">操作門檻</div>
+        <div class="qual-text">利用 NotebookLM 處理財報等複雜文件時，操作難度較高，部分學員表示需要更多引導。</div>
+      </div>
+      <div class="qual-item">
+        <div class="qual-keyword">提示詞撰寫</div>
+        <div class="qual-text">雖有範本，但學員在「如何自行撰寫精準提示詞」上仍感到困惑，期待更多系統性教學。</div>
+      </div>
+      <div class="qual-item">
+        <div class="qual-keyword">資訊量負荷</div>
+        <div class="qual-text">課程內容相當充實，部分學員反映資訊量太大，無法立即完全吸收，需要更多練習時間。</div>
+      </div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ════════════ SUGGESTIONS ════════════ -->
+<div id="suggest">
+<div class="container">
+<section>
+  <div class="section-header fade-up">
+    <div class="section-tag tag-blue">Future Suggestions</div>
+    <h2>學員未來期望與建議</h2>
+    <p>學員對後續課程規劃的寶貴意見</p>
+  </div>
+  <div class="suggestions-grid fade-up">
+    <div class="suggestion-card">
+      <div class="suggestion-num">1</div>
+      <div class="suggestion-title">分主題教學</div>
+      <div class="suggestion-text">採用「主題式開課」，讓內容更聚焦，避免單日資訊過載，提升吸收率。</div>
+    </div>
+    <div class="suggestion-card">
+      <div class="suggestion-num">2</div>
+      <div class="suggestion-title">增加練習比重</div>
+      <div class="suggestion-text">希望有更多實機操作與熟悉介面的練習時間，從做中學加深印象。</div>
+    </div>
+    <div class="suggestion-card">
+      <div class="suggestion-num">3</div>
+      <div class="suggestion-title">進階應用期待</div>
+      <div class="suggestion-text">對 PAD 自動化教學感興趣，期待 AI 與流程自動化結合的進階課程。</div>
+    </div>
+    <div class="suggestion-card">
+      <div class="suggestion-num">4</div>
+      <div class="suggestion-title">軟體限制調整</div>
+      <div class="suggestion-text">希望能有更大的 AI 使用容量或更穩定的回應品質，以充分應對工作需求。</div>
+    </div>
+  </div>
+</section>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ════════════ YOUTUBE ════════════ -->
+<div id="video" style="background:var(--bg-section)">
+<div class="container">
+<section>
+  <div class="section-header fade-up">
+    <div class="section-tag tag-amber">Course Video</div>
+    <h2>課程影片回顧</h2>
+    <p>點擊縮圖前往 YouTube 播放清單觀看完整課程影片</p>
+  </div>
+  <div class="fade-up">
+    <a class="yt-card"
+       href="https://www.youtube.com/watch?v=H8bJgTXsMr4&list=PLMd9XthdQPJS6aI2Of_JPSz6fed17hhAb"
+       target="_blank" rel="noopener">
+      <img class="yt-thumb"
+           src="https://img.youtube.com/vi/H8bJgTXsMr4/maxresdefault.jpg"
+           onerror="this.src='https://img.youtube.com/vi/H8bJgTXsMr4/hqdefault.jpg'"
+           alt="TIPC AI課程 Google Gemini應用 課程影片">
+      <div class="yt-overlay">
+        <div class="yt-play">
+          <svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+        </div>
+        <div class="yt-info">
+          <svg class="yt-logo" viewBox="0 0 90 20" fill="none">
+            <path d="M27.9727 3.12324C27.6435 1.89323 26.6768 0.926647 25.4468 0.597488C23.2197 0 14.285 0 14.285 0C14.285 0 5.35042 0 3.12323 0.597488C1.89323 0.926647 0.926647 1.89323 0.597488 3.12324C0 5.35042 0 10 0 10C0 10 0 14.6496 0.597488 16.8768C0.926647 18.1068 1.89323 19.0734 3.12323 19.4025C5.35042 20 14.285 20 14.285 20C14.285 20 23.2197 20 25.4468 19.4025C26.6768 19.0734 27.6435 18.1068 27.9727 16.8768C28.5701 14.6496 28.5701 10 28.5701 10C28.5701 10 28.5677 5.35042 27.9727 3.12324Z" fill="#FF0000"/>
+            <path d="M11.4253 14.2854L18.8477 10.0004L11.4253 5.71533V14.2854Z" fill="white"/>
+          </svg>
+          <div class="yt-text">
+            <div class="yt-label">播放清單</div>
+            <div class="yt-title">TIPC AI課程：Google Gemini 企業應用 · 臺中場</div>
+          </div>
+        </div>
+      </div>
+    </a>
+    <p class="yt-hint">
+      或直接前往 →
+      <a href="https://www.youtube.com/watch?v=H8bJgTXsMr4&list=PLMd9XthdQPJS6aI2Of_JPSz6fed17hhAb" target="_blank">YouTube 播放清單</a>
+    </p>
+  </div>
+</section>
+</div>
+</div>
+
+<div class="divider"></div>
+
+<!-- ════════════ PHOTOS ════════════ -->
+<div id="gallery">
+<div class="container">
+<section>
+  <div class="section-header fade-up">
+    <div class="section-tag tag-purple">Course Gallery</div>
+    <h2>課程精彩回顧</h2>
+    <p>共 23 張課程現場照片 · 點擊可放大瀏覽</p>
+  </div>
+  <div class="photo-masonry fade-up">
+    <div class="photo-item" data-index="0"><img src="https://drive.google.com/thumbnail?id=10YCwioz61HpMuTfCPMMN1ezVjnfwieHa&sz=w800" alt="01" loading="lazy"><div class="photo-overlay"><span>📸 01</span></div></div>
+    <div class="photo-item" data-index="1"><img src="https://drive.google.com/thumbnail?id=1_4QM1YkZ228BfVLyzJ2J-MZqoDJqDiOW&sz=w800" alt="02" loading="lazy"><div class="photo-overlay"><span>📸 02</span></div></div>
+    <div class="photo-item" data-index="2"><img src="https://drive.google.com/thumbnail?id=1wJuG_6bw05hxfJgNBw580Q1TYOGPD2WH&sz=w800" alt="03" loading="lazy"><div class="photo-overlay"><span>📸 03</span></div></div>
+    <div class="photo-item" data-index="3"><img src="https://drive.google.com/thumbnail?id=1KMh_hmKTX4wlocIU8fmj0Jhmlf5vJJCq&sz=w800" alt="04" loading="lazy"><div class="photo-overlay"><span>📸 04</span></div></div>
+    <div class="photo-item" data-index="4"><img src="https://drive.google.com/thumbnail?id=18Jop3a46qgkat38urHSVl2RgZP6ZJ6Rn&sz=w800" alt="05" loading="lazy"><div class="photo-overlay"><span>📸 05</span></div></div>
+    <div class="photo-item" data-index="5"><img src="https://drive.google.com/thumbnail?id=1NM_kVL0s23G9x6y0LlcSB6HUugOkMkYg&sz=w800" alt="06" loading="lazy"><div class="photo-overlay"><span>📸 06</span></div></div>
+    <div class="photo-item" data-index="6"><img src="https://drive.google.com/thumbnail?id=1Aa4OnmD147RNtsTz2fkODvbfQNzIMy-W&sz=w800" alt="07" loading="lazy"><div class="photo-overlay"><span>📸 07</span></div></div>
+    <div class="photo-item" data-index="7"><img src="https://drive.google.com/thumbnail?id=1YWjsXsqyoxJLl2GD6pqvrp1mJKI8mYLy&sz=w800" alt="08" loading="lazy"><div class="photo-overlay"><span>📸 08</span></div></div>
+    <div class="photo-item" data-index="8"><img src="https://drive.google.com/thumbnail?id=1p8yEx-wdQv2VIcTamQBdHMKk0I8H8QyF&sz=w800" alt="09" loading="lazy"><div class="photo-overlay"><span>📸 09</span></div></div>
+    <div class="photo-item" data-index="9"><img src="https://drive.google.com/thumbnail?id=1Uw-utQo6mM4xIk5NmfYAkt38JUI5aVBr&sz=w800" alt="10" loading="lazy"><div class="photo-overlay"><span>📸 10</span></div></div>
+    <div class="photo-item" data-index="10"><img src="https://drive.google.com/thumbnail?id=17EV2xFwQ_dQAJdvxczBulvZjyGqwbpWx&sz=w800" alt="11" loading="lazy"><div class="photo-overlay"><span>📸 11</span></div></div>
+    <div class="photo-item" data-index="11"><img src="https://drive.google.com/thumbnail?id=1U8sHiO4ZTu1H3AaGH7XORJv2fSHUBl32&sz=w800" alt="12" loading="lazy"><div class="photo-overlay"><span>📸 12</span></div></div>
+    <div class="photo-item" data-index="12"><img src="https://drive.google.com/thumbnail?id=1iIcHIAnqpflmzi_UrLDHLNYALeLmxFwe&sz=w800" alt="13" loading="lazy"><div class="photo-overlay"><span>📸 13</span></div></div>
+    <div class="photo-item" data-index="13"><img src="https://drive.google.com/thumbnail?id=1ewsSToZrQyz9sNExassPMnPawpdNwka0&sz=w800" alt="14" loading="lazy"><div class="photo-overlay"><span>📸 14</span></div></div>
+    <div class="photo-item" data-index="14"><img src="https://drive.google.com/thumbnail?id=1qRo-kuR1_OS0KJovwOvwCAyH50J5WD3M&sz=w800" alt="15" loading="lazy"><div class="photo-overlay"><span>📸 15</span></div></div>
+    <div class="photo-item" data-index="15"><img src="https://drive.google.com/thumbnail?id=1y_UVM42qEEEzr2zhGwgkHfl6ivozdKtS&sz=w800" alt="16" loading="lazy"><div class="photo-overlay"><span>📸 16</span></div></div>
+    <div class="photo-item" data-index="16"><img src="https://drive.google.com/thumbnail?id=1IEmxC8jFNtspQI1KH03oUj4HQmFF-Wjt&sz=w800" alt="17" loading="lazy"><div class="photo-overlay"><span>📸 17</span></div></div>
+    <div class="photo-item" data-index="17"><img src="https://drive.google.com/thumbnail?id=17oTb9GWL8a_U8QGcAAhgQzw_hU4nwDNM&sz=w800" alt="18" loading="lazy"><div class="photo-overlay"><span>📸 18</span></div></div>
+    <div class="photo-item" data-index="18"><img src="https://drive.google.com/thumbnail?id=1l-AMj-iAwKwC1EJPYaPvcl6SsSm-hfyQ&sz=w800" alt="19" loading="lazy"><div class="photo-overlay"><span>📸 19</span></div></div>
+    <div class="photo-item" data-index="19"><img src="https://drive.google.com/thumbnail?id=1ZODWSFq9AZec2fiVHJ_VYYHbjBHg9RCH&sz=w800" alt="20" loading="lazy"><div class="photo-overlay"><span>📸 20</span></div></div>
+    <div class="photo-item" data-index="20"><img src="https://drive.google.com/thumbnail?id=1PcL3YcW-bv4IPyPzYcLhPylkvL2AwK2N&sz=w800" alt="21" loading="lazy"><div class="photo-overlay"><span>📸 21</span></div></div>
+    <div class="photo-item" data-index="21"><img src="https://drive.google.com/thumbnail?id=1kjjCTPKwkQG8v6hLsBFo-5aAShMYXFH_&sz=w800" alt="22" loading="lazy"><div class="photo-overlay"><span>📸 22</span></div></div>
+    <div class="photo-item" data-index="22"><img src="https://drive.google.com/thumbnail?id=1sNIHMQYAHKxAdXXpXQJ9AaTMVGmOp3H3&sz=w800" alt="23" loading="lazy"><div class="photo-overlay"><span>📸 23</span></div></div>
+  </div>
+</section>
+</div>
+</div>
+
+<!-- ════════════ FOOTER ════════════ -->
+<footer>
+  <div class="container">
+    <span class="footer-logo">TIPC AI 課程</span>
+    Google Gemini 企業應用 · 臺中場 · 2026/05/25<br>
+    共 34 位學員參與 · 整體滿意度 9.59 / 10<br>
+    <span style="margin-top:6px;display:inline-block;">TIPC 總公司資訊處 敬製</span>
+  </div>
+</footer>
+
+<!-- ════════════ LIGHTBOX ════════════ -->
+<div class="lightbox" id="lightbox">
+  <button class="lightbox-close" id="lb-close">×</button>
+  <button class="lightbox-prev" id="lb-prev">‹</button>
+  <img src="" id="lb-img" alt="">
+  <button class="lightbox-next" id="lb-next">›</button>
+</div>
+
+<!-- ════════════ SCRIPTS ════════════ -->
+<script>
+/* ── Hamburger ── */
+const hamburger = document.getElementById('hamburger');
+const mobileNav = document.getElementById('mobile-nav');
+hamburger.addEventListener('click', () => {
+  hamburger.classList.toggle('open');
+  mobileNav.classList.toggle('open');
+});
+function closeMobileNav() {
+  hamburger.classList.remove('open');
+  mobileNav.classList.remove('open');
+}
+
+/* ── Font size ── */
+let fontSize = 16;
+document.getElementById('font-plus').addEventListener('click', () => {
+  fontSize = Math.min(fontSize + 1, 22);
+  document.documentElement.style.setProperty('--font-size', fontSize + 'px');
+});
+document.getElementById('font-minus').addEventListener('click', () => {
+  fontSize = Math.max(fontSize - 1, 13);
+  document.documentElement.style.setProperty('--font-size', fontSize + 'px');
+});
+
+/* ── Count-up ── */
+function animateCount(el) {
+  const target   = parseFloat(el.dataset.count);
+  const isInt    = el.dataset.int === 'true' || Number.isInteger(target);
+  const duration = 1500;
+  const start    = performance.now();
+  function tick(now) {
+    const ease = 1 - Math.pow(1 - Math.min((now - start) / duration, 1), 3);
+    el.textContent = isInt ? Math.round(target * ease) : (target * ease).toFixed(2);
+    if (ease < 1) requestAnimationFrame(tick);
+  }
+  requestAnimationFrame(tick);
+}
+
+/* ── Intersection Observer ── */
+const observer = new IntersectionObserver(entries => {
+  entries.forEach(entry => {
+    if (!entry.isIntersecting) return;
+    const el = entry.target;
+    el.classList.add('visible');
+    el.querySelectorAll('[data-count]').forEach(animateCount);
+    if (el.hasAttribute('data-count')) animateCount(el);
+    el.querySelectorAll('.progress-fill[data-width]').forEach(bar => {
+      bar.style.width = bar.dataset.width + '%';
+    });
+    observer.unobserve(el);
+  });
+}, { threshold: 0.12 });
+
+document.querySelectorAll('.fade-up, [data-count]').forEach(el => observer.observe(el));
+setTimeout(() => document.querySelectorAll('.hero [data-count]').forEach(animateCount), 300);
+
+/* ── Lightbox ── */
+(function() {
+  const lb     = document.getElementById('lightbox');
+  const lbImg  = document.getElementById('lb-img');
+  const items  = Array.from(document.querySelectorAll('.photo-item img'));
+  let cur = 0;
+  function open(i)  { cur = i; lbImg.src = items[i].src.replace('sz=w800','sz=w1600'); lb.classList.add('active'); document.body.style.overflow='hidden'; }
+  function close()  { lb.classList.remove('active'); document.body.style.overflow=''; lbImg.src=''; }
+  function prev()   { open((cur - 1 + items.length) % items.length); }
+  function next()   { open((cur + 1) % items.length); }
+  document.querySelectorAll('.photo-item').forEach((el,i) => el.addEventListener('click', () => open(i)));
+  document.getElementById('lb-close').addEventListener('click', close);
+  document.getElementById('lb-prev').addEventListener('click', prev);
+  document.getElementById('lb-next').addEventListener('click', next);
+  lb.addEventListener('click', e => { if (e.target === lb) close(); });
+  document.addEventListener('keydown', e => {
+    if (!lb.classList.contains('active')) return;
+    if (e.key==='Escape') close();
+    if (e.key==='ArrowLeft') prev();
+    if (e.key==='ArrowRight') next();
+  });
+})();
+</script>
+</body>
+</html>
