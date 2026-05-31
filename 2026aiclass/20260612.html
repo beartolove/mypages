@@ -1,0 +1,984 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>個人AI學習地圖建議</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans TC", "Inter", sans-serif;
+      background: #F8F6F1;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slideshow {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 100px;
+      z-index: 1;
+    }
+
+    .slide.active {
+      display: flex;
+    }
+
+    .slide-content {
+      max-width: 900px;
+      width: 100%;
+      text-align: center;
+    }
+
+    .nav-bar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: white;
+      border-radius: 50px;
+      padding: 10px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #2D2D2D;
+      cursor: pointer;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nav-btn:disabled { color: #ccc; cursor: default; }
+    .nav-btn:disabled:hover { background: none; }
+
+    .page-indicator {
+      font-size: 15px;
+      color: #666;
+      min-width: 72px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 2px 6px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .page-indicator:hover { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+
+    .page-jump-input {
+      width: 48px;
+      border: 2px solid #2CC5B5;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      text-align: center;
+      color: #2D2D2D;
+      background: white;
+      outline: none;
+      padding: 2px 4px;
+    }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 32px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.15);
+      color: #F5A623;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .title-main {
+      font-size: clamp(36px, 5.5vw, 60px);
+      font-weight: 900;
+      color: #2D2D2D;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .title-accent { color: #2CC5B5; }
+
+    .icon-circle {
+      width: 72px; height: 72px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 32px;
+      margin: 0 auto 16px;
+    }
+    .icon-circle.teal { background: rgba(44,197,181,0.15); }
+    .icon-circle.orange { background: rgba(245,166,35,0.15); }
+    .icon-circle.red { background: rgba(229,57,53,0.15); }
+    .icon-circle.purple { background: rgba(139,92,246,0.15); }
+
+    .icon-square {
+      width: 56px; height: 56px;
+      border-radius: 14px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 26px;
+      color: white;
+    }
+    .icon-square.teal { background: #2CC5B5; }
+    .icon-square.orange { background: #F5A623; }
+    .icon-square.purple { background: #8B5CF6; }
+    .icon-square.red { background: #E53935; }
+
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 20px; }
+    .two-col { display: grid; grid-template-columns: repeat(2,1fr); gap: 20px; }
+    .quad-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+
+    .compare-card { border-radius: 16px; padding: 24px; }
+    .compare-card.positive { background: rgba(44,197,181,0.1); }
+    .compare-card.negative { background: rgba(229,57,53,0.08); }
+    .compare-label { font-size: 13px; color: #999; margin-bottom: 12px; }
+    .compare-value { font-size: 22px; font-weight: 700; }
+    .compare-value.teal { color: #2CC5B5; }
+    .compare-value.red { color: #E53935; }
+
+    .slide-footer {
+      position: fixed;
+      bottom: 20px; right: 28px;
+      font-size: 15px; font-weight: 600; color: #aaa;
+      letter-spacing: 0.02em;
+      z-index: 99; white-space: nowrap;
+      user-select: none;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide.active .slide-content { animation: fadeIn 0.35s ease; }
+
+    /* 週次 badge */
+    .week-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(44,197,181,0.12);
+      color: #2CC5B5;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 700;
+      margin-bottom: 20px;
+    }
+
+    /* 提示詞卡片 */
+    .prompt-card {
+      background: #1e1e2e;
+      border-radius: 16px;
+      padding: 20px 24px;
+      text-align: left;
+      position: relative;
+      margin-top: 12px;
+    }
+    .prompt-card pre {
+      color: #cdd6f4;
+      font-size: 13px;
+      font-family: 'Courier New', monospace;
+      white-space: pre-wrap;
+      word-break: break-word;
+      line-height: 1.7;
+      margin: 0;
+    }
+    .copy-btn {
+      position: absolute;
+      top: 12px; right: 14px;
+      background: rgba(44,197,181,0.2);
+      color: #2CC5B5;
+      border: none;
+      border-radius: 8px;
+      padding: 4px 12px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background 0.2s, color 0.2s;
+      white-space: nowrap;
+    }
+    .copy-btn:hover { background: #2CC5B5; color: white; }
+    .copy-btn.copied { background: #4ade80; color: white; }
+
+    /* 連結樣式 */
+    .slide-link {
+      color: #2CC5B5;
+      text-decoration: none;
+      font-weight: 600;
+      border-bottom: 2px solid rgba(44,197,181,0.3);
+      transition: border-color 0.2s;
+    }
+    .slide-link:hover { border-color: #2CC5B5; }
+
+    /* 規則條列 */
+    .rule-list {
+      text-align: left;
+      list-style: none;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+    .rule-list li {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 15px;
+      color: #444;
+      line-height: 1.6;
+    }
+    .rule-list li .dot {
+      min-width: 8px; height: 8px;
+      border-radius: 50%;
+      background: #2CC5B5;
+      margin-top: 7px;
+    }
+
+    /* 大數字強調 */
+    .stat-number {
+      font-size: clamp(48px, 8vw, 80px);
+      font-weight: 900;
+      color: #2CC5B5;
+      line-height: 1;
+    }
+
+    /* 步驟流程 */
+    .step-flow {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    .step-item {
+      background: white;
+      border-radius: 16px;
+      padding: 20px 24px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.08);
+      min-width: 150px;
+    }
+    .step-arrow {
+      font-size: 28px;
+      color: #ccc;
+    }
+    .step-pct {
+      font-size: 32px;
+      font-weight: 900;
+      color: #2CC5B5;
+    }
+    .step-label {
+      font-size: 13px;
+      color: #666;
+      margin-top: 6px;
+    }
+
+    /* 能力標籤列 */
+    .ability-tags {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      justify-content: center;
+      margin-top: 16px;
+    }
+    .ability-tag {
+      background: white;
+      border-radius: 20px;
+      padding: 8px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      color: #444;
+      box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    }
+    .ability-tag.highlight {
+      background: rgba(229,57,53,0.1);
+      color: #E53935;
+    }
+
+    /* 小標題 */
+    .section-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: #2D2D2D;
+      margin-bottom: 16px;
+    }
+    .section-sub {
+      font-size: 14px;
+      color: #999;
+      margin-bottom: 8px;
+    }
+  </style>
+</head>
+<body>
+<div class="slideshow">
+
+  <!-- P1: 封面 -->
+  <section class="slide active" data-index="0">
+    <div class="slide-content">
+      <div class="badge">📌 TIPC資訊處 × 麻瓜AI課程</div>
+      <div class="title-main">個人<span class="title-accent">AI學習</span><br>地圖建議</div>
+      <p style="color:#999;font-size:16px;margin-top:16px;line-height:1.8">三週循序漸進，從習慣養成到高效人機協作</p>
+      <div style="display:flex;gap:16px;justify-content:center;margin-top:32px;flex-wrap:wrap;">
+        <div style="background:rgba(44,197,181,0.1);border-radius:14px;padding:14px 28px;font-weight:700;color:#2CC5B5;font-size:15px;">第一週：養成習慣</div>
+        <div style="background:rgba(245,166,35,0.1);border-radius:14px;padding:14px 28px;font-weight:700;color:#F5A623;font-size:15px;">第二週：善用員工</div>
+        <div style="background:rgba(139,92,246,0.1);border-radius:14px;padding:14px 28px;font-weight:700;color:#8B5CF6;font-size:15px;">第三週：AI放大器</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P2: 第一週封面 -->
+  <section class="slide" data-index="1">
+    <div class="slide-content">
+      <div class="week-badge">🗓 第一週</div>
+      <div class="title-main">養成習慣，<br><span class="title-accent">優先用 AI</span></div>
+      <p style="color:#666;font-size:16px;margin-top:16px;line-height:1.8">從「想到才用」轉變為「預設使用」<br>兩個關鍵習慣讓你踏出第一步</p>
+      <div class="two-col" style="margin-top:32px;">
+        <div class="card" style="text-align:left;">
+          <div style="font-size:28px;margin-bottom:8px;">🔍</div>
+          <div style="font-weight:700;color:#2D2D2D;margin-bottom:6px;">萬事問 AI</div>
+          <div style="font-size:14px;color:#666;">改變首頁習慣，預設使用 AI 搜尋</div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div style="font-size:28px;margin-bottom:8px;">🎙️</div>
+          <div style="font-weight:700;color:#2D2D2D;margin-bottom:6px;">說話比打字容易</div>
+          <div style="font-size:14px;color:#666;">語音輸入、語音聆聽，隨時隨地使用</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P3: 萬事問AI -->
+  <section class="slide" data-index="2">
+    <div class="slide-content">
+      <div class="badge">📌 習慣1</div>
+      <div class="section-title">萬事問 AI：改變你的首頁</div>
+      <div class="two-col">
+        <div class="compare-card negative">
+          <div class="compare-label">❌ 舊習慣</div>
+          <div class="compare-value red" style="font-size:16px;margin-bottom:8px;">Google 搜尋當首頁</div>
+          <div style="font-size:13px;color:#888;">想到才用、零散查詢</div>
+        </div>
+        <div class="compare-card positive">
+          <div class="compare-label">✅ 新習慣</div>
+          <div class="compare-value teal" style="font-size:16px;margin-bottom:8px;"><a href="https://google.com/ai" target="_blank" class="slide-link">Google AI 模式</a></div>
+          <div style="font-size:13px;color:#555;">預設使用，主動詢問</div>
+        </div>
+      </div>
+      <div class="prompt-card" style="margin-top:20px;">
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+        <pre>幫我整理[一週國際港口新聞]</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- P4: 說話比打字容易 -->
+  <section class="slide" data-index="3">
+    <div class="slide-content">
+      <div class="badge">📌 習慣2</div>
+      <div class="section-title">說話比打字容易</div>
+      <div class="three-col">
+        <div class="card" style="text-align:left;">
+          <div class="icon-circle teal">🎙️</div>
+          <div style="font-weight:700;margin-bottom:8px;">語音聊天</div>
+          <div style="font-size:13px;color:#666;">散步時與 ChatGPT、Gemini 語音對話，邊走邊學</div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div class="icon-circle orange">📷</div>
+          <div style="font-weight:700;margin-bottom:8px;">拍照上傳</div>
+          <div style="font-size:13px;color:#666;">拍英文菜單、文件上傳，請 AI 直接說明</div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div class="icon-circle purple">🎧</div>
+          <div style="font-weight:700;margin-bottom:8px;">Podcast 摘要</div>
+          <div style="font-size:13px;color:#666;">用 NotebookLM 轉成語音摘要，邊健身邊聽</div>
+        </div>
+      </div>
+      <div class="prompt-card" style="margin-top:16px;">
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+        <pre>AI視覺能力在現場散雜貨裝卸巡查可以有哪三種應用
+可否裝在巡查員身上來搭配輔助</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- P5: 第二週封面 -->
+  <section class="slide" data-index="4">
+    <div class="slide-content">
+      <div class="week-badge" style="background:rgba(245,166,35,0.12);color:#F5A623;">🗓 第二週</div>
+      <div class="title-main">善用你的<br><span style="color:#F5A623;">AI 員工</span></div>
+      <p style="color:#666;font-size:16px;margin-top:16px;line-height:1.8">學會指揮員工、熟悉員工能力<br>讓 AI 成為你最稱職的工作夥伴</p>
+      <div class="three-col" style="margin-top:32px;">
+        <div class="card">
+          <div style="font-size:24px;margin-bottom:8px;">🗣️</div>
+          <div style="font-weight:700;font-size:15px;color:#2D2D2D;">講清楚</div>
+          <div style="font-size:13px;color:#888;margin-top:4px;">目的明確、細節到位</div>
+        </div>
+        <div class="card">
+          <div style="font-size:24px;margin-bottom:8px;">🔢</div>
+          <div style="font-weight:700;font-size:15px;color:#2D2D2D;">拆步驟</div>
+          <div style="font-size:13px;color:#888;margin-top:4px;">分次執行，逐步深化</div>
+        </div>
+        <div class="card">
+          <div style="font-size:24px;margin-bottom:8px;">🧠</div>
+          <div style="font-weight:700;font-size:15px;color:#2D2D2D;">熟悉能力</div>
+          <div style="font-size:13px;color:#888;margin-top:4px;">Canvas、圖片、Deep Research</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P6: 講清楚 -->
+  <section class="slide" data-index="5">
+    <div class="slide-content">
+      <div class="badge">📌 指揮技巧 1</div>
+      <div class="section-title">講清楚：三個要素缺一不可</div>
+      <div class="three-col" style="margin-bottom:16px;">
+        <div class="card" style="text-align:left;">
+          <div style="font-weight:800;color:#2CC5B5;font-size:18px;margin-bottom:8px;">① 說明目的</div>
+          <div style="font-size:13px;color:#666;">先一句話說明你想達成什麼</div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div style="font-weight:800;color:#F5A623;font-size:18px;margin-bottom:8px;">② 描述細節</div>
+          <div style="font-size:13px;color:#666;">需求細節、步驟條件、資料來源</div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div style="font-weight:800;color:#8B5CF6;font-size:18px;margin-bottom:8px;">③ 給參考</div>
+          <div style="font-size:13px;color:#666;">原始資料、格式範例、背景來源</div>
+        </div>
+      </div>
+      <div class="prompt-card">
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+        <pre>幫我整理[一週國際港口新聞]
+整理成表格並包含[解讀對經濟情勢影響部份]
+完整欄位包括：序號、新聞、來源、經濟影響、正反面
+其中「正反面」欄位以紅、綠燈號顯示</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- P7: 拆步驟 + 問AI提示詞 -->
+  <section class="slide" data-index="6">
+    <div class="slide-content">
+      <div class="badge">📌 指揮技巧 2 & 3</div>
+      <div class="section-title">拆步驟 × 不會下提示詞也沒關係</div>
+      <div class="two-col">
+        <div class="card" style="text-align:left;">
+          <div style="font-weight:800;color:#F5A623;margin-bottom:10px;font-size:16px;">🔢 拆步驟原則</div>
+          <ul class="rule-list">
+            <li><span class="dot"></span>AI 跟人一樣注意力、記性有限</li>
+            <li><span class="dot"></span>整理完資料後，才請 AI 開始寫報告</li>
+            <li><span class="dot"></span>分次執行，每輪專注一件事</li>
+          </ul>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div class="card" style="text-align:left;">
+            <div style="font-weight:800;color:#8B5CF6;margin-bottom:10px;font-size:16px;">🤔 不會下提示詞？</div>
+            <div style="font-size:13px;color:#666;line-height:1.7;">直接問 AI：「我要怎麼下提示詞？」<br>請 AI 給你 Markdown 格式以利複製</div>
+          </div>
+          <div class="prompt-card" style="margin-top:0;">
+            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+            <pre>如果我要[把以上內容寫成一篇港務公司
+總經理口吻給港區業者的一封信]，
+我要怎麼下提示詞。給我markdown格式以利複製</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P8: 總經理公開信 範例 -->
+  <section class="slide" data-index="7">
+    <div class="slide-content">
+      <div class="badge">📌 完整提示詞範例</div>
+      <div class="section-title">角色扮演：總經理致夥伴公開信</div>
+      <div class="prompt-card" style="max-height:340px;overflow-y:auto;">
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+        <pre>你現在是一位具備 20 年港務管理經驗、兼具前瞻眼光與親和力的「港務公司總經理」。
+請幫我撰寫一封致港區所有夥伴（包含航商、貨代、物流業者與碼頭營運商）的內部公開信。
+
+### 寫作目的
+透過分享「國際港口關鍵趨勢（綠色航運走廊、AI 預測調度、歐盟碳稅、全自動化碼頭）」，
+傳達全球供應鏈正在發生的劇烈變革，展現攜手轉型的決心。
+
+### 角色設定與語氣
+- 語氣：宏觀、專業、穩重，帶領導力，充滿合作溫度，不打官腔
+- 稱呼：「各位港區的領航夥伴」、「我們供應鏈上的命運共同體」
+- 署名：港務公司總經理
+
+### 信件結構
+1. 開頭：全球局勢宏觀觀測（美西AI調度、歐盟碳稅、鹿特丹綠色數位走廊）
+2. 中段：對業者的影響解讀（綠色通膨、供應鏈向數位樞紐港集中）
+3. 後段：港務公司承諾（數據標準化、自動化、綠色岸電建置）
+4. 結尾：溫暖凝聚，把挑戰變成轉型的紅利
+
+### 輸出格式
+請直接輸出整封信的完整內文，使用精緻的 Markdown 排版。</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- P9: AI 共通能力 -->
+  <section class="slide" data-index="8">
+    <div class="slide-content">
+      <div class="badge">📌 熟悉員工能力</div>
+      <div class="section-title">主流 AI 三大共通能力</div>
+      <div class="three-col">
+        <div class="card" style="text-align:left;">
+          <div class="icon-circle teal">✏️</div>
+          <div style="font-weight:800;color:#2CC5B5;margin-bottom:8px;">共同寫作</div>
+          <div style="font-size:13px;color:#666;margin-bottom:12px;">Canvas 協作模式<br>新聞稿→FB文章，一鍵轉換</div>
+          <div class="prompt-card" style="padding:12px 16px;">
+            <button class="copy-btn" style="top:8px;right:10px;" onclick="copyPrompt(this)">📋 複製</button>
+            <pre style="font-size:11px;">把新聞稿轉為 FB 文章
+文字約 140 字，附上標題
+口氣親民，不要太官方
+最後附上 hashtag</pre>
+          </div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div class="icon-circle orange">🎨</div>
+          <div style="font-weight:800;color:#F5A623;margin-bottom:8px;">生成圖片</div>
+          <div style="font-size:13px;color:#666;margin-bottom:12px;">Banana 模式<br>上傳照片生成海報</div>
+          <div class="prompt-card" style="padding:12px 16px;">
+            <button class="copy-btn" style="top:8px;right:10px;" onclick="copyPrompt(this)">📋 複製</button>
+            <pre style="font-size:11px;">將這兩張圖片合併做成 FB
+宣傳海報，日式雜誌插畫風格
+正體中文、16:9
+標題：米奇退散！港區防鼠開外掛</pre>
+          </div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div class="icon-circle purple">🔬</div>
+          <div style="font-weight:800;color:#8B5CF6;margin-bottom:8px;">深入研究</div>
+          <div style="font-size:13px;color:#666;margin-bottom:12px;">Deep Research<br>主題研究寫成小論文</div>
+          <div class="prompt-card" style="padding:12px 16px;">
+            <button class="copy-btn" style="top:8px;right:10px;" onclick="copyPrompt(this)">📋 複製</button>
+            <pre style="font-size:11px;">就[AI科技應用在港口營運及作業]
+進行國際港口研究，以科技應用
+與港口領域實證分析進行說明</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P10: 第三週封面 -->
+  <section class="slide" data-index="9">
+    <div class="slide-content">
+      <div class="week-badge" style="background:rgba(139,92,246,0.12);color:#8B5CF6;">🗓 第三週</div>
+      <div class="title-main">AI 是你的<br><span style="color:#8B5CF6;">放大器</span></div>
+      <p style="color:#666;font-size:16px;margin-top:16px;line-height:1.8">你的基本能力幾分，決定放大的上限</p>
+      <div class="card" style="margin-top:28px;padding:24px 36px;">
+        <div style="font-size:48px;font-weight:900;color:#8B5CF6;">10×</div>
+        <div style="font-size:16px;color:#666;margin-top:8px;line-height:1.7">AI 是十倍放大器<br><strong style="color:#2D2D2D;">你的能力 × 10 = 產出上限</strong></div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P11: 五大核心能力 -->
+  <section class="slide" data-index="10">
+    <div class="slide-content">
+      <div class="badge">📌 未來的基本能力</div>
+      <div class="section-title">五大核心能力</div>
+      <div class="quad-grid" style="margin-bottom:16px;">
+        <div class="card" style="text-align:left;display:flex;gap:14px;align-items:flex-start;">
+          <div class="icon-square teal" style="min-width:40px;width:40px;height:40px;font-size:20px;border-radius:10px;">🗣️</div>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px;">表達力</div>
+            <div style="font-size:13px;color:#666;">具體說明需求，講清楚你要什麼</div>
+          </div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:14px;align-items:flex-start;">
+          <div class="icon-square orange" style="min-width:40px;width:40px;height:40px;font-size:20px;border-radius:10px;">🛠️</div>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px;">工具力</div>
+            <div style="font-size:13px;color:#666;">善用不同 AI 員工，找對工具做對事</div>
+          </div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:14px;align-items:flex-start;">
+          <div class="icon-square purple" style="min-width:40px;width:40px;height:40px;font-size:20px;border-radius:10px;">🏭</div>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px;">領域力</div>
+            <div style="font-size:13px;color:#666;">結合崗位專業知識，AI 才能真的幫上忙</div>
+          </div>
+        </div>
+        <div class="card" style="text-align:left;display:flex;gap:14px;align-items:flex-start;">
+          <div class="icon-square red" style="min-width:40px;width:40px;height:40px;font-size:20px;border-radius:10px;">🧠</div>
+          <div>
+            <div style="font-weight:700;margin-bottom:4px;">判斷力 ★</div>
+            <div style="font-size:13px;color:#666;">最重要！你該為產出的結果把關負責</div>
+          </div>
+        </div>
+      </div>
+      <div class="card" style="background:rgba(229,57,53,0.06);border:1.5px solid rgba(229,57,53,0.2);">
+        <span style="color:#E53935;font-weight:700;">⚠️ Human in the Loop：</span>
+        <span style="font-size:14px;color:#666;">判斷力是核心中的核心，你必須為 AI 產出的結果把關負責</span>
+      </div>
+    </div>
+  </section>
+
+  <!-- P12: 判斷力三解方 -->
+  <section class="slide" data-index="11">
+    <div class="slide-content">
+      <div class="badge">📌 強化判斷力的三個解方</div>
+      <div class="section-title">如何避免 AI 產生錯誤內容？</div>
+      <div class="three-col">
+        <div class="card" style="text-align:left;">
+          <div style="font-weight:800;color:#2CC5B5;margin-bottom:10px;">解方 1<br>要求來源</div>
+          <div class="prompt-card" style="padding:12px 14px;">
+            <button class="copy-btn" style="top:8px;right:10px;" onclick="copyPrompt(this)">📋 複製</button>
+            <pre style="font-size:11px;">整理成表格並包含
+[解讀對經濟情勢影響部份]
+
+以上相關內容請
+註明出處的連結網址</pre>
+          </div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div style="font-weight:800;color:#F5A623;margin-bottom:10px;">解方 2<br>交叉比對</div>
+          <div class="prompt-card" style="padding:12px 14px;">
+            <button class="copy-btn" style="top:8px;right:10px;" onclick="copyPrompt(this)">📋 複製</button>
+            <pre style="font-size:11px;">將以下內容求證來源
+的真實性、適當性...</pre>
+          </div>
+          <div style="font-size:12px;color:#888;margin-top:10px;">用另一個 AI（如 ChatGPT）來驗證</div>
+        </div>
+        <div class="card" style="text-align:left;">
+          <div style="font-weight:800;color:#8B5CF6;margin-bottom:10px;">解方 3<br>衡量適當性</div>
+          <div style="font-size:12px;color:#666;line-height:1.6;">請 AI 以顧問角色，評估導入效益、成本、市場技術成熟度、公司行業特性</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P13: 數位孿生評估 提示詞 -->
+  <section class="slide" data-index="12">
+    <div class="slide-content">
+      <div class="badge">📌 解方3 完整範例</div>
+      <div class="section-title">請 AI 評估新科技導入適當性</div>
+      <div class="prompt-card" style="max-height:360px;overflow-y:auto;">
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+        <pre>你是一個資深的新科技導入港口營運的顧問專家
+請以穩健角度幫我針對[港務公司導入數位孿生在引水人登船]提供評估建議
+
+請就導入效益、合理成本、市場技術成熟度、公司行業特性等進行評估建議
+包括：
+一、何謂[數位孿生]，可如何建置運用在[引水人準時登離船]議題？
+二、預計為港務公司帶來的效益為何？投資效益的合理性如何判斷
+   （含建置與維運成本的建議合理區間，並詳列軟硬體及維運各項可能成本）？
+三、此項技術的市場成熟度，是否容易有替代方案、是否為最佳方案？
+四、依照港務公司的行業定位特性及以下限制條件，綜合評估是否建議導入？
+   1. 港務公司無公權力
+   2. 引水人、引水船、所帶商船非屬港務公司所管</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- P14: 10-80-10 法則 -->
+  <section class="slide" data-index="13">
+    <div class="slide-content">
+      <div class="badge">📌 高效人機協作</div>
+      <div class="title-main" style="font-size:clamp(32px,4.5vw,52px);">黃金比例<br><span class="title-accent">10 — 80 — 10</span></div>
+      <p style="color:#666;font-size:15px;margin:12px 0 28px;">生成式 AI 時代的標準工作流</p>
+      <div class="step-flow">
+        <div class="step-item">
+          <div class="step-pct">10%</div>
+          <div style="font-size:14px;font-weight:700;color:#2D2D2D;margin-top:6px;">你定方向</div>
+          <div class="step-label">設定目標、框架、限制</div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-item" style="background:rgba(44,197,181,0.08);box-shadow:0 4px 16px rgba(44,197,181,0.15);">
+          <div class="step-pct" style="color:#F5A623;">80%</div>
+          <div style="font-size:14px;font-weight:700;color:#2D2D2D;margin-top:6px;">AI 執行</div>
+          <div class="step-label">擴展、搜集、撰寫、細化</div>
+        </div>
+        <div class="step-arrow">→</div>
+        <div class="step-item">
+          <div class="step-pct">10%</div>
+          <div style="font-size:14px;font-weight:700;color:#2D2D2D;margin-top:6px;">你做品管</div>
+          <div class="step-label">合規、效益、防禦把關</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P15: 智慧冷鏈案例 三階段 -->
+  <section class="slide" data-index="14">
+    <div class="slide-content">
+      <div class="badge">📌 實戰案例：智慧冷鏈物流園區規劃</div>
+      <div class="section-title">三階段人機分工示範</div>
+      <div class="three-col">
+        <div class="card" style="text-align:left;border-top:4px solid #2CC5B5;">
+          <div style="font-weight:800;color:#2CC5B5;font-size:13px;margin-bottom:6px;">第一階段 10%</div>
+          <div style="font-weight:700;margin-bottom:8px;">前置：人類定方向</div>
+          <ul class="rule-list" style="font-size:12px;">
+            <li><span class="dot"></span>土地為國家資產，僅租賃/BOT</li>
+            <li><span class="dot"></span>夏季停電風險，冷鏈零容錯</li>
+            <li><span class="dot"></span>須與 MTNet、海關系統對接</li>
+          </ul>
+        </div>
+        <div class="card" style="text-align:left;border-top:4px solid #F5A623;">
+          <div style="font-weight:800;color:#F5A623;font-size:13px;margin-bottom:6px;">第二階段 80%</div>
+          <div style="font-weight:700;margin-bottom:8px;">中段：AI多輪執行</div>
+          <ul class="rule-list" style="font-size:12px;">
+            <li><span class="dot"></span>深化電力備援微電網架構</li>
+            <li><span class="dot"></span>設計 BOT 招商誘因機制</li>
+            <li><span class="dot"></span>細化各章節實質內容</li>
+          </ul>
+        </div>
+        <div class="card" style="text-align:left;border-top:4px solid #E53935;">
+          <div style="font-weight:800;color:#E53935;font-size:13px;margin-bottom:6px;">第三階段 10%</div>
+          <div style="font-weight:700;margin-bottom:8px;">後置：人類最終品管</div>
+          <ul class="rule-list" style="font-size:12px;">
+            <li><span class="dot"></span>找出三個「致命漏洞」</li>
+            <li><span class="dot"></span>提供條文修正建議</li>
+            <li><span class="dot"></span>準備防禦董事會質疑</li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P16: 第一階段提示詞 -->
+  <section class="slide" data-index="15">
+    <div class="slide-content">
+      <div class="badge">📌 第一階段 Prompt</div>
+      <div class="section-title">前置 10%：人類主管出題</div>
+      <div class="prompt-card" style="max-height:380px;overflow-y:auto;">
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+        <pre>你現在是港務公司跨領域資深專案經理，能整合資訊與業務需求進行規劃
+公司計畫在高雄港特定港區引進「物聯網（IoT）自動化低碳冷鏈倉儲園區」
+
+請幫我擬定「智慧冷鏈物流園區前期可行性綜合規劃書」第一版結構大綱。
+在規劃時，請務必納入以下剛性限制與考量：
+1. 港區土地屬於國家資產，無法販售，一律採「租賃或不移轉所有權之 BOT/ROT」
+2. 臺灣夏季用電高峰期有非計畫性停電風險，冷鏈對電力穩定度容錯率為零
+3. 必須與現有「航港單一窗口服務平台（MTNet）」與海關系統對接，達到通關自動化
+
+請先產出「一級與二級章節大綱」，並針對上述三個限制，
+在對應章節旁註明預計採取的應對思維方向。</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- P17: 第二階段提示詞 -->
+  <section class="slide" data-index="16">
+    <div class="slide-content">
+      <div class="badge">📌 第二階段 Prompt</div>
+      <div class="section-title">中段 80%：多輪引導 AI 深化執行</div>
+      <div class="two-col">
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="font-size:13px;font-weight:700;color:#F5A623;">針對「零容錯電力與綠能」深化：</div>
+          <div class="prompt-card">
+            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+            <pre style="font-size:11px;">針對第三章「綠能與不斷電系統（UPS）基礎建設」進行深化。
+請幫我撰寫此章節的詳細內容，必須包含：
+1. 結合「屋頂型太陽能光電 + 儲能系統（BESS）+ 柴油發電機」
+   的微電網（Microgrid）架構與切換邏輯
+2. IoT 溫度感測器如何做到「預測性電能調節」？
+3. 估算電力備援系統在建置（CAPEX）與維運（OPEX）的成本大項
+（請用繁體中文，以專業工程與財務評估報告語氣，至少 800 字）</pre>
+          </div>
+        </div>
+        <div style="display:flex;flex-direction:column;gap:12px;">
+          <div style="font-size:13px;font-weight:700;color:#8B5CF6;">針對「BOT 招商財務邏輯」細化：</div>
+          <div class="prompt-card">
+            <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+            <pre style="font-size:11px;">針對第五章「招商與財務營運模式」。
+由於土地不可售，請設計「土地租金 + 權利金變動抽成」
+的招商誘因機制，讓航商或物流巨頭願意投資高額自動化設備。
+請條列出：
+1. 港務公司應負擔的基礎設施範圍
+2. 投資航商應自理的範圍
+3. 如何平衡「港務公司穩健收益」與
+   「航商投資回收期（ROI）」的衝突？</pre>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- P18: 第三階段提示詞 -->
+  <section class="slide" data-index="17">
+    <div class="slide-content">
+      <div class="badge">📌 第三階段 Prompt</div>
+      <div class="section-title">後置 10%：主管壓力測試品管</div>
+      <div class="prompt-card" style="max-height:340px;overflow-y:auto;">
+        <button class="copy-btn" onclick="copyPrompt(this)">📋 複製</button>
+        <pre>你現在是港務公司的總經理，同時也是一位對財務預算極度嚴格、作風穩健保守的審查委員。
+請審視我們剛剛共同完成的「智慧冷鏈物流園區前期可行性綜合規劃書」所有產出內容。
+
+請幫我挑出這份規劃書中，最可能被董事會或交通部質疑的三個「致命漏洞」或「過度樂觀的假設」
+（例如：通關系統與海關對接的法規與技術壁壘、儲能系統的攤提成本是否過高導致航商卻步、
+公權力不足如何推動跨機關協調）。
+
+針對這三個潛在漏洞，請直接給出「具體的條文修正建議」或「實務配套補救措施」，
+好讓我在下週的經營會議上能夠完美防禦高層的質疑。</pre>
+      </div>
+    </div>
+  </section>
+
+  <!-- P19: 結語 -->
+  <section class="slide" data-index="18">
+    <div class="slide-content">
+      <div class="badge">✨ 核心結語</div>
+      <div class="title-main" style="font-size:clamp(28px,4vw,48px);">主管沒有自己去寫<br><span class="title-accent">微電網切換邏輯</span></div>
+      <div class="two-col" style="margin-top:28px;">
+        <div class="card" style="background:rgba(229,57,53,0.06);border:1.5px solid rgba(229,57,53,0.2);">
+          <div style="font-size:24px;margin-bottom:8px;">😓</div>
+          <div style="font-weight:700;color:#E53935;margin-bottom:8px;">免去 80% 的文書地獄</div>
+          <div style="font-size:13px;color:#666;">AI 負責擴展架構、搜集案例、撰寫專業文本</div>
+        </div>
+        <div class="card" style="background:rgba(44,197,181,0.06);border:1.5px solid rgba(44,197,181,0.2);">
+          <div style="font-size:24px;margin-bottom:8px;">🎯</div>
+          <div style="font-weight:700;color:#2CC5B5;margin-bottom:8px;">精準抓住關鍵 20%</div>
+          <div style="font-size:13px;color:#666;">土地產權、電力風險、通關對接、財務防禦</div>
+        </div>
+      </div>
+      <div class="card" style="margin-top:20px;background:linear-gradient(135deg,rgba(44,197,181,0.08),rgba(139,92,246,0.08));">
+        <div style="font-size:18px;font-weight:800;color:#2D2D2D;line-height:1.7;">
+          這就是高效人機協作的<span class="title-accent">黃金比例</span> ✨
+        </div>
+        <div style="font-size:14px;color:#666;margin-top:8px;">你設方向 × AI 執行 × 你做品管 = 10倍產出</div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer -->
+  <footer class="slide-footer">🐻 林熊熊分享</footer>
+
+  <!-- Nav -->
+  <nav class="nav-bar">
+    <button class="nav-btn" id="prevBtn">‹</button>
+    <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
+    <span style="color:#ccc">/</span>
+    <span id="totalPages" style="font-size:15px;color:#999"></span>
+    <button class="nav-btn" id="nextBtn">›</button>
+  </nav>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const totalPagesEl = document.getElementById('totalPages');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let current = 0;
+  totalPagesEl.textContent = slides.length;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    updateIndicator();
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+  }
+
+  function updateIndicator() {
+    pageIndicator.textContent = current + 1;
+  }
+
+  pageIndicator.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = 1;
+    input.max = slides.length;
+    input.value = current + 1;
+    input.className = 'page-jump-input';
+    pageIndicator.replaceWith(input);
+    input.select();
+
+    function commit() {
+      const n = parseInt(input.value, 10);
+      input.replaceWith(pageIndicator);
+      if (!isNaN(n)) goTo(n - 1);
+      else updateIndicator();
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { input.replaceWith(pageIndicator); updateIndicator(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+    });
+    input.addEventListener('blur', commit);
+    input.addEventListener('input', () => {
+      if (input.value < 1) input.value = 1;
+      if (input.value > slides.length) input.value = slides.length;
+    });
+  });
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+  });
+
+  // 一鍵複製功能
+  function copyPrompt(btn) {
+    const pre = btn.parentElement.querySelector('pre');
+    if (!pre) return;
+    navigator.clipboard.writeText(pre.textContent.trim()).then(() => {
+      const orig = btn.textContent;
+      btn.textContent = '✅ 已複製！';
+      btn.classList.add('copied');
+      setTimeout(() => {
+        btn.textContent = orig;
+        btn.classList.remove('copied');
+      }, 2000);
+    }).catch(() => {
+      // fallback
+      const ta = document.createElement('textarea');
+      ta.value = pre.textContent.trim();
+      document.body.appendChild(ta);
+      ta.select();
+      document.execCommand('copy');
+      document.body.removeChild(ta);
+      btn.textContent = '✅ 已複製！';
+      btn.classList.add('copied');
+      setTimeout(() => { btn.textContent = '📋 複製'; btn.classList.remove('copied'); }, 2000);
+    });
+  }
+
+  goTo(0);
+</script>
+</body>
+</html>
