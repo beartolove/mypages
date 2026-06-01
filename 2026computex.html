@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW" data-theme="dark">
+<html lang="zh-TW" data-theme="light">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -702,8 +702,9 @@ footer {
 @media (max-width: 640px) {
   .nav-links  { display: none; }
   .hamburger  { display: flex; }
-  /* hide theme-btn & font-stepper from header on mobile — shown in drawer */
-  .theme-btn, .font-stepper { display: none; }
+  /* hide controls only inside the header, NOT inside the mobile drawer */
+  #site-header .theme-btn,
+  #site-header .font-stepper { display: none; }
 }
 
 @media (min-width: 641px) {
@@ -1202,7 +1203,7 @@ footer {
   applyFont(fontSize); // init
 
   /* ── Theme ─────────────────────────────── */
-  let theme = localStorage.getItem('cx26-theme') || 'dark';
+  let theme = localStorage.getItem('cx26-theme') || 'light';
 
   function applyTheme(t) {
     theme = t;
@@ -1212,8 +1213,8 @@ footer {
     ['d', 'm'].forEach(id => {
       const icon  = document.getElementById('theme-icon-' + id);
       const label = document.getElementById('theme-label-' + id);
-      if (icon)  icon.textContent  = isDark ? '☀️' : '🌙';
-      if (label) label.textContent = isDark ? '明亮' : '暗色';
+      if (icon)  icon.textContent  = isDark ? '🌙' : '☀️';
+      if (label) label.textContent = isDark ? '暗色' : '明亮';
     });
   }
 
