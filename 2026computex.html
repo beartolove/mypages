@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="zh-TW" data-theme="light">
+<html lang="zh-TW" data-theme="dark">
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
@@ -1203,18 +1203,19 @@ footer {
   applyFont(fontSize); // init
 
   /* ── Theme ─────────────────────────────── */
-  let theme = localStorage.getItem('cx26-theme') || 'light';
+  let theme = localStorage.getItem('cx26-theme') || 'dark';
 
   function applyTheme(t) {
     theme = t;
     document.documentElement.setAttribute('data-theme', theme);
     localStorage.setItem('cx26-theme', theme);
     const isDark = theme === 'dark';
+    // 按鈕顯示「切換後的目標」：暗色時 → 顯示「☀️ 明亮」；明亮時 → 顯示「🌙 暗色」
     ['d', 'm'].forEach(id => {
       const icon  = document.getElementById('theme-icon-' + id);
       const label = document.getElementById('theme-label-' + id);
-      if (icon)  icon.textContent  = isDark ? '🌙' : '☀️';
-      if (label) label.textContent = isDark ? '暗色' : '明亮';
+      if (icon)  icon.textContent  = isDark ? '☀️' : '🌙';
+      if (label) label.textContent = isDark ? '明亮' : '暗色';
     });
   }
 
