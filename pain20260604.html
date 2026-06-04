@@ -1,0 +1,1020 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>業務痛點 × AI 解題方向</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: "Noto Sans TC", "Inter", sans-serif;
+      background: #F8F6F1;
+      min-height: 100vh;
+      overflow: hidden;
+    }
+
+    body::before {
+      content: '';
+      position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .slideshow {
+      position: relative;
+      width: 100vw;
+      height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .slide {
+      position: absolute;
+      inset: 0;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 40px 20px 100px;
+      z-index: 1;
+    }
+
+    .slide.active { display: flex; }
+
+    .slide-content {
+      max-width: 960px;
+      width: 100%;
+      text-align: center;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(16px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .slide.active .slide-content { animation: fadeIn 0.35s ease; }
+
+    /* Nav */
+    .nav-bar {
+      position: fixed;
+      bottom: 30px;
+      left: 50%;
+      transform: translateX(-50%);
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: white;
+      border-radius: 50px;
+      padding: 10px 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.12);
+      z-index: 100;
+    }
+
+    .nav-btn {
+      background: none;
+      border: none;
+      font-size: 24px;
+      color: #2D2D2D;
+      cursor: pointer;
+      width: 36px; height: 36px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      transition: background 0.2s;
+    }
+    .nav-btn:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nav-btn:disabled { color: #ccc; cursor: default; }
+    .nav-btn:disabled:hover { background: none; }
+
+    .page-indicator {
+      font-size: 15px;
+      color: #666;
+      min-width: 72px;
+      text-align: center;
+      cursor: pointer;
+      border-radius: 8px;
+      padding: 2px 6px;
+      transition: background 0.15s;
+      user-select: none;
+    }
+    .page-indicator:hover { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+
+    .page-jump-input {
+      width: 48px;
+      border: 2px solid #2CC5B5;
+      border-radius: 8px;
+      font-size: 15px; font-weight: 600;
+      text-align: center;
+      color: #2D2D2D;
+      background: white;
+      outline: none;
+      padding: 2px 4px;
+    }
+
+    .slide-footer {
+      position: fixed;
+      bottom: 20px; right: 28px;
+      font-size: 15px; font-weight: 600; color: #aaa;
+      letter-spacing: 0.02em;
+      z-index: 99; white-space: nowrap;
+      user-select: none;
+    }
+
+    /* 基礎元件 */
+    .badge {
+      display: inline-block;
+      background: rgba(245,166,35,0.15);
+      color: #F5A623;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 500;
+      margin-bottom: 24px;
+    }
+
+    .badge-teal {
+      display: inline-block;
+      background: rgba(44,197,181,0.15);
+      color: #2CC5B5;
+      border-radius: 20px;
+      padding: 6px 20px;
+      font-size: 14px;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .title-main {
+      font-size: clamp(36px, 5.5vw, 60px);
+      font-weight: 900;
+      color: #2D2D2D;
+      line-height: 1.2;
+      margin-bottom: 16px;
+    }
+    .title-accent { color: #2CC5B5; }
+    .title-red { color: #E53935; }
+
+    .card {
+      background: white;
+      border-radius: 20px;
+      padding: 28px;
+      box-shadow: 0 4px 20px rgba(0,0,0,0.08);
+    }
+
+    .icon-circle {
+      width: 64px; height: 64px;
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 28px;
+      margin: 0 auto 14px;
+    }
+    .icon-circle.teal { background: rgba(44,197,181,0.15); }
+    .icon-circle.orange { background: rgba(245,166,35,0.15); }
+    .icon-circle.red { background: rgba(229,57,53,0.1); }
+    .icon-circle.purple { background: rgba(139,92,246,0.15); }
+    .icon-circle.blue { background: rgba(59,130,246,0.15); }
+
+    .icon-square {
+      width: 48px; height: 48px;
+      border-radius: 12px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 22px;
+      color: white;
+      flex-shrink: 0;
+    }
+    .icon-square.teal { background: #2CC5B5; }
+    .icon-square.orange { background: #F5A623; }
+    .icon-square.purple { background: #8B5CF6; }
+    .icon-square.red { background: #E53935; }
+    .icon-square.blue { background: #3B82F6; }
+
+    .three-col { display: grid; grid-template-columns: repeat(3,1fr); gap: 16px; }
+    .two-col { display: grid; grid-template-columns: repeat(2,1fr); gap: 16px; }
+    .quad-grid { display: grid; grid-template-columns: repeat(2,1fr); gap: 14px; }
+
+    /* 痛點頁專用 */
+    .pain-card {
+      background: rgba(229,57,53,0.06);
+      border: 1.5px solid rgba(229,57,53,0.2);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: left;
+    }
+    .solution-card {
+      background: rgba(44,197,181,0.08);
+      border: 1.5px solid rgba(44,197,181,0.25);
+      border-radius: 16px;
+      padding: 20px;
+      text-align: left;
+    }
+    .pain-label { font-size: 12px; font-weight: 700; color: #E53935; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .solution-label { font-size: 12px; font-weight: 700; color: #2CC5B5; letter-spacing: 0.08em; margin-bottom: 8px; }
+    .card-text { font-size: 15px; color: #444; line-height: 1.7; }
+    .card-title { font-size: 17px; font-weight: 700; color: #2D2D2D; margin-bottom: 8px; }
+
+    .step-row {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      text-align: left;
+      margin-bottom: 12px;
+    }
+    .step-num {
+      width: 28px; height: 28px;
+      border-radius: 50%;
+      background: #2CC5B5;
+      color: white;
+      font-size: 13px;
+      font-weight: 700;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    .step-text { font-size: 14px; color: #444; line-height: 1.7; }
+
+    .tag {
+      display: inline-block;
+      background: rgba(139,92,246,0.12);
+      color: #8B5CF6;
+      border-radius: 10px;
+      padding: 3px 12px;
+      font-size: 13px;
+      font-weight: 500;
+      margin: 3px;
+    }
+    .tag.teal { background: rgba(44,197,181,0.12); color: #2CC5B5; }
+    .tag.orange { background: rgba(245,166,35,0.12); color: #d4891a; }
+
+    /* 目錄頁 */
+    .toc-grid {
+      display: grid;
+      grid-template-columns: repeat(3,1fr);
+      gap: 12px;
+      margin-top: 20px;
+    }
+    .toc-item {
+      background: white;
+      border-radius: 14px;
+      padding: 16px 14px;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.06);
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      cursor: pointer;
+      transition: transform 0.2s, box-shadow 0.2s;
+      text-align: left;
+      border: 1.5px solid transparent;
+    }
+    .toc-item:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 18px rgba(0,0,0,0.10);
+      border-color: #2CC5B5;
+    }
+    .toc-num {
+      width: 36px; height: 36px;
+      border-radius: 10px;
+      background: #2CC5B5;
+      color: white;
+      font-weight: 900;
+      font-size: 15px;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .toc-text { font-size: 13px; color: #444; line-height: 1.4; font-weight: 500; }
+
+    .section-header {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      margin-bottom: 22px;
+      text-align: left;
+    }
+    .section-num-big {
+      width: 56px; height: 56px;
+      border-radius: 16px;
+      background: linear-gradient(135deg, #2CC5B5, #1fa99b);
+      color: white;
+      font-size: 22px;
+      font-weight: 900;
+      display: flex; align-items: center; justify-content: center;
+      flex-shrink: 0;
+    }
+    .section-title { font-size: 22px; font-weight: 900; color: #2D2D2D; line-height: 1.3; }
+    .section-unit { font-size: 13px; color: #999; margin-top: 3px; }
+
+    /* 數據標籤 */
+    .stat-box {
+      background: white;
+      border-radius: 16px;
+      padding: 20px;
+      box-shadow: 0 4px 16px rgba(0,0,0,0.07);
+      text-align: center;
+    }
+    .stat-num { font-size: 40px; font-weight: 900; color: #2CC5B5; }
+    .stat-label { font-size: 14px; color: #666; margin-top: 4px; }
+
+    /* 技術標籤列 */
+    .tech-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    sub-text { font-size: 13px; color: #999; }
+  </style>
+</head>
+<body>
+<div class="slideshow">
+
+  <!-- ===== P1 封面 ===== -->
+  <section class="slide active">
+    <div class="slide-content">
+      <div class="badge">2025 業務優化計畫</div>
+      <div class="title-main">業務痛點<span class="title-accent"> × AI</span><br>解題方向報告</div>
+      <p style="font-size:18px;color:#666;margin-top:16px;line-height:1.7">
+        整合 13 項跨科室業務挑戰<br>提出 AI 導入建議與解決策略
+      </p>
+      <div style="display:flex;gap:24px;justify-content:center;margin-top:36px;">
+        <div class="stat-box" style="min-width:130px">
+          <div class="stat-num">13</div>
+          <div class="stat-label">業務痛點</div>
+        </div>
+        <div class="stat-box" style="min-width:130px">
+          <div class="stat-num" style="color:#F5A623">4</div>
+          <div class="stat-label">涉及科室</div>
+        </div>
+        <div class="stat-box" style="min-width:130px">
+          <div class="stat-num" style="color:#8B5CF6">5+</div>
+          <div class="stat-label">AI 應用類型</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P2 目錄 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="badge-teal">📋 目錄總覽</div>
+      <div class="title-main" style="font-size:32px;margin-bottom:6px">13 項業務痛點一覽</div>
+      <p style="font-size:14px;color:#999;margin-bottom:4px">點擊卡片可直接跳頁</p>
+      <div class="toc-grid">
+        <div class="toc-item" onclick="goTo(2)">
+          <div class="toc-num">1</div>
+          <div class="toc-text">船舶計費規定查詢耗時</div>
+        </div>
+        <div class="toc-item" onclick="goTo(3)">
+          <div class="toc-num">2</div>
+          <div class="toc-text">科內資訊同步不一致</div>
+        </div>
+        <div class="toc-item" onclick="goTo(4)">
+          <div class="toc-num">3</div>
+          <div class="toc-text">信用額度核給計算繁瑣</div>
+        </div>
+        <div class="toc-item" onclick="goTo(5)">
+          <div class="toc-num">4</div>
+          <div class="toc-text">年度預算估計耗時</div>
+        </div>
+        <div class="toc-item" onclick="goTo(6)">
+          <div class="toc-num">5</div>
+          <div class="toc-text">每月營收報表整理耗時</div>
+        </div>
+        <div class="toc-item" onclick="goTo(7)">
+          <div class="toc-num">6</div>
+          <div class="toc-text">當年度營收預估困難</div>
+        </div>
+        <div class="toc-item" onclick="goTo(8)">
+          <div class="toc-num">7</div>
+          <div class="toc-text">航線查詢效率低落</div>
+        </div>
+        <div class="toc-item" onclick="goTo(9)">
+          <div class="toc-num">8</div>
+          <div class="toc-text">棧埠作業流程漏洞</div>
+        </div>
+        <div class="toc-item" onclick="goTo(10)">
+          <div class="toc-num">9</div>
+          <div class="toc-text">航商客戶資訊散落</div>
+        </div>
+        <div class="toc-item" onclick="goTo(11)">
+          <div class="toc-num">10</div>
+          <div class="toc-text">契約文件製作耗時</div>
+        </div>
+        <div class="toc-item" onclick="goTo(12)">
+          <div class="toc-num">11</div>
+          <div class="toc-text">航線表整理耗時</div>
+        </div>
+        <div class="toc-item" onclick="goTo(13)">
+          <div class="toc-num">12</div>
+          <div class="toc-text">自貿量值統計繁瑣</div>
+        </div>
+        <div class="toc-item" onclick="goTo(14)" style="grid-column:1/4;max-width:33%;">
+          <div class="toc-num">13</div>
+          <div class="toc-text">契約條文比對耗力</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P3 痛點1 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">1</div>
+        <div>
+          <div class="section-title">船舶作業計費規定查詢耗時</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">業者詢問時，需逐一翻查費率表、函釋、公文及作業規定；特殊案件仰賴資深員工記憶，存在知識斷層與作業風險。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">建立「船舶作業計費規定 AI 查詢助手」，整合費率表、函釋、歷史案例，自動判斷適用規定並產生建議回覆。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text">建立<strong>知識向量資料庫</strong>（費率表＋函釋＋公文＋SOP＋案例）</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">設計<strong>RAG 查詢引擎</strong>，依輸入條件精準檢索相關法源</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">LLM 整合後自動<strong>產出建議回覆與引用文件清單</strong></div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">RAG 語意搜尋</span>
+          <span class="tag teal">知識庫建置</span>
+          <span class="tag orange">LLM 問答生成</span>
+          <span class="tag">向量資料庫</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P4 痛點2 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">2</div>
+        <div>
+          <div class="section-title">科內業務資訊同步不一致</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">業務規定散落在會議、電子郵件與口頭交辦，部分同仁不知最新規定，導致作業標準不一、重複確認成本高。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">建立「AI 知識管理暨訊息同步助手」，自動整理會議紀錄、公文等資訊，辨識變更事項並推播給全科同仁。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>文件自動擷取</strong>：定期匯入會議紀錄、公文、電子郵件</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">AI <strong>辨識異動事項</strong>，自動摘要新舊規定差異</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">支援<strong>自然語言查詢</strong>，即時回應同仁問題並附出處</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">文件自動摘要</span>
+          <span class="tag teal">變更偵測</span>
+          <span class="tag orange">推播通知整合</span>
+          <span class="tag">知識圖譜</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P5 痛點3 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">3</div>
+        <div>
+          <div class="section-title">客戶信用額度核給計算繁瑣</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">年度信用額度審查需手動統整港灣、棧埠、CY 等多份報表，逐一計算年度港埠業務費、逾期件數，整合極耗時。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">上傳多份報表後，AI 自動跨檔比對、加總計算，依客戶名稱彙整成含 22 欄位的信用額度試算 Excel，大幅降低人工作業量。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>多源報表解析</strong>：自動讀取港灣、棧埠、CY 等 5 份來源</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">依客戶名稱<strong>跨檔整合計算</strong>年度業務費、件數、逾期比率</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">自動輸出<strong>標準 Excel 格式</strong>（A～V 欄對應欄位）</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">Excel 自動化</span>
+          <span class="tag teal">跨表資料整合</span>
+          <span class="tag orange">Python / pandas</span>
+          <span class="tag">AI 輔助驗算</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P6 痛點4 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">4</div>
+        <div>
+          <div class="section-title">年度預算細項估計耗費時間</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">每年度預算編列需依各會計科目細項手動整理報表、統計費率次數與合計金額，再估算後續可能營收，工作量大。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">AI 自動比對報表數據、整理費率次數與金額彙整表，並進行後續數值模擬，以 Excel 格式輸出，加速預算編列流程。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text">讀取港灣、棧埠等<strong>多份收入報表</strong>，依費率項目整合統計</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">AI 產出<strong>費率次數 × 金額彙整表</strong>，自動驗算正確性</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">基於歷史趨勢進行<strong>統計預測模型</strong>，說明數據依據</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">報表自動彙整</span>
+          <span class="tag teal">統計預測模型</span>
+          <span class="tag orange">Excel 輸出</span>
+          <span class="tag">時序預測</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P7 痛點5 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">5</div>
+        <div>
+          <div class="section-title">每月營收比較報表整理耗時</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">每月需將累積實際數分別與累積預算數、去年同期進行比較，並分析差異原因，全憑人工整理報表相當耗時。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">上傳當月與去年同期報表，AI 自動計算差異欄位（C、F 欄），並根據數據特徵自動生成可能原因分析說明。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>自動讀取</strong>當月及去年同期兩份報表</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">計算累積實際數 vs 預算數、vs 去年同期之<strong>差異值</strong></div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">AI 分析差異，自動<strong>產出文字說明</strong>及 Excel 格式報表</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">自動差異計算</span>
+          <span class="tag teal">LLM 原因分析</span>
+          <span class="tag orange">Excel 自動化</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P8 痛點6 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">6</div>
+        <div>
+          <div class="section-title">當年度營收預估困難</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">現行依賴人工評估今年度各科目預估收入，缺乏系統性預測方法，主觀判斷偏差大，難以對齊實際趨勢。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">整合前 3 年歷史報表＋當年現況，AI 進行統計預測，自動說明各科目預估收入及推算理由，產出 Excel 模擬表。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text">載入<strong>前 3 年完整報表</strong>＋當年迄今報表</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">AI 識別<strong>季節性趨勢</strong>與成長/衰退模式，建立預測模型</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">輸出各科目<strong>預估金額 + 說明文字</strong>（含信心區間）</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">時序預測</span>
+          <span class="tag teal">趨勢分析</span>
+          <span class="tag orange">情境模擬</span>
+          <span class="tag">Prophet / ARIMA</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P9 痛點7 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">7</div>
+        <div>
+          <div class="section-title">航線與航商資訊查詢效率低</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">國際航線代碼與派船航線名稱不對應，需手動查詢自貿科航線表或官網，再手工整合報表，耗時且易出錯。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">整合進港船舶報表、裝卸櫃量資料、航線表，建立可查詢的航商航線+櫃量資料庫，支援月比與年比分析。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text">以<strong>VLOOKUP / JOIN 邏輯</strong>自動合併 REP_D027 × REP_D212</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">整合自貿科航線表＋<strong>官網自動爬蟲</strong>對應派船航線名稱</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">查詢介面支援<strong>航商 → 航線 → 月/年櫃量比較</strong>下載</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">資料整合 ETL</span>
+          <span class="tag teal">網路爬蟲</span>
+          <span class="tag orange">查詢介面</span>
+          <span class="tag">資料庫建置</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P10 痛點8 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">8</div>
+        <div>
+          <div class="section-title">棧埠作業申請流程漏洞</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">棧埠作業申請未於開工前完成、工作證明書超過 2 週未產出，影響帳單開立與月收，僅靠 1 年 2 次查核，成效不彰。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">在系統關鍵節點新增智慧卡控與警示機制，未完成申請時阻止後續動作，逾期未產出則自動提醒相關人員。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>系統卡控</strong>：派工前驗證全船運送人棧埠申請是否完成</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text"><strong>自動提醒</strong>：工作證明書逾 14 天未產出即推播警示</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text"><strong>異常記錄</strong>：追蹤未申請案件，產出定期查核報表</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">業務規則引擎</span>
+          <span class="tag teal">自動提醒機制</span>
+          <span class="tag orange">系統卡控整合</span>
+          <span class="tag">流程自動化</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P11 痛點9 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">9</div>
+        <div>
+          <div class="section-title">航商客戶資訊散落難以整合</div>
+          <div class="section-unit">📌 營運管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">出席會議報告單散落於個別承辦人，同一客戶可能由不同人處理，交接時資訊流失，無法快速掌握航商完整歷程。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">蒐集公文系統出席報告，整合成航商客戶資料庫，可查詢基本資料、拜訪紀錄、相關公文，並串接痛點 7 的航線櫃量資訊。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>文件擷取</strong>：自動解析會議報告單、公文，分類儲存</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">建立<strong>客戶 360° 資料庫</strong>（基本資料/航線/櫃量/拜訪紀錄）</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">串接<strong>航線櫃量資料庫（痛點7）</strong>，一站式查詢</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">文件解析 NLP</span>
+          <span class="tag teal">客戶資料庫</span>
+          <span class="tag orange">跨系統整合</span>
+          <span class="tag">資料串接</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P12 痛點10 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">10</div>
+        <div>
+          <div class="section-title">契約文件製作與整理耗時</div>
+          <div class="section-unit">📌 契約管理科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">辦理續約、招商需從本機散落文件中整理歷程、製作簡報口袋資料、撰寫契約草案、租金試算表及簽文，流程繁複耗時。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">串接本機契約文件及法規資料庫，AI 自動整理案件歷程、產出口袋資料、簡報，並依公版範本生成所需文件與簽文。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>文件索引</strong>：掃描本機歷史契約電子檔，建立可搜尋知識庫</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">AI 輔助<strong>確認不確定事項</strong>後，自動填充公版模板</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">一鍵輸出<strong>契約草案 / 租金試算表 / 簡報 / 簽文</strong></div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">文件生成 AI</span>
+          <span class="tag teal">模板自動填充</span>
+          <span class="tag orange">RAG 法規查詢</span>
+          <span class="tag">Word 自動化</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P13 痛點11 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">11</div>
+        <div>
+          <div class="section-title">每月航線表整理與比對耗時</div>
+          <div class="section-unit">📌 自貿運籌科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">需每月從 Alphaliner 抓取航線資料，整合 3A03 報表的櫃量與碼頭資訊，再與上月比對異動，人工作業繁瑣易錯。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">自動登入 Alphaliner 抓取資料、讀取 3A03 報表，整合後自動標記異動（淡藍色底色），一鍵產出完整航線 Excel 表。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>自動爬蟲</strong>：定期登入 Alphaliner，抓取指定港口航線資料</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">讀取 3A03 報表，<strong>依碼頭代碼映射</strong>對應櫃場與累計櫃量</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">與上月比對，<strong>自動標色異動行</strong>，輸出完整 Excel 航線表</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">網頁自動爬蟲</span>
+          <span class="tag teal">Excel 自動化</span>
+          <span class="tag orange">差異標色</span>
+          <span class="tag">資料整合</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P14 痛點12 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">12</div>
+        <div>
+          <div class="section-title">自貿港區量值統計分析繁瑣</div>
+          <div class="section-unit">📌 自貿運籌科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">每月需登入交通部統計資訊網下載多份報表，逐筆整理臺北港、基隆港、蘇澳港的自貿量值資料，流程繁瑣易出錯。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">一鍵自動化：登入網站、依港口下載報表、擷取關鍵欄位、計算 F1/F5 量值，自動產出含折線圖的多維比較統計表。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>RPA 自動登入</strong>交通部統計資訊網，依港口下載 7 份報表</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">解析 14、15 報表，<strong>依監管編號分類彙入</strong>報單計算表</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">自動計算月比、年同期比，<strong>生成圖表</strong>並輸出 Excel 總表</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">RPA 流程自動化</span>
+          <span class="tag teal">Excel 自動輸出</span>
+          <span class="tag orange">圖表自動生成</span>
+          <span class="tag">Playwright / Selenium</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P15 痛點13 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="section-header">
+        <div class="section-num-big">13</div>
+        <div>
+          <div class="section-title">契約條文比對耗時易出錯</div>
+          <div class="section-unit">📌 蘇澳港營運處業務科</div>
+        </div>
+      </div>
+      <div class="two-col" style="margin-bottom:16px">
+        <div class="pain-card">
+          <div class="pain-label">🔴 業務痛點</div>
+          <div class="card-text">新訂或續約時，需人工逐條對照契約條文與公司範本，條文繁多、易遺漏或誤植，增加承辦人員負擔。</div>
+        </div>
+        <div class="solution-card">
+          <div class="solution-label">✅ AI 解題方向</div>
+          <div class="card-text">導入 AI 文字比對技術，自動辨識新增、刪除、修正內容並標示差異，自動生成「契約條文對照表」Word 檔。</div>
+        </div>
+      </div>
+      <div class="card" style="text-align:left;padding:22px">
+        <div class="card-title" style="margin-bottom:14px">🛠️ 建議實作步驟</div>
+        <div class="three-col" style="gap:12px">
+          <div class="step-row"><div class="step-num">1</div><div class="step-text"><strong>雙文件解析</strong>：讀取契約範本與新擬訂契約，對齊條文結構</div></div>
+          <div class="step-row"><div class="step-num">2</div><div class="step-text">AI <strong>逐條比對</strong>，自動標記新增（綠）、刪除（紅）、修正（黃）</div></div>
+          <div class="step-row"><div class="step-num">3</div><div class="step-text">一鍵輸出<strong>Word 格式對照表</strong>，含差異說明欄位</div></div>
+        </div>
+        <div class="tech-row" style="margin-top:14px">
+          <span class="tag teal">文件比對 NLP</span>
+          <span class="tag teal">差異自動標記</span>
+          <span class="tag orange">Word 自動化</span>
+          <span class="tag">語意對齊</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ===== P16 總結 ===== -->
+  <section class="slide">
+    <div class="slide-content">
+      <div class="badge">📊 綜合分析</div>
+      <div class="title-main" style="font-size:36px;margin-bottom:20px">AI 導入<span class="title-accent">優先建議</span></div>
+      <div class="quad-grid" style="margin-bottom:16px">
+        <div class="card" style="text-align:left;padding:22px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div class="icon-square teal">🚀</div>
+            <div style="font-weight:700;font-size:15px;color:#2D2D2D">立即可行（低建置成本）</div>
+          </div>
+          <div class="card-text">痛點 3、5：Excel 報表自動化<br>痛點 13：契約條文比對 Word<br>痛點 11：航線表自動更新</div>
+        </div>
+        <div class="card" style="text-align:left;padding:22px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div class="icon-square orange">🧠</div>
+            <div style="font-weight:700;font-size:15px;color:#2D2D2D">中期建置（AI 知識庫）</div>
+          </div>
+          <div class="card-text">痛點 1：計費查詢 RAG 助手<br>痛點 2：知識管理同步系統<br>痛點 10：契約文件生成 AI</div>
+        </div>
+        <div class="card" style="text-align:left;padding:22px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div class="icon-square purple">🔗</div>
+            <div style="font-weight:700;font-size:15px;color:#2D2D2D">整合型（跨系統串接）</div>
+          </div>
+          <div class="card-text">痛點 7+9：航商資料庫整合<br>痛點 12：RPA 自動下載統計<br>痛點 4+6：預算預測模型</div>
+        </div>
+        <div class="card" style="text-align:left;padding:22px">
+          <div style="display:flex;align-items:center;gap:12px;margin-bottom:12px">
+            <div class="icon-square red">⚙️</div>
+            <div style="font-weight:700;font-size:15px;color:#2D2D2D">系統端改造</div>
+          </div>
+          <div class="card-text">痛點 8：棧埠系統卡控機制<br>需與資訊單位協作<br>納入系統功能需求規格書</div>
+        </div>
+      </div>
+      <div class="card" style="padding:16px 24px;background:rgba(44,197,181,0.06);border:1.5px solid rgba(44,197,181,0.2)">
+        <p style="font-size:14px;color:#2D2D2D;line-height:1.8">
+          💡 <strong>建議策略</strong>：先以<strong>自動化工具（RPA + Python）</strong>解決報表整理耗時問題（立竿見影），
+          再推進<strong>RAG 知識庫</strong>處理資訊查詢與同步問題，最後整合各資料庫形成完整的<strong>智慧化作業平台</strong>。
+        </p>
+      </div>
+    </div>
+  </section>
+
+  <!-- Footer & Nav -->
+  <footer class="slide-footer">🐻 林熊熊分享</footer>
+
+  <nav class="nav-bar">
+    <button class="nav-btn" id="prevBtn">‹</button>
+    <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
+    <span style="color:#ccc">/</span>
+    <span id="totalPages" style="font-size:15px;color:#999"></span>
+    <button class="nav-btn" id="nextBtn">›</button>
+  </nav>
+</div>
+
+<script>
+  const slides = document.querySelectorAll('.slide');
+  const pageIndicator = document.getElementById('pageIndicator');
+  const totalPagesEl  = document.getElementById('totalPages');
+  const prevBtn = document.getElementById('prevBtn');
+  const nextBtn = document.getElementById('nextBtn');
+
+  let current = 0;
+  totalPagesEl.textContent = slides.length;
+
+  function goTo(n) {
+    slides[current].classList.remove('active');
+    current = Math.max(0, Math.min(n, slides.length - 1));
+    slides[current].classList.add('active');
+    updateIndicator();
+    prevBtn.disabled = current === 0;
+    nextBtn.disabled = current === slides.length - 1;
+  }
+
+  function updateIndicator() {
+    pageIndicator.textContent = current + 1;
+  }
+
+  pageIndicator.addEventListener('click', () => {
+    const input = document.createElement('input');
+    input.type = 'number';
+    input.min = 1;
+    input.max = slides.length;
+    input.value = current + 1;
+    input.className = 'page-jump-input';
+    pageIndicator.replaceWith(input);
+    input.select();
+
+    function commit() {
+      const n = parseInt(input.value, 10);
+      input.replaceWith(pageIndicator);
+      if (!isNaN(n)) goTo(n - 1);
+      else updateIndicator();
+    }
+
+    input.addEventListener('keydown', e => {
+      if (e.key === 'Enter') { e.preventDefault(); commit(); }
+      if (e.key === 'Escape') { input.replaceWith(pageIndicator); updateIndicator(); }
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+    });
+    input.addEventListener('blur', commit);
+    input.addEventListener('input', () => {
+      if (input.value < 1) input.value = 1;
+      if (input.value > slides.length) input.value = slides.length;
+    });
+  });
+
+  prevBtn.addEventListener('click', () => goTo(current - 1));
+  nextBtn.addEventListener('click', () => goTo(current + 1));
+
+  document.addEventListener('keydown', e => {
+    if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+    if (e.key === 'ArrowLeft'  || e.key === 'ArrowUp')   goTo(current - 1);
+  });
+
+  goTo(0);
+</script>
+</body>
+</html>
