@@ -1,0 +1,506 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>社會科錯題精練</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <style>
+    /* 3D 翻牌基礎設定 */
+    .perspective-1000 {
+      perspective: 1000px;
+    }
+    .preserve-3d {
+      transform-style: preserve-3d;
+    }
+    .backface-hidden {
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+    }
+    .rotate-y-180 {
+      transform: rotateY(180deg);
+    }
+    
+    /* 修正手機版自動撐開高度時，正反面高度一致的動態處理 */
+    .card-container {
+      display: grid;
+      grid-template-columns: 100%;
+    }
+    .card-face {
+      grid-area: 1 / 1 / 2 / 2;
+    }
+  </style>
+</head>
+<body class="bg-slate-50 text-slate-800 min-h-screen flex flex-col font-sans antialiased">
+
+  <header class="bg-white border-b border-slate-200 sticky top-0 z-50 shadow-sm">
+    <div class="max-w-xl mx-auto px-4 py-3 flex justify-between items-center">
+      <div>
+        <h1 class="font-bold text-xl text-slate-950">社會科錯題精練</h1>
+        <p class="text-xs text-slate-500" id="current-index-label">進度：1 / 6</p>
+      </div>
+      
+      <div class="flex items-center bg-slate-100 p-1 rounded-xl border border-slate-200 text-xs">
+        <button id="btn-quiz-mode" onclick="setMode('quiz')" class="px-2.5 py-1.5 rounded-lg font-semibold transition-all bg-white text-indigo-600 shadow-sm">
+          測驗
+        </button>
+        <button id="btn-study-mode" onclick="setMode('study')" class="px-2.5 py-1.5 rounded-lg font-semibold transition-all text-slate-600 hover:text-slate-900">
+          看答案
+        </button>
+      </div>
+    </div>
+  </header>
+
+  <main class="flex-grow max-w-xl w-full mx-auto px-3 py-4 flex flex-col justify-start gap-4">
+    
+    <div class="w-full bg-slate-200 h-2 rounded-full overflow-hidden shadow-inner">
+      <div id="progress-bar" class="bg-indigo-600 h-full w-1/6 transition-all duration-300 rounded-full"></div>
+    </div>
+
+    <div class="perspective-1000 w-full my-1">
+      <div id="flashcard" class="w-full duration-500 preserve-3d card-container relative cursor-pointer">
+        
+        <div class="card-face backface-hidden bg-white rounded-2xl border-2 border-slate-200 shadow-lg p-5 flex flex-col justify-between transition-all hover:border-indigo-300">
+          <div>
+            <div class="mb-3">
+              <span id="card-q-number" class="bg-indigo-600 text-white font-extrabold text-base px-4 py-1.5 rounded-lg shadow-sm">題目 2</span>
+            </div>
+            
+            <div class="mb-5">
+              <p id="card-question-text" class="text-slate-900 font-bold text-lg sm:text-xl leading-relaxed">
+                載入中...
+              </p>
+            </div>
+            
+            <div id="options-container" class="space-y-3">
+              </div>
+          </div>
+          
+          <div class="mt-6 flex justify-between items-center pt-3 border-t border-slate-100">
+            <span class="text-xs text-slate-400 font-medium" id="bottom-tip">請選擇一個正確答案</span>
+            <button id="btn-submit" onclick="submitAnswer(event)" class="bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-base px-6 py-2.5 rounded-xl transition-all shadow-md disabled:opacity-50">
+              確認送出
+            </button>
+          </div>
+        </div>
+        
+        <div class="card-face backface-hidden rotate-y-180 bg-slate-900 text-white rounded-2xl p-5 flex flex-col justify-between shadow-xl border-2 border-slate-800">
+          <div>
+            <div class="flex justify-between items-center mb-4">
+              <span id="result-badge" class="font-black text-base px-3 py-1 rounded-md shadow-sm">答對！</span>
+              <span id="card-back-number" class="text-xs text-slate-400 font-bold">題目 2 • 考點回顧</span>
+            </div>
+            
+            <div class="grid grid-cols-2 gap-3 mb-5">
+              <div class="bg-white/5 rounded-xl p-3 border border-white/10 text-center">
+                <span class="block text-xs text-slate-400 font-bold">正確答案</span>
+                <span id="correct-answer-display" class="text-3xl font-black text-emerald-400 mt-1 block"></span>
+              </div>
+              <div class="bg-white/5 rounded-xl p-3 border border-white/10 text-center">
+                <span class="block text-xs text-slate-400 font-bold">您的回答</span>
+                <span id="user-answer-display" class="text-3xl font-black text-rose-400 mt-1 block"></span>
+              </div>
+            </div>
+            
+            <div class="mb-4">
+              <h4 class="text-sm font-bold text-indigo-400 tracking-wider mb-1">🎯 核心觀念解析</h4>
+              <p id="explanation-text" class="text-base text-slate-200 leading-relaxed font-medium">
+                解析加載中...
+              </p>
+            </div>
+          </div>
+          
+          <div class="flex gap-3 items-center pt-4 border-t border-white/10 mt-4">
+            <button onclick="flipCard(event)" class="flex-1 bg-white/10 hover:bg-white/20 text-white font-bold text-sm py-2.5 rounded-xl transition-all border border-white/10">
+              看題目面
+            </button>
+            <button id="btn-next" onclick="nextQuestion(event)" class="flex-1 bg-emerald-500 hover:bg-emerald-600 text-white font-bold text-sm py-2.5 rounded-xl transition-all">
+              下一題 ➔
+            </button>
+          </div>
+        </div>
+        
+      </div>
+    </div>
+    
+    <div class="mt-2 flex justify-center items-center gap-3">
+      <button onclick="prevQuestion(event)" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 shadow-sm transition-all text-slate-700 font-bold text-sm disabled:opacity-40" id="btn-prev-nav">
+        ⬅ 上一題
+      </button>
+      <div class="flex gap-1.5" id="nav-dots-container"></div>
+      <button onclick="nextQuestion(event)" class="px-4 py-2 rounded-xl bg-white hover:bg-slate-100 border border-slate-200 shadow-sm transition-all text-slate-700 font-bold text-sm" id="btn-next-nav">
+        下一題 ➡
+      </button>
+    </div>
+
+  </main>
+
+  <div id="results-modal" class="fixed inset-0 bg-slate-950/80 backdrop-blur-sm z-50 flex items-center justify-center p-4 opacity-0 pointer-events-none transition-all duration-300">
+    <div class="bg-white rounded-2xl max-w-sm w-full p-6 shadow-2xl text-center transform scale-95 transition-all">
+      <h3 class="text-xl font-black text-slate-900 mb-2">精熟挑戰完成！</h3>
+      <div class="bg-slate-50 border border-slate-100 rounded-xl p-4 my-4">
+        <div class="grid grid-cols-2 gap-2">
+          <div>
+            <span class="text-xs text-slate-400 block font-bold">答對率</span>
+            <span id="modal-accuracy" class="text-2xl font-black text-indigo-600">0%</span>
+          </div>
+          <div>
+            <span class="text-xs text-slate-400 block font-bold">答對題數</span>
+            <span id="modal-score" class="text-2xl font-black text-emerald-600">0 / 6</span>
+          </div>
+        </div>
+      </div>
+      <div class="space-y-2">
+        <button onclick="restartQuiz()" class="w-full bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-2.5 rounded-xl transition-all shadow-md">
+          再挑戰一次
+        </button>
+        <button onclick="closeModal()" class="w-full bg-slate-100 hover:bg-slate-200 text-slate-600 font-bold py-2 rounded-xl transition-all">
+          返回看解析
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    const quizData = [
+      {
+        id: 2,
+        question: "承上題，日治時期為解決中南部平原缺水，影響糖廠產量穩定性的問題，因此興建嘉南大圳，請問造成中南部平原缺水的原因，與下列何者關係較密切？",
+        options: [
+          { key: "A", text: "夏季炎熱蒸發量大於降水量" },
+          { key: "B", text: "冬季背風坡降水較少" },
+          { key: "C", text: "南部人口稠密用水過多" },
+          { key: "D", text: "工業發達用水過多" }
+        ],
+        answer: "B",
+        explanation: "中南部地區在冬季時處於東北季風的背風坡，雨量稀少、乾季明顯（冬乾現象），因此常有缺水問題，需要興建嘉南大圳等水利設施來穩定甘蔗的灌溉水源。"
+      },
+      {
+        id: 9,
+        question: "臺灣在經濟發展上，對於國際貿易依賴度極高，此種商業現象與臺灣何種環境特徵最為相關？",
+        options: [
+          { key: "A", text: "勞動力不足" },
+          { key: "B", text: "土地狹小" },
+          { key: "C", text: "人口密度高" },
+          { key: "D", text: "缺自然資源" }
+        ],
+        answer: "D",
+        explanation: "臺灣礦產、石油及能源等自然資源極為依賴進口。本身自然資源缺乏，加上內部市場較小，主要採取加工出口導向的經濟模式，因此對國際貿易的依賴度非常高。"
+      },
+      {
+        id: 23,
+        question: "(甲)台大畢業，進台積電擔任半導體工程師；(乙)在高雄加工出口區的紡織廠做女工；(丙)在鳳梨罐頭加工廠工作，將新鮮水果做成罐頭出口海外；(丁)承包煉油廠、煉鋼廠的相關工程。阿福導演打算拍一部關於「台灣工業發展史」的電影，若依照時間順序，請問阿福導演應該怎麼安排電影場景？",
+        options: [
+          { key: "A", text: "甲丙乙丁" },
+          { key: "B", text: "乙丙丁甲" },
+          { key: "C", text: "丙乙丁甲" },
+          { key: "D", text: "丁乙丙甲" }
+        ],
+        answer: "C",
+        explanation: "歷史發展順序為：(丙)民國40年代農產加工 ➔ (乙)民國50年代勞力密集輕工業（加工出口區紡織）➔ (丁)民國60年代重化工業（十大建設）➔ (甲)民國70年代後高科技產業（半導體）。"
+      },
+      {
+        id: 34,
+        question: "有關臺灣工業區分布的敘述，下列何者錯誤？",
+        options: [
+          { key: "A", text: "臺灣各工業區有聚集的現象，因為聯繫方便且節省運輸成本" },
+          { key: "B", text: "電子、資訊產業主要分布在北部，眼鏡製造及重工業主要分布在南部" },
+          { key: "C", text: "花蓮有石材製品製造業是因為當地原石資源豐富" },
+          { key: "D", text: "以高科技產業為主的南部科學園區，是三個高科技產業區中最早成立的" }
+        ],
+        answer: "D",
+        explanation: "臺灣最早成立的科學園區是「新竹科學園區」（1980年成立），而非南部科學園區，故 (D) 選項描述錯誤。"
+      },
+      {
+        id: 35,
+        question: "臺灣曾靠出口農產品賺取大量外匯，帶動經濟發展，其中，外銷表現最好的「三罐王」是鳳梨、洋菇、蘆筍三種罐頭，全盛時期，這「三罐王」高居全臺外銷總額的 12.3%，直到後來受到東南亞國家的競爭，才逐漸轉型為內需型產業。請問：屬於農產加工業的「三罐王」，是從下列哪一個時期開始發展？",
+        options: [
+          { key: "A", text: "民國 40 年代" },
+          { key: "B", text: "民國 50 年代" },
+          { key: "C", text: "民國 60 年代" },
+          { key: "D", text: "民國 70 年代以後" }
+        ],
+        answer: "B",
+        explanation: "臺灣的鳳梨、洋菇、蘆筍等農產加工罐頭外銷，是在「民國 50 年代」達到全盛，成為當時外匯的重要支柱。"
+      },
+      {
+        id: 36,
+        question: "臺灣政府在面臨「美援」停止後所造成經濟發展資金短缺等困境，採取以勞力密集的輕工業來拓展出口的策略，陸續設立高雄、楠梓、臺中加工出口區，使出口產業蓬勃發展，賺取大量外匯，是奠定臺灣經濟起飛的基礎。請問：下列何者是當時加工出口區的主要產品？",
+        options: [
+          { key: "A", text: "紡織、電子裝配" },
+          { key: "B", text: "農、林加工製品" },
+          { key: "C", text: "汽車、電鍍鋅鋼品" },
+          { key: "D", text: "半導體、液晶螢幕" }
+        ],
+        answer: "A",
+        explanation: "民國50年代加工出口區創立初期，主要利用臺灣廉價且充足的勞動力，發展勞力密集的輕工業，其中最核心的代表產品就是紡織品與電子零件裝配。"
+      }
+    ];
+
+    let currentIdx = 0;
+    let selectedOption = null;
+    let quizState = {};
+    let currentMode = 'quiz';
+    let isFlipped = false;
+
+    function initQuiz() {
+      quizData.forEach((q, idx) => {
+        quizState[idx] = { userAnswer: null, isCorrect: false, isAnswered: false };
+      });
+      currentIdx = 0;
+      isFlipped = false;
+      selectedOption = null;
+      renderDots();
+      renderCard();
+      updateProgress();
+    }
+
+    function setMode(mode) {
+      currentMode = mode;
+      const btnQuiz = document.getElementById('btn-quiz-mode');
+      const btnStudy = document.getElementById('btn-study-mode');
+      const flashcard = document.getElementById('flashcard');
+      
+      if (isFlipped) {
+        flashcard.classList.remove('rotate-y-180');
+        isFlipped = false;
+      }
+
+      if (mode === 'quiz') {
+        btnQuiz.className = "px-3 py-1.5 rounded-lg font-semibold transition-all bg-white text-indigo-600 shadow-sm";
+        btnStudy.className = "px-3 py-1.5 rounded-lg font-semibold transition-all text-slate-600 hover:text-slate-900";
+      } else {
+        btnStudy.className = "px-3 py-1.5 rounded-lg font-semibold transition-all bg-white text-indigo-600 shadow-sm";
+        btnQuiz.className = "px-3 py-1.5 rounded-lg font-semibold transition-all text-slate-600 hover:text-slate-900";
+      }
+      renderCard();
+    }
+
+    function flipCard(event) {
+      if (event) event.stopPropagation();
+      const flashcard = document.getElementById('flashcard');
+      if (event && (event.target.closest('.option-btn'))) return;
+
+      isFlipped = !isFlipped;
+      if (isFlipped) {
+        flashcard.classList.add('rotate-y-180');
+      } else {
+        flashcard.classList.remove('rotate-y-180');
+      }
+    }
+
+    document.getElementById('flashcard').addEventListener('click', function() {
+      if (currentMode === 'study') flipCard();
+    });
+
+    function renderDots() {
+      const container = document.getElementById('nav-dots-container');
+      container.innerHTML = '';
+      quizData.forEach((_, idx) => {
+        const dot = document.createElement('button');
+        dot.onclick = () => jumpToQuestion(idx);
+        dot.id = `nav-dot-${idx}`;
+        dot.className = "w-7 h-7 rounded-full border text-xs font-bold transition-all flex items-center justify-center";
+        dot.innerText = quizData[idx].id;
+        container.appendChild(dot);
+      });
+      updateNavigationUI();
+    }
+
+    function updateNavigationUI() {
+      quizData.forEach((_, idx) => {
+        const dot = document.getElementById(`nav-dot-${idx}`);
+        if (!dot) return;
+        if (currentIdx === idx) {
+          dot.className = "w-7 h-7 rounded-full text-xs font-black bg-indigo-600 text-white ring-2 ring-indigo-200 scale-110";
+        } else {
+          if (quizState[idx].isAnswered) {
+            dot.className = quizState[idx].isCorrect 
+              ? "w-7 h-7 rounded-full text-xs font-bold bg-emerald-500 text-white" 
+              : "w-7 h-7 rounded-full text-xs font-bold bg-rose-500 text-white";
+          } else {
+            dot.className = "w-7 h-7 rounded-full text-xs font-bold bg-white text-slate-600 border-slate-200";
+          }
+        }
+      });
+      document.getElementById('btn-prev-nav').disabled = (currentIdx === 0);
+    }
+
+    function renderCard() {
+      const q = quizData[currentIdx];
+      const state = quizState[currentIdx];
+      
+      document.getElementById('card-q-number').innerText = `題目 ${q.id}`;
+      document.getElementById('card-question-text').innerText = q.question;
+      
+      const optContainer = document.getElementById('options-container');
+      optContainer.innerHTML = '';
+      selectedOption = state.userAnswer;
+
+      q.options.forEach(opt => {
+        const button = document.createElement('button');
+        button.type = "button";
+        button.onclick = () => selectOption(opt.key);
+        button.className = "option-btn w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3 font-bold text-base bg-white border-slate-200 text-slate-800";
+        button.id = `opt-${opt.key}`;
+        
+        const circle = document.createElement('span');
+        circle.className = "w-6 h-6 rounded-full border border-slate-300 bg-slate-50 text-slate-500 flex items-center justify-center text-xs font-bold shrink-0";
+        circle.innerText = opt.key;
+        circle.id = `circle-${opt.key}`;
+
+        const textSpan = document.createElement('span');
+        textSpan.innerText = opt.text;
+        
+        button.appendChild(circle);
+        button.appendChild(textSpan);
+        optContainer.appendChild(button);
+      });
+
+      const submitBtn = document.getElementById('btn-submit');
+      const tip = document.getElementById('bottom-tip');
+      
+      if (currentMode === 'study') {
+        submitBtn.innerText = "直接看解析";
+        tip.innerText = "目前為自由複習模式";
+        submitBtn.onclick = (e) => { e.stopPropagation(); flipCard(); };
+        submitBtn.disabled = false;
+      } else {
+        submitBtn.innerText = "確認送出";
+        tip.innerText = "請選擇一個正確答案";
+        submitBtn.onclick = (e) => submitAnswer(e);
+        
+        if (state.isAnswered) {
+          selectOption(state.userAnswer, true);
+          submitBtn.innerText = "看解析結果";
+          submitBtn.disabled = false;
+          submitBtn.onclick = (e) => { e.stopPropagation(); flipCard(); };
+        } else {
+          submitBtn.disabled = true; 
+        }
+      }
+
+      document.getElementById('correct-answer-display').innerText = q.answer;
+      document.getElementById('user-answer-display').innerText = state.userAnswer || "無";
+      document.getElementById('explanation-text').innerText = q.explanation;
+      
+      const resBadge = document.getElementById('result-badge');
+      if (state.isAnswered) {
+        if (state.isCorrect) {
+          resBadge.innerText = "答對啦！🎉";
+          resBadge.className = "font-black text-sm px-3 py-1 rounded bg-emerald-500 text-white";
+        } else {
+          resBadge.innerText = "這題答錯囉 💡";
+          resBadge.className = "font-black text-sm px-3 py-1 rounded bg-rose-500 text-white";
+        }
+      } else {
+        resBadge.innerText = "解析模式";
+        resBadge.className = "font-black text-sm px-3 py-1 rounded bg-amber-500 text-white";
+      }
+
+      const nextBtn = document.getElementById('btn-next');
+      nextBtn.innerText = (currentIdx === quizData.length - 1) ? "完成精熟測驗 👑" : "下一題 ➔";
+
+      const flashcard = document.getElementById('flashcard');
+      if (isFlipped) {
+        flashcard.classList.add('rotate-y-180');
+      } else {
+        flashcard.classList.remove('rotate-y-180');
+      }
+    }
+
+    function selectOption(key, isLocked = false) {
+      if (currentMode === 'study') return;
+      if (quizState[currentIdx].isAnswered && !isLocked) return;
+
+      selectedOption = key;
+
+      quizData[currentIdx].options.forEach(opt => {
+        document.getElementById(`opt-${opt.key}`).className = "option-btn w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3 font-bold text-base bg-white border-slate-200 text-slate-800";
+        document.getElementById(`circle-${opt.key}`).className = "w-6 h-6 rounded-full border border-slate-300 bg-slate-50 text-slate-500 flex items-center justify-center text-xs font-bold shrink-0";
+      });
+
+      document.getElementById(`opt-${key}`).className = "option-btn w-full text-left p-4 rounded-xl border-2 transition-all flex items-center gap-3 font-bold text-base bg-indigo-50 border-indigo-500 text-indigo-950 shadow-sm";
+      document.getElementById(`circle-${key}`).className = "w-6 h-6 rounded-full bg-indigo-600 text-white flex items-center justify-center text-xs font-bold shrink-0";
+
+      if (!quizState[currentIdx].isAnswered) {
+        document.getElementById('btn-submit').disabled = false;
+      }
+    }
+
+    function submitAnswer(event) {
+      if (event) event.stopPropagation();
+      if (!selectedOption) return;
+
+      const q = quizData[currentIdx];
+      const isCorrect = (selectedOption === q.answer);
+      
+      quizState[currentIdx] = { userAnswer: selectedOption, isCorrect: isCorrect, isAnswered: true };
+
+      setTimeout(() => {
+        flipCard();
+        renderCard();
+        updateNavigationUI();
+      }, 150);
+    }
+
+    function jumpToQuestion(idx) {
+      if (idx < 0 || idx >= quizData.length) return;
+      currentIdx = idx;
+      isFlipped = false;
+      document.getElementById('flashcard').classList.remove('rotate-y-180');
+
+      setTimeout(() => {
+        renderCard();
+        updateProgress();
+        updateNavigationUI();
+      }, 100);
+    }
+
+    function prevQuestion(event) {
+      if (event) event.stopPropagation();
+      if (currentIdx > 0) jumpToQuestion(currentIdx - 1);
+    }
+
+    function nextQuestion(event) {
+      if (event) event.stopPropagation();
+      if (currentIdx === quizData.length - 1) {
+        showResults();
+        return;
+      }
+      jumpToQuestion(currentIdx + 1);
+    }
+
+    function updateProgress() {
+      document.getElementById('progress-bar').style.width = `${((currentIdx + 1) / quizData.length) * 100}%`;
+      document.getElementById('current-index-label').innerText = `進度：${currentIdx + 1} / ${quizData.length}`;
+    }
+
+    function showResults() {
+      let correct = 0;
+      let answered = 0;
+      Object.keys(quizState).forEach(key => {
+        if (quizState[key].isAnswered) {
+          answered++;
+          if (quizState[key].isCorrect) correct++;
+        }
+      });
+      document.getElementById('modal-score').innerText = `${correct} / ${quizData.length}`;
+      document.getElementById('modal-accuracy').innerText = `${answered > 0 ? Math.round((correct / answered) * 100) : 0}%`;
+      
+      document.getElementById('results-modal').classList.remove('opacity-0', 'pointer-events-none');
+    }
+
+    function closeModal() {
+      document.getElementById('results-modal').classList.add('opacity-0', 'pointer-events-none');
+    }
+
+    function restartQuiz() {
+      closeModal();
+      initQuiz();
+    }
+
+    window.onload = function() { initQuiz(); };
+  </script>
+</body>
+</html>
