@@ -1,0 +1,392 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>錯題一頁式測驗</title>
+  <style>
+    :root {
+      --bg:#f6f7fb;
+      --card:#ffffff;
+      --text:#172033;
+      --muted:#5f6b7a;
+      --brand:#2563eb;
+      --brand2:#1e40af;
+      --ok:#15803d;
+      --bad:#b91c1c;
+      --warn:#b45309;
+      --line:#e5e7eb;
+      --soft:#eef2ff;
+      --fontScale:1;
+    }
+    * { box-sizing:border-box; }
+    body {
+      margin:0;
+      font-family:-apple-system, BlinkMacSystemFont, "Noto Sans TC", "Microsoft JhengHei", "PingFang TC", Arial, sans-serif;
+      background:linear-gradient(180deg,#eef2ff 0,#f6f7fb 260px);
+      color:var(--text);
+      font-size:calc(18px * var(--fontScale));
+      line-height:1.65;
+    }
+    .app { max-width:880px; margin:0 auto; padding:14px 14px 96px; }
+    .topbar {
+      position:sticky; top:0; z-index:30;
+      background:rgba(246,247,251,.92); backdrop-filter:blur(10px);
+      border-bottom:1px solid rgba(229,231,235,.8);
+      margin:0 -14px 14px; padding:10px 14px;
+    }
+    .toprow { display:flex; gap:8px; align-items:center; justify-content:space-between; flex-wrap:wrap; }
+    h1 { font-size:calc(24px * var(--fontScale)); margin:4px 0; letter-spacing:.02em; }
+    .pill { display:inline-flex; align-items:center; gap:6px; padding:4px 9px; border-radius:999px; background:#fff; border:1px solid var(--line); color:var(--muted); font-size:calc(13px * var(--fontScale)); }
+    .card { background:var(--card); border:1px solid var(--line); border-radius:20px; padding:18px; box-shadow:0 8px 24px rgba(15,23,42,.06); }
+    .section { margin-top:14px; }
+    label { display:block; color:#334155; font-weight:700; margin:12px 0 8px; }
+    select, button { font:inherit; }
+    select { width:100%; border:1px solid var(--line); border-radius:14px; padding:12px; background:#fff; color:var(--text); }
+    .grid2 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+    .btn {
+      appearance:none; border:0; border-radius:14px; padding:12px 14px; min-height:48px;
+      background:var(--brand); color:white; font-weight:800; cursor:pointer;
+      box-shadow:0 6px 16px rgba(37,99,235,.22);
+    }
+    .btn:active { transform:translateY(1px); }
+    .btn.secondary { background:#fff; color:var(--text); border:1px solid var(--line); box-shadow:none; }
+    .btn.danger { background:#b91c1c; }
+    .btn.ghost { background:transparent; color:var(--brand); border:1px solid #bfdbfe; box-shadow:none; }
+    .fontBtns { display:flex; gap:6px; }
+    .fontBtns button { border:1px solid var(--line); background:#fff; border-radius:999px; padding:4px 10px; color:#1f2937; }
+    .progressWrap { height:10px; background:#dbeafe; border-radius:999px; overflow:hidden; margin-top:10px; }
+    .progressBar { height:100%; width:0%; background:linear-gradient(90deg,#2563eb,#22c55e); transition:.25s; }
+    .qmeta { display:flex; flex-wrap:wrap; gap:8px; margin-bottom:12px; }
+    .questionText { font-size:calc(21px * var(--fontScale)); font-weight:800; line-height:1.65; margin:8px 0 14px; white-space:pre-wrap; }
+    .images { display:grid; gap:10px; margin:12px 0; }
+    .qimg { width:100%; max-height:65vh; object-fit:contain; border:1px solid var(--line); border-radius:14px; background:#fff; }
+    .imgCaption { font-size:calc(13px * var(--fontScale)); color:var(--muted); margin-top:-4px; }
+    .options { display:grid; gap:10px; margin-top:12px; }
+    .option {
+      width:100%; text-align:left; background:#fff; color:var(--text); border:2px solid var(--line);
+      border-radius:16px; padding:13px 14px; cursor:pointer; box-shadow:none; min-height:54px;
+    }
+    .option .key { display:inline-flex; align-items:center; justify-content:center; width:2.1em; height:2.1em; margin-right:8px; border-radius:999px; background:#f1f5f9; font-weight:900; color:#334155; }
+    .option.selected { border-color:var(--brand); background:#eff6ff; }
+    .option.correct { border-color:#16a34a; background:#dcfce7; }
+    .option.wrong { border-color:#dc2626; background:#fee2e2; }
+    .feedback { display:none; margin-top:14px; border-radius:16px; padding:14px; border:1px solid var(--line); background:#f8fafc; }
+    .feedback.show { display:block; }
+    .feedback.ok { border-color:#86efac; background:#f0fdf4; }
+    .feedback.bad { border-color:#fecaca; background:#fff1f2; }
+    .feedback.warn { border-color:#fde68a; background:#fffbeb; }
+    .feedbackTitle { font-weight:900; margin-bottom:6px; }
+    .navBtns { display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:14px; }
+    .hidden { display:none !important; }
+    .resultGrid { display:grid; grid-template-columns:repeat(3,1fr); gap:10px; margin:14px 0; }
+    .stat { background:#f8fafc; border:1px solid var(--line); border-radius:16px; padding:12px; text-align:center; }
+    .stat b { display:block; font-size:calc(26px * var(--fontScale)); color:var(--brand2); }
+    .wrongList { display:grid; gap:10px; margin-top:14px; }
+    .wrongItem { border:1px solid var(--line); border-radius:14px; background:#fff; padding:12px; }
+    details { margin-top:10px; }
+    summary { cursor:pointer; color:var(--brand2); font-weight:800; }
+    .footerActions { position:fixed; left:0; right:0; bottom:0; z-index:20; padding:10px 14px calc(10px + env(safe-area-inset-bottom)); background:rgba(255,255,255,.94); border-top:1px solid var(--line); backdrop-filter:blur(8px); }
+    .footerInner { max-width:880px; margin:0 auto; display:grid; grid-template-columns:1fr 1fr; gap:10px; }
+    .small { font-size:calc(14px * var(--fontScale)); color:var(--muted); }
+    .notice { background:#fff7ed; border:1px solid #fed7aa; color:#9a3412; border-radius:14px; padding:10px 12px; margin-top:12px; }
+    @media (max-width:640px) {
+      .app { padding-left:12px; padding-right:12px; }
+      .grid2, .resultGrid { grid-template-columns:1fr; }
+      .card { padding:15px; border-radius:18px; }
+      .navBtns { grid-template-columns:1fr; }
+      .footerInner { grid-template-columns:1fr 1fr; }
+      .questionText { font-size:calc(20px * var(--fontScale)); }
+      .qimg { max-height:58vh; }
+    }
+    @media print { .topbar,.footerActions,.setupOnly,.btn { display:none !important; } body { background:#fff; } .card { box-shadow:none; } }
+  </style>
+</head>
+<body>
+  <div class="app">
+    <div class="topbar">
+      <div class="toprow">
+        <div>
+          <h1>錯題一頁式測驗</h1>
+          <div class="small" id="topInfo">共 70 題｜手機版</div>
+        </div>
+        <div class="fontBtns" aria-label="字體大小">
+          <button type="button" onclick="changeFont(-0.1)">A−</button>
+          <button type="button" onclick="changeFont(0.1)">A＋</button>
+        </div>
+      </div>
+      <div class="progressWrap hidden" id="progressWrap"><div class="progressBar" id="progressBar"></div></div>
+    </div>
+
+    <section id="setup" class="card setupOnly">
+      <div class="qmeta">
+        <span class="pill">非題組題</span>
+        <span class="pill">可依序或亂數</span>
+        <span class="pill">可選 20／50／全部</span>
+      </div>
+      <label for="mode">出題方式</label>
+      <select id="mode">
+        <option value="sequential">依序出題</option>
+        <option value="random">亂數出題</option>
+      </select>
+      <div class="grid2">
+        <div>
+          <label for="count">一次出題數</label>
+          <select id="count">
+            <option value="20">20 題</option>
+            <option value="50">50 題</option>
+            <option value="all">全部題目</option>
+          </select>
+        </div>
+        <div>
+          <label for="reviewMode">答題模式</label>
+          <select id="reviewMode">
+            <option value="instant">答完立即看答案</option>
+            <option value="end">全部答完再看結果</option>
+          </select>
+        </div>
+      </div>
+      <div class="notice">提醒：有圖片的題目需確保 Google Drive 圖片權限設為「任何知道連結的人皆可檢視」，否則發布到網路後可能無法顯示。</div>
+      <div class="section grid2">
+        <button class="btn" onclick="startQuiz()">開始測驗</button>
+        <button class="btn secondary" onclick="startQuiz(true)">只練習錯過的題目</button>
+      </div>
+    </section>
+
+    <section id="quiz" class="card hidden">
+      <div class="qmeta" id="qmeta"></div>
+      <div class="questionText" id="questionText"></div>
+      <div class="images" id="images"></div>
+      <div class="options" id="options"></div>
+      <div class="feedback" id="feedback"></div>
+      <div class="navBtns">
+        <button class="btn secondary" id="prevBtn" onclick="prevQuestion()">上一題</button>
+        <button class="btn" id="nextBtn" onclick="nextQuestion()">下一題</button>
+      </div>
+    </section>
+
+    <section id="result" class="card hidden">
+      <h2>測驗結果</h2>
+      <div class="resultGrid">
+        <div class="stat"><b id="scoreNum">0</b>答對</div>
+        <div class="stat"><b id="wrongNum">0</b>答錯</div>
+        <div class="stat"><b id="rateNum">0%</b>正確率</div>
+      </div>
+      <div class="section grid2">
+        <button class="btn" onclick="restartSame()">再做一次同一份</button>
+        <button class="btn secondary" onclick="retryWrong()">只重練錯題</button>
+      </div>
+      <div class="section grid2">
+        <button class="btn ghost" onclick="backToSetup()">回到設定</button>
+        <button class="btn ghost" onclick="window.print()">列印結果</button>
+      </div>
+      <div id="wrongArea" class="wrongList"></div>
+    </section>
+  </div>
+
+  <div class="footerActions hidden" id="footerActions">
+    <div class="footerInner">
+      <button class="btn secondary" onclick="backToSetup()">結束</button>
+      <button class="btn" onclick="nextQuestion()" id="footerNext">下一題</button>
+    </div>
+  </div>
+
+  <script>
+    const QUESTION_BANK = [{"id": "T001", "sourceId": "Q001", "batch": "第一批", "type": "單選-沒圖", "question": "臺灣在清帝國時期從臺南運送大宗貨物到臺北主要是依賴海運，當時選擇海運而不考慮陸運的原因，主要是基於臺灣西部地區的何種限制？", "options": [{"key": "A", "text": "森林茂密"}, {"key": "B", "text": "河流東西流向"}, {"key": "C", "text": "天氣溼熱"}, {"key": "D", "text": "山脈南北縱走"}], "answer": "D", "explanation": "臺灣主要山脈多呈南北走向，阻隔東西向交通；清代西部南北陸路仍受地形、河川與道路條件限制，長距離大宗貨物多仰賴海運。此題選項中最符合「西部地區陸運限制」的是山脈南北縱走。", "concept": "清代臺灣交通、地形限制、海運", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T002", "sourceId": "Q002", "batch": "第一批", "type": "單選-有圖", "question": "圖（一）是甲、乙二地相對位置的示意圖，圖中標示各種運輸方式往來二地之間的最短距離。根據圖（二）各種運輸方式的運費判斷，由甲地運送小麥至乙地，選用哪一種運輸方式的運費最便宜？", "options": [{"key": "A", "text": "空運"}, {"key": "B", "text": "公路"}, {"key": "C", "text": "鐵路"}, {"key": "D", "text": "水運"}], "answer": "D", "explanation": "小麥屬大宗、低單價貨物，通常適合單位運費較低的水運；依圖示距離與運費曲線比較，水運雖距離較長，但總運費仍最低。", "concept": "運輸方式、運費曲線、大宗貨物", "difficulty": "中", "hasImage": "是", "images": [{"file": "第2題_圖一_甲乙距離示意圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=11FNwSoknD72uAXb76RC6qePANlUxJZMV&sz=w1200"}, {"file": "第2題_圖二_運費距離關係圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1JSxySH86DmJp5tbN9ZStejv4aZ0fE6Ju&sz=w1200"}], "note": "圖中距離與曲線交會點需於正式建檔時再放大確認。"}, {"id": "T003", "sourceId": "Q003", "batch": "第一批", "type": "單選-沒圖", "question": "同學們正在討論「都市」的特色，何者的說法最適當？", "options": [{"key": "A", "text": "都市人口密度比較大"}, {"key": "B", "text": "都市的居民都是從事服務業"}, {"key": "C", "text": "都市的面積比鄉村大"}, {"key": "D", "text": "都市的居民主要由宗族關係組成"}], "answer": "A", "explanation": "都市通常具有較高人口密度與較多元的產業、人口組成；不一定所有居民都從事服務業，面積也不一定比鄉村大，宗族關係也不是都市主要特徵。", "concept": "都市特徵、人口密度", "difficulty": "易", "hasImage": "否", "images": [], "note": "原檔名與前一題同為第2題，建議後續重新編號或加入頁碼。"}, {"id": "T004", "sourceId": "Q004", "batch": "第一批", "type": "單選-沒圖", "question": "敏鈺在閱讀某自然雜誌時發現上面寫道：「存在地球已四億年的活化石『鱟』，過去在臺灣極為常見，現今卻較難見其蹤跡。某地區在成立國家公園之前，曾因戰地政務的考量，在沿海的樹林中大量放置地雷，阻隔人們進入濱海的沙灘地，使該地意外成為鱟理想的產卵地點。」上文所指的國家公園最可能為下列何者？", "options": [{"key": "A", "text": "雪霸"}, {"key": "B", "text": "金門"}, {"key": "C", "text": "墾丁"}, {"key": "D", "text": "太魯閣"}], "answer": "B", "explanation": "題幹提到戰地政務、沿海地雷與鱟的產卵地，符合金門地區的歷史與自然保育背景。", "concept": "國家公園、金門、鱟、戰地政務", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T005", "sourceId": "Q005", "batch": "第一批", "type": "單選-有圖", "question": "右圖為早上8點時在重要交通線上所偵測到的交通流量，從圖中資料可知，四個地點中，哪一地的都市規模較大？", "options": [{"key": "A", "text": "甲"}, {"key": "B", "text": "乙"}, {"key": "C", "text": "丙"}, {"key": "D", "text": "丁"}], "answer": "B", "explanation": "早上8點通勤時段進入交通流量越高，通常表示該地就業、服務與吸引力較強，都市規模可能較大；圖中乙的進入交通流量最高。", "concept": "都市規模、通勤流量、交通判讀", "difficulty": "易", "hasImage": "是", "images": [{"file": "第4題_交通流量長條圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1jxvv00Ztlcvkb2IjLiuyvuqhh6ssp2em&sz=w1200"}], "note": "建議正式網頁保留原圖與放大檢視。"}, {"id": "T006", "sourceId": "Q006A", "batch": "第二批", "type": "單選-有圖", "question": "清初住在臺北的黃老闆，某日接到一批來自臺南商號的茶葉訂單，在當時的環境下，黃老闆最可能選擇右圖中哪條路徑來運輸商品？", "options": [{"key": "A", "text": "甲"}, {"key": "B", "text": "乙"}, {"key": "C", "text": "丙"}, {"key": "D", "text": "丁"}], "answer": "D", "explanation": "清領初期臺灣南北交通以西部沿海航運較便利，陸路需跨越河川、地形與治安限制，東部路線也不合當時主要開發與交通條件。圖中丁較符合臺灣西部沿海運輸路徑。", "concept": "清領時期交通、臺灣西部海運", "difficulty": "中", "hasImage": "是", "images": [{"file": "第6題_臺灣路徑示意圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1AXQbW4377l4RunLNiMeD3GFK0NqsQQEP&sz=w1200"}], "note": "圖中路線標示需正式網頁前再次核對。"}, {"id": "T007", "sourceId": "Q006B", "batch": "第二批", "type": "單選-沒圖", "question": "臺灣某行政區的山地面積比例高於75%，100公尺以下平地面積不到25%。該區平原為數條河川共同沖積而成，甲山脈呈東北－西南走向越過平原西北方，平原南方為乙山脈的北端起點，平原東部則有縱向海岸沙丘分布。上述行政區應為下列何者？", "options": [{"key": "A", "text": "南投縣"}, {"key": "B", "text": "苗栗縣"}, {"key": "C", "text": "宜蘭縣"}, {"key": "D", "text": "臺東縣"}], "answer": "C", "explanation": "題幹描述的蘭陽平原由河川沖積形成，西北側受雪山山脈影響，南側接近中央山脈北端，東側有沿海沙丘，符合宜蘭縣地理特徵。", "concept": "臺灣地形、宜蘭蘭陽平原", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T008", "sourceId": "Q004B", "batch": "第二批", "type": "單選-沒圖", "question": "都市化帶來了人民生活上的便利，但也造成了許多負面的影響，下列何者不是都市化之後帶來的問題？", "options": [{"key": "A", "text": "生態破壞及生態干擾"}, {"key": "B", "text": "公共設施不足"}, {"key": "C", "text": "都市人口結構高齡化"}, {"key": "D", "text": "城鄉差距的擴大"}], "answer": "C", "explanation": "都市化常見問題包括環境生態破壞、公共設施不足、交通與污染問題、城鄉差距擴大等；都市人口結構高齡化較不是都市化本身的典型直接問題。", "concept": "都市化影響", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T009", "sourceId": "Q005B", "batch": "第二批", "type": "單選-沒圖", "question": "政府主動制訂花東地區發展條例，且離島縣市須落實離島建設條例，並制訂符合原住民利益的特殊條例，上述這些措施的主要目的為何？", "options": [{"key": "A", "text": "均衡區域發展，縮小城鄉差異"}, {"key": "B", "text": "減少族群衝突，避免政治話題"}, {"key": "C", "text": "推動礦產開採，提高經濟收入"}, {"key": "D", "text": "增加觀光景點，服務中國遊客"}], "answer": "A", "explanation": "花東、離島與原住民族相關特殊條例主要著眼於保障偏遠或特定區域發展需求，促進區域均衡與縮小城鄉差距。", "concept": "區域發展、城鄉差距", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T010", "sourceId": "Q005C", "batch": "第二批", "type": "單選-沒圖", "question": "「臺灣好行（景點接駁）旅遊服務」是交通部觀光署專為旅遊規劃的公車服務，從臺灣各大景點所在地附近的臺鐵、高鐵站接送旅客前往主要觀光景點。下列各路線部分站點，哪一條路線位於「中部區域」？", "options": [{"key": "A", "text": "310太魯閣線：花蓮轉運站－東華大學美崙校區－七星潭－太魯閣遊客中心"}, {"key": "B", "text": "503石門水庫線：桃園客運中壢總站－老街溪河川教育中心－劉屋－石門水庫"}, {"key": "C", "text": "88府城巡迴線：臺南火車站－孔廟－林百貨／鄭成功廟－赤崁樓－臺南轉運站"}, {"key": "D", "text": "6936鹿港祈福線：高鐵臺中站－彰化火車站－八卦山大佛風景區－鹿港老街站"}], "answer": "D", "explanation": "太魯閣線屬東部，石門水庫線屬北部，府城巡迴線屬南部；鹿港祈福線經臺中、彰化與鹿港，屬中部區域。", "concept": "臺灣區域、觀光交通路線", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T011", "sourceId": "Q13", "batch": "第三批", "type": "單選-沒圖", "question": "宜蘭與大臺北地區的距離因國道五號的完工通車而縮短，每逢假日宜蘭湧進許多觀光人潮，帶動觀光業發展，也促使宜蘭納入北部一日生活圈。此公路修建時，耗費大量人力及時間在開通下列哪一座山脈？", "options": [{"key": "A", "text": "中央山脈"}, {"key": "B", "text": "雪山山脈"}, {"key": "C", "text": "玉山山脈"}, {"key": "D", "text": "海岸山脈"}], "answer": "B", "explanation": "國道五號往返臺北與宜蘭，關鍵工程為雪山隧道，穿越雪山山脈。", "concept": "臺灣交通建設／雪山隧道", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T012", "sourceId": "Q7", "batch": "第三批", "type": "單選-有圖", "question": "右圖是品均與媽媽每天通勤會經過的道路路況，若她們在上班時間行經此路段，下列哪一示意圖最符合當時都市與郊區的對應位置，以及當時人潮的流向？", "options": [{"key": "A", "text": "郊區←都市中心"}, {"key": "B", "text": "都市中心→郊區"}, {"key": "C", "text": "郊區→都市中心（都市中心在左）"}, {"key": "D", "text": "郊區→都市中心（都市中心在右）"}], "answer": "需確認", "explanation": "上班尖峰通常由郊區往都市中心移動；但本題還需依右側道路圖判讀都市中心與郊區的相對位置。", "concept": "都市化／通勤流向", "difficulty": "中", "hasImage": "是", "images": [{"file": "第7題_都市郊區通勤流向選項圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1l35o-CgJMKkxyOCU2X837_WaF26TwChc&sz=w1200"}, {"file": "第7題_通勤道路路況圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1djJyA1ai-udm7trEs9JP4R48WV3mZ9q7&sz=w1200"}], "note": "選項圖方向需以原圖再核對。"}, {"id": "T013", "sourceId": "Q8-1", "batch": "第三批", "type": "單選-沒圖", "question": "宗翰與智耀利用中秋假期由臺北前往花蓮旅遊，行程中先穿越了「甲」山脈的蔣渭水高速公路，到了宜蘭參觀冬山河、蘇澳泡冷泉後，繼續向南前往花蓮；開在蘇花公路時，他們隨時須留意右側「乙」山脈是否有落石滾下。旅途中先後所經過的甲、乙兩山脈依序為何？", "options": [{"key": "A", "text": "甲：中央山脈，乙：海岸山脈"}, {"key": "B", "text": "甲：雪山山脈，乙：中央山脈"}, {"key": "C", "text": "甲：雪山山脈，乙：海岸山脈"}, {"key": "D", "text": "甲：中央山脈，乙：雪山山脈"}], "answer": "B", "explanation": "臺北往宜蘭經國道五號穿越雪山山脈；沿蘇花公路南下時，內陸側主要為中央山脈。", "concept": "臺灣山脈與交通路線", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T014", "sourceId": "Q8-2", "batch": "第三批", "type": "單選-有圖", "question": "右表為春男家規劃的暑假親子旅遊，請根據行程規畫推論他們最有可能前往右圖中哪一個地點？", "options": [{"key": "A", "text": "甲"}, {"key": "B", "text": "乙"}, {"key": "C", "text": "丙"}, {"key": "D", "text": "丁"}], "answer": "C", "explanation": "行程包含馬公、望安、七美、桶盤嶼等地，皆屬澎湖群島；圖中臺灣西側的離島群位置為丙。", "concept": "臺灣離島／澎湖位置", "difficulty": "中", "hasImage": "是", "images": [{"file": "第8題_親子旅遊行程與離島位置圖_高500.jpg", "url": "https://drive.google.com/thumbnail?id=1YHUU6-O1gA6No0BDk1PYYxyBGI6P0bzd&sz=w1200"}], "note": "圖片引用已改為高500等比例圖，適合一頁式網頁呈現。"}, {"id": "T015", "sourceId": "Q10", "batch": "第三批", "type": "單選-有圖", "question": "右表為臺灣各區域家庭平均年所得最高及最低的縣市，造成表中不同區域間及區域內的收入高低變化，和下列何者關係最大？", "options": [{"key": "A", "text": "區域土地面積"}, {"key": "B", "text": "區域產業結構"}, {"key": "C", "text": "區域人口多寡"}, {"key": "D", "text": "區域資源豐缺"}], "answer": "B", "explanation": "家庭所得差異通常與都市化、就業機會、工商服務業比重及產業結構差異關係最密切。", "concept": "區域發展／產業結構", "difficulty": "中", "hasImage": "是", "images": [{"file": "第10題_各區域家庭平均年所得表_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1E_BHn8rLW-ixe_T9aa7OnrtM8v0ZAlL8&sz=w1200"}], "note": ""}, {"id": "T016", "sourceId": "Q11", "batch": "第三批", "type": "單選-有圖", "question": "右圖是臺灣地區都市化的程度示意圖，其發展過程與下列何項因素的關係最為明顯？", "options": [{"key": "A", "text": "出生率的高低變化"}, {"key": "B", "text": "集村的數量逐漸增加"}, {"key": "C", "text": "性別比例的高低變化"}, {"key": "D", "text": "工商業從業人員增加"}], "answer": "D", "explanation": "都市化提高與人口由農業轉向工商服務業、非農就業人口增加密切相關。", "concept": "都市化／產業轉型", "difficulty": "中", "hasImage": "是", "images": [{"file": "第11題_臺灣都市化程度折線圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1gbIMzKa4HpieJfL9MRaCLcnhbAo8ggLh&sz=w1200"}], "note": ""}, {"id": "T017", "sourceId": "Q12", "batch": "第三批", "type": "單選-沒圖", "question": "這個地區為臺灣本島人口最少的縣，擁有豐富的自然美景及人文景觀，如：三仙臺、卑南文化遺址及長濱文化遺址等。此外，池上米、鳳梨釋迦、金針花等，都是當地的特產。上文所描述的最可能是下列哪個縣市？", "options": [{"key": "A", "text": "宜蘭縣"}, {"key": "B", "text": "屏東縣"}, {"key": "C", "text": "花蓮縣"}, {"key": "D", "text": "臺東縣"}], "answer": "D", "explanation": "三仙臺、卑南文化遺址、長濱文化遺址、池上米與釋迦皆是臺東縣重要特色。", "concept": "臺灣縣市特色／臺東", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T018", "sourceId": "Q15A", "batch": "第四批", "type": "單選-沒圖", "question": "業者會依照物品的特性選擇最適當的運輸方式，以提高經濟效益，下列四種不同商品的運輸方式，哪一項最為適當？", "options": [{"key": "A", "text": "日本出口大量汽車至臺灣→陸運"}, {"key": "B", "text": "網路平臺外送員宅配食物給客戶→公路"}, {"key": "C", "text": "屏東新鮮黑鮪魚送至臺北餐廳→海運"}, {"key": "D", "text": "彰化田尾花卉送至臺灣各大花市→空運"}], "answer": "B", "explanation": "外送員以機車、汽車等道路運具配送，最符合公路運輸；其餘選項不是不可能就是效率與成本不佳。", "concept": "運輸方式選擇／公路海運空運", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T019", "sourceId": "Q15B", "batch": "第四批", "type": "單選-沒圖", "question": "臺北市某年的社會增加率呈現負值，而鄰近的新北市、桃園、新竹等地則呈現正成長，造成人口移往郊區最可能的原因為下列何者？", "options": [{"key": "A", "text": "醫療衛生進步"}, {"key": "B", "text": "大眾交通系統的擴展"}, {"key": "C", "text": "教育環境的考量"}, {"key": "D", "text": "大量的工廠遷往至中國"}], "answer": "B", "explanation": "交通建設與大眾運輸擴展，讓跨區通勤更方便，促使部分人口移居郊區、形成都市擴張。", "concept": "都市化／郊區化／通勤圈", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T020", "sourceId": "Q18", "batch": "第四批", "type": "單選-有圖", "question": "某日新聞報導：「新北市宣布放颱風假後，臺北市、基隆市皆宣布不放颱風假，讓許多通勤到臺北市工作的上班族受到影響，通勤人口比例如右表。」關於上述這些縣市之間關連性的敘述，何者正確？", "options": [{"key": "A", "text": "基隆、新北、桃園市彼此間的依賴程度高"}, {"key": "B", "text": "桃園市與臺北市間在生活上的關係最緊密"}, {"key": "C", "text": "桃園市與臺北市間的大眾運輸需求量最大"}, {"key": "D", "text": "臺北為北部都會區的中心，工作機會最多"}], "answer": "D", "explanation": "表中顯示新北、基隆、桃園皆有通勤至臺北市工作的比例，反映臺北市為北部都會區核心，就業吸引力高。", "concept": "都會區關聯／跨縣市通勤", "difficulty": "中", "hasImage": "是", "images": [{"file": "第18題_跨縣市通勤比例表_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=16Jh1R5PIUDrQAJ9aMMLSWy6uQQ_RVi_A&sz=w1200"}], "note": ""}, {"id": "T021", "sourceId": "Q20", "batch": "第四批", "type": "單選-有圖", "question": "右圖為促成臺灣一日生活圈的不同階段，隨著交通建設的進步，臺灣一日生活圈的範圍逐漸擴大。圖中甲、乙應是分別代表何種交通建設？", "options": [{"key": "A", "text": "甲：高速鐵路；乙：北迴鐵路"}, {"key": "B", "text": "甲：國道一號；乙：蘇花公路"}, {"key": "C", "text": "甲：縱貫鐵路；乙：國道五號"}, {"key": "D", "text": "甲：高速鐵路；乙：國道五號"}], "answer": "D", "explanation": "2007年後西部縱向一日生活圈明顯擴大，對應高速鐵路；宜蘭納入北部生活圈則與國道五號通車密切相關。", "concept": "交通建設／一日生活圈", "difficulty": "中", "hasImage": "是", "images": [{"file": "第20題_臺灣一日生活圈階段圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1zbXsjqP9ZgXBoMzmtMuDtoOPb2csua0t&sz=w1200"}], "note": ""}, {"id": "T022", "sourceId": "Q21", "batch": "第四批", "type": "單選-有圖", "question": "右圖為18世紀臺灣沿海的主要聚落，當時有「一府二鹿三艋舺」之稱，然而目前這些城市多已沒落，除了泥沙堆積港口外，還與下列哪一因素關係密切？", "options": [{"key": "A", "text": "海岸線後退"}, {"key": "B", "text": "水患發生頻繁"}, {"key": "C", "text": "全球暖化的影響"}, {"key": "D", "text": "鐵公路的修築完成"}], "answer": "D", "explanation": "早期港口城市興盛與海運有關，後來隨鐵路、公路等陸運建設發展，交通與商業重心改變，部分舊港市地位下降。", "concept": "清代聚落／交通變遷", "difficulty": "中", "hasImage": "是", "images": [{"file": "第21題_18世紀沿海主要聚落示意圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1xjyMJV18DpHaHnF8zqC4zj_aFoHjy5lp&sz=w1200"}], "note": ""}, {"id": "T023", "sourceId": "Q22", "batch": "第四批", "type": "單選-沒圖", "question": "放暑假的瑞奇與朋友約好一同出遊，下列是他們討論出的幾個旅遊地點與交通方式，哪一項行程安排最可行？", "options": [{"key": "A", "text": "飛機直達屏東，再坐船前往小琉球"}, {"key": "B", "text": "鐵路前往阿里山，欣賞日出與雲海"}, {"key": "C", "text": "高速公路直達花蓮，縱谷風情之旅"}, {"key": "D", "text": "高鐵環島之旅，快速體驗全臺風情"}], "answer": "B", "explanation": "阿里山可先搭鐵路到嘉義，再轉阿里山森林鐵路（或接駁）上山；其餘選項分別涉及不存在的直航、未直達的高速公路或不存在的高鐵環島。", "concept": "臺灣交通與旅遊", "difficulty": "中", "hasImage": "否", "images": [], "note": "B 選項依教材脈絡通常視為最可行；若採嚴格字面解讀，仍可再人工確認。"}, {"id": "T024", "sourceId": "Q23-1", "batch": "第五批", "type": "單選-有圖", "question": "侑恩是位鐵道迷，他希望能利用暑假期間從臺中搭乘鐵路順時針繞臺灣一週後至高雄找外婆，並拍下不同的鐵道沿線風景來分享。侑恩依序會經過右表哪些鐵路路線？", "options": [{"key": "A", "text": "乙丙己甲戊丁"}, {"key": "B", "text": "乙丁戊甲丙己"}, {"key": "C", "text": "乙戊丁甲丙己"}, {"key": "D", "text": "乙己丙甲丁戊"}], "answer": "C", "explanation": "由臺中順時針環島至高雄，依序為：縱貫線→宜蘭線→北迴線→臺東線→南迴線→屏東線。", "concept": "臺鐵路線／環島交通", "difficulty": "中", "hasImage": "是", "images": [{"file": "第23題_鐵道路線代號表_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1fidt2RZo-76pguxlquN1nm3f4xSnCnhv&sz=w1200"}], "note": ""}, {"id": "T025", "sourceId": "Q23-2", "batch": "第五批", "type": "單選-沒圖", "question": "臺灣西半部可分為北、中、南三大區域，其中三大區域具備哪一項共同特色？", "options": [{"key": "A", "text": "皆有高速鐵路經過"}, {"key": "B", "text": "皆呈現夏雨冬乾"}, {"key": "C", "text": "皆以平原地形為主"}, {"key": "D", "text": "沿海皆發展養殖漁業"}], "answer": "A", "explanation": "臺灣高鐵路線行經西部走廊，北、中、南三大區域皆有高鐵站與路線經過；其餘選項並非三區共同特色。", "concept": "臺灣西部區域特色", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T026", "sourceId": "Q24-1", "batch": "第五批", "type": "單選-沒圖", "question": "地處冬季季風的迎風面，以致於降雨日數多，有「雨都」之稱的基隆港，雖然是個港闊水深的天然良港，但也受到何種限制而不利於港區的擴建，進而影響發展，使其逐漸落後於高雄港？", "options": [{"key": "A", "text": "泥沙淤積嚴重"}, {"key": "B", "text": "人口大量外流"}, {"key": "C", "text": "丘陵緊臨港區"}, {"key": "D", "text": "外海風浪強勁"}], "answer": "C", "explanation": "基隆港附近多丘陵山地，腹地狹小，不利港區向外擴建，因此後續發展受限。", "concept": "港口發展／自然條件", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T027", "sourceId": "Q24-2", "batch": "第五批", "type": "單選-沒圖", "question": "臺灣鐵路西部幹線及東部幹線的時刻表中，只見到列車行駛的方向為「北上行」、「南下行」，均未見到東行或西行的列車班次。造成臺灣沒有東、西向鐵路班次的主因為何？", "options": [{"key": "A", "text": "資源開發"}, {"key": "B", "text": "地形限制"}, {"key": "C", "text": "河川流向"}, {"key": "D", "text": "人口密度"}], "answer": "B", "explanation": "臺灣中央山脈南北縱走，東西向交通受高山阻隔，因此鐵路幹線主要沿南北方向分布。", "concept": "地形與交通", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T028", "sourceId": "Q24-3", "batch": "第五批", "type": "單選-有圖", "question": "右圖為臺灣四大區域分區圖，請問：哪一個區域為臺灣高科技重鎮，經濟發達，加上鄰近航空城，現為臺灣國際移工比例最高的區域？", "options": [{"key": "A", "text": "甲"}, {"key": "B", "text": "乙"}, {"key": "C", "text": "丙"}, {"key": "D", "text": "丁"}], "answer": "A", "explanation": "北部區域包含桃園、新竹等地，兼具航空城、高科技產業與就業機會，因此國際移工比例較高。", "concept": "臺灣四大區域／北部產業", "difficulty": "中", "hasImage": "是", "images": [{"file": "第24題_臺灣四大區域分區圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1V7tVM52PPPVYv6Wr5RrkhMTQWjeGk-Tf&sz=w1200"}], "note": "與 Q25-1 共用同一張分區圖。"}, {"id": "T029", "sourceId": "Q25-1", "batch": "第五批", "type": "單選-有圖", "question": "參觀國家歌劇院進行一場人文與生態共生的建築美學、鹿港老街迎媽祖、田尾欣賞花卉園藝、桃米生態村抓青蛙、日月潭划獨木舟、集集看火車。要滿足上述旅遊規劃，應該前往哪一個區域？", "options": [{"key": "A", "text": "甲"}, {"key": "B", "text": "乙"}, {"key": "C", "text": "丙"}, {"key": "D", "text": "丁"}], "answer": "B", "explanation": "題目景點分布於臺中、彰化、南投，屬中部區域。", "concept": "臺灣四大區域／中部景點", "difficulty": "易", "hasImage": "是", "images": [{"file": "第24題_臺灣四大區域分區圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=1V7tVM52PPPVYv6Wr5RrkhMTQWjeGk-Tf&sz=w1200"}], "note": "與 Q24-3 共用同一張分區圖。"}, {"id": "T030", "sourceId": "Q25-2", "batch": "第五批", "type": "單選-有圖", "question": "□□支線鐵路是目前臺灣僅存的支線鐵路之一，也是臺灣非常著名的鐵道旅遊景點，除了每年元宵節定期舉辦的放天燈活動外，還結合煤礦博物館、十分瀑布與老街懷舊等主題。請問：上文中所提的□□支線，應位於右圖中何處？", "options": [{"key": "A", "text": "甲"}, {"key": "B", "text": "乙"}, {"key": "C", "text": "丙"}, {"key": "D", "text": "丁"}], "answer": "A", "explanation": "放天燈、煤礦、十分瀑布等線索指向平溪支線，位於新北市東北部，屬北部區域。", "concept": "支線鐵路／平溪支線", "difficulty": "中", "hasImage": "是", "images": [{"file": "第25題_臺灣區域位置示意圖_500x500.jpg", "url": "https://drive.google.com/thumbnail?id=12Gi7BLqsw5SwTAlL-rRbQ_ErQmVLCYsN&sz=w1200"}], "note": ""}, {"id": "T031", "sourceId": "H01", "batch": "筆記八頁", "type": "單選-沒圖", "question": "臺灣自哪一年代起，經濟目標轉為朝向自由化、國際化？", "options": [{"key": "A", "text": "民國50年代"}, {"key": "B", "text": "民國60年代"}, {"key": "C", "text": "民國70年代"}, {"key": "D", "text": "民國80年代"}], "answer": "D", "explanation": "筆記標示答案為 D：80 年代。", "concept": "臺灣經濟發展／自由化國際化", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T032", "sourceId": "H02", "batch": "筆記八頁", "type": "單選-沒圖", "question": "「技術密集、能源消耗低、工業升級」是哪一年代特色？", "options": [{"key": "A", "text": "50年代"}, {"key": "B", "text": "60年代"}, {"key": "C", "text": "70年代"}, {"key": "D", "text": "80年代"}], "answer": "C", "explanation": "筆記標示答案為 C：70 年代，產業升級。", "concept": "臺灣產業升級", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T033", "sourceId": "H03", "batch": "筆記八頁", "type": "單選-沒圖", "question": "民國76年開放大陸探親，當時的執政者是誰？", "options": [{"key": "A", "text": "蔣中正"}, {"key": "B", "text": "蔣經國"}, {"key": "C", "text": "李登輝"}], "answer": "B", "explanation": "筆記標示答案為 B：蔣經國。", "concept": "兩岸關係／開放探親", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T034", "sourceId": "H04", "batch": "筆記八頁", "type": "單選-沒圖", "question": "下列哪一年，在政府修憲後，將「山胞」一詞改稱為「原住民」？", "options": [{"key": "A", "text": "民國76年"}, {"key": "B", "text": "民國80年"}, {"key": "C", "text": "民國83年"}, {"key": "D", "text": "民國85年"}], "answer": "C", "explanation": "筆記標示答案為 C：民國83年。", "concept": "原住民族政策／修憲", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T035", "sourceId": "H05", "batch": "筆記八頁", "type": "單選-沒圖", "question": "「甲：臺美斷交」、「乙：邦交國減少」、「丙：十大建設」，若依史事發生的先後順序排列，應為下列何者？", "options": [{"key": "A", "text": "甲乙丙"}, {"key": "B", "text": "乙甲丙"}, {"key": "C", "text": "乙丙甲"}, {"key": "D", "text": "丙甲乙"}], "answer": "C", "explanation": "筆記標示答案為 C：乙丙甲。備註中寫有三件事大致為1971、1973、1979年。", "concept": "戰後臺灣外交與經濟建設", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T036", "sourceId": "H06", "batch": "筆記八頁", "type": "單選-沒圖", "question": "某項交通建設的興建，大大改善通勤時間與交通壅塞的問題，某項交通設施是？", "options": [{"key": "A", "text": "省道"}, {"key": "B", "text": "飛機"}, {"key": "C", "text": "捷運"}, {"key": "D", "text": "鐵路"}], "answer": "C", "explanation": "筆記標示答案為 C：捷運。", "concept": "都市交通／捷運", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T037", "sourceId": "H07", "batch": "筆記八頁", "type": "單選-沒圖", "question": "客運路線「南港—花蓮」、「板橋—花蓮」，沿途較不可能看見何者？", "options": [{"key": "A", "text": "蘭陽平原"}, {"key": "B", "text": "東海"}, {"key": "C", "text": "雪山隧道"}], "answer": "B", "explanation": "筆記標示答案為 B：東海。", "concept": "臺灣交通路線／北宜花交通", "difficulty": "中", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T038", "sourceId": "H08", "batch": "筆記八頁", "type": "單選-沒圖", "question": "下列何者為「南橫公路」？", "options": [{"key": "A", "text": "國道5號"}, {"key": "B", "text": "臺9線"}, {"key": "C", "text": "臺20線"}, {"key": "D", "text": "臺61線"}], "answer": "C", "explanation": "筆記標示答案為 C：臺20線。", "concept": "臺灣公路／南橫公路", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T039", "sourceId": "H09", "batch": "筆記八頁", "type": "單選-沒圖", "question": "何時政府推動十大建設，同時也是經濟發展最快速的階段？", "options": [{"key": "A", "text": "民國40年代"}, {"key": "B", "text": "民國50年代"}, {"key": "C", "text": "民國60年代"}, {"key": "D", "text": "民國70年代"}], "answer": "C", "explanation": "筆記標示答案為 C：民國60年代。", "concept": "十大建設／經濟發展", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T040", "sourceId": "H10", "batch": "筆記八頁", "type": "單選-沒圖", "question": "50年代從家鄉到高雄加工出口區工作，最可能是從事何種工作？", "options": [{"key": "A", "text": "在石化工廠當清潔工"}, {"key": "B", "text": "在鋼鐵廠當材料工程師"}, {"key": "C", "text": "在紡織廠當女工"}], "answer": "C", "explanation": "筆記標示答案為 C：在紡織廠當女工。", "concept": "加工出口區／勞力密集工業", "difficulty": "中", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T041", "sourceId": "H11", "batch": "筆記八頁", "type": "單選-沒圖", "question": "若以海運最短距離考量，臺中去馬祖要到哪個港口搭船？", "options": [{"key": "A", "text": "臺中港"}, {"key": "B", "text": "基隆港"}, {"key": "C", "text": "高雄港"}, {"key": "D", "text": "花蓮港"}], "answer": "B", "explanation": "筆記標示答案為 B：基隆港。", "concept": "臺灣港口與離島交通", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T042", "sourceId": "H12", "batch": "筆記八頁", "type": "單選-沒圖", "question": "民國60年代的十大建設使高雄成為重工業中心，此與哪項設施關係最密切？", "options": [{"key": "A", "text": "高速公路"}, {"key": "B", "text": "高鐵"}, {"key": "C", "text": "國際港口"}, {"key": "D", "text": "國際機場"}], "answer": "B", "explanation": "筆記標示答案疑似為 B，但與一般知識可能不符，建議複核。", "concept": "十大建設／高雄重工業", "difficulty": "中", "hasImage": "否", "images": [], "note": "筆記右下答案看似 B；依題意可能需再確認選項與正解。"}, {"id": "T043", "sourceId": "H13", "batch": "筆記八頁", "type": "單選-沒圖", "question": "美援停止後，採取輕工業拓展出口，當時加工出口區主要產品為何？", "options": [{"key": "A", "text": "紡織、電子裝配"}, {"key": "B", "text": "農林加工"}, {"key": "C", "text": "汽車、電鍍鞋類用品"}], "answer": "A", "explanation": "筆記標示答案為 A。", "concept": "出口導向工業／加工出口區", "difficulty": "中", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T044", "sourceId": "H14", "batch": "筆記八頁", "type": "單選-沒圖", "question": "右圖何者為「公路運輸」？", "options": [{"key": "A", "text": "甲"}, {"key": "B", "text": "乙"}, {"key": "C", "text": "丙"}, {"key": "D", "text": "丁"}], "answer": "B", "explanation": "筆記標示答案為 B。", "concept": "運輸方式／公路運輸", "difficulty": "中", "hasImage": "否", "images": [], "note": "使用者指定無圖；原題依右側手繪圖判讀。"}, {"id": "T045", "sourceId": "H15", "batch": "筆記八頁", "type": "單選-沒圖", "question": "何者錯誤？", "options": [{"key": "A", "text": "都市化程度高，經濟水準佳"}, {"key": "B", "text": "都市化指鄉村人口向都市集中"}, {"key": "C", "text": "都市化程度高，表示都市土地面積大於鄉村"}], "answer": "C", "explanation": "筆記標示答案為 C。", "concept": "都市化概念", "difficulty": "易", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T046", "sourceId": "H16", "batch": "筆記八頁", "type": "單選-沒圖", "question": "「快」使用的運輸方式具有何種特性？", "options": [{"key": "A", "text": "宜長程運輸"}, {"key": "B", "text": "載運量較大"}, {"key": "C", "text": "運費較低廉"}, {"key": "D", "text": "適應地形"}], "answer": "D", "explanation": "筆記標示答案為 D。", "concept": "運輸方式特性", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T047", "sourceId": "H17", "batch": "筆記八頁", "type": "單選-沒圖", "question": "日治時期為解決缺水與建造嘉南大圳，中南部缺水是因為？", "options": [{"key": "A", "text": "夏季蒸發量大於降水量"}, {"key": "B", "text": "冬季背風坡降水少"}, {"key": "C", "text": "南部人口稠密用水多"}, {"key": "D", "text": "工業用水過多"}], "answer": "B", "explanation": "筆記標示答案為 B。", "concept": "臺灣氣候／嘉南大圳", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T048", "sourceId": "H18", "batch": "筆記八頁", "type": "單選-沒圖", "question": "臺灣在經濟發展上依賴國際貿易的原因為何？", "options": [{"key": "A", "text": "勞力不足"}, {"key": "B", "text": "土地小"}, {"key": "C", "text": "人口密度高"}, {"key": "D", "text": "缺自然資源"}], "answer": "D", "explanation": "筆記標示答案為 D。", "concept": "臺灣經濟／國際貿易", "difficulty": "易", "hasImage": "否", "images": [], "note": ""}, {"id": "T049", "sourceId": "H19", "batch": "筆記八頁", "type": "單選-沒圖", "question": "（甲）半導體工程師、（乙）紡織廠女工、（丙）加工鳳梨罐頭、（丁）煉油廠／煉鋼廠，依時間順序為何？", "options": [{"key": "A", "text": "甲丙乙丁"}, {"key": "B", "text": "乙丙丁甲"}, {"key": "C", "text": "丙乙丁甲"}, {"key": "D", "text": "丁乙丙甲"}], "answer": "C", "explanation": "筆記標示答案為 C。", "concept": "臺灣產業發展順序", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T050", "sourceId": "H20", "batch": "筆記八頁", "type": "單選-沒圖", "question": "何者錯誤？", "options": [{"key": "A", "text": "各工業區聚集是因為能夠減少運輸成本"}, {"key": "B", "text": "花蓮石材製品業是因為原石資源豐富"}, {"key": "C", "text": "南部科學園區是最早成立的高科技區"}], "answer": "C", "explanation": "筆記標示答案為 C。", "concept": "工業區位／科學園區", "difficulty": "中", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T051", "sourceId": "H21", "batch": "筆記八頁", "type": "單選-沒圖", "question": "農產加工業的「三罐王」從何時開始發展？", "options": [{"key": "A", "text": "民國40年代"}, {"key": "B", "text": "民國50年代"}, {"key": "C", "text": "民國60年代"}, {"key": "D", "text": "民國70年代以後"}], "answer": "A", "explanation": "筆記標示答案為 A。", "concept": "農產加工業／三罐王", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T052", "sourceId": "H22", "batch": "筆記八頁", "type": "單選-沒圖", "question": "哪位總統強調兩岸為分裂、分治？", "options": [{"key": "A", "text": "蔣中正"}, {"key": "B", "text": "蔣經國"}, {"key": "C", "text": "李登輝"}], "answer": "C", "explanation": "筆記標示答案為 C：李登輝。", "concept": "兩岸關係／分裂分治", "difficulty": "中", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T053", "sourceId": "H23", "batch": "筆記八頁", "type": "單選-沒圖", "question": "開放大陸探親，是以何者為回應？", "options": [{"key": "A", "text": "反攻大陸"}, {"key": "B", "text": "三不政策"}, {"key": "C", "text": "一國兩制"}, {"key": "D", "text": "三通四流"}], "answer": "B", "explanation": "筆記標示答案為 B。", "concept": "兩岸政策／開放探親", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T054", "sourceId": "H24", "batch": "筆記八頁", "type": "單選-沒圖", "question": "中華民國的聯合國席位何時被取代？", "options": [{"key": "A", "text": "30年"}, {"key": "B", "text": "40年"}, {"key": "C", "text": "50年"}, {"key": "D", "text": "60年"}], "answer": "D", "explanation": "筆記標示答案為 D：60年。", "concept": "外交史／退出聯合國", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T055", "sourceId": "H25", "batch": "筆記八頁", "type": "單選-沒圖", "question": "主管機關「OOOO」指出金門、雲林首長申請參加海峽論壇，希望避免兩岸對立及對抗。OOOO 最有可能是？", "options": [{"key": "A", "text": "國臺辦"}, {"key": "B", "text": "海協會"}, {"key": "C", "text": "陸委會"}], "answer": "C", "explanation": "筆記標示答案為 C：陸委會。", "concept": "兩岸主管機關／陸委會", "difficulty": "中", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T056", "sourceId": "H26", "batch": "筆記八頁", "type": "單選-沒圖", "question": "八二三炮戰爆發於下列何時？", "options": [{"key": "A", "text": "國共內戰"}, {"key": "B", "text": "武力對抗"}, {"key": "C", "text": "政治對峙"}], "answer": "B", "explanation": "筆記標示答案為 B。", "concept": "兩岸關係／八二三炮戰", "difficulty": "中", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T057", "sourceId": "H27", "batch": "筆記八頁", "type": "單選-沒圖", "question": "「一個國家，兩個制度」應是在何事之後發表的？", "options": [{"key": "A", "text": "分裂分治"}, {"key": "B", "text": "解嚴"}, {"key": "C", "text": "中國與美國建交"}], "answer": "D", "explanation": "筆記標示答案為 D，但原圖未完整看到 D 選項，需複核。", "concept": "兩岸關係／一國兩制", "difficulty": "中", "hasImage": "否", "images": [], "note": "D 選項未清楚出現在筆記影像中。"}, {"id": "T058", "sourceId": "H28", "batch": "筆記八頁", "type": "單選-沒圖", "question": "民眾包圍美國代表的事抗議，最可能是何時發生？", "options": [{"key": "A", "text": "50年代"}, {"key": "B", "text": "60年代"}, {"key": "C", "text": "70年代"}, {"key": "D", "text": "80年代"}], "answer": "B", "explanation": "筆記標示答案為 B。", "concept": "臺美關係／外交抗議", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T059", "sourceId": "H29", "batch": "筆記八頁", "type": "單選-沒圖", "question": "「開放大陸探親」同年還發生何事？", "options": [{"key": "A", "text": "八二三炮戰"}, {"key": "B", "text": "中美斷交"}, {"key": "C", "text": "解嚴"}], "answer": "C", "explanation": "筆記標示答案為 C：解嚴。", "concept": "兩岸關係／解嚴與探親", "difficulty": "易", "hasImage": "否", "images": [], "note": "原筆記只有三個選項。"}, {"id": "T060", "sourceId": "H30", "batch": "筆記八頁", "type": "單選-沒圖", "question": "民國60年代的十大建設背景為何？", "options": [{"key": "A", "text": "推動產業升級"}, {"key": "B", "text": "用基礎建設賺外匯"}, {"key": "C", "text": "能源危機，經濟不景氣"}, {"key": "D", "text": "生產民生必需品"}], "answer": "C", "explanation": "筆記標示答案為 C。", "concept": "十大建設／能源危機", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T061", "sourceId": "H31", "batch": "筆記八頁", "type": "單選-沒圖", "question": "民國82年的辜汪會談，授權「海協會」的政府單位為何？", "options": [{"key": "A", "text": "立法院"}, {"key": "B", "text": "行政院"}, {"key": "C", "text": "陸委會"}, {"key": "D", "text": "國務院"}], "answer": "D", "explanation": "筆記標示答案為 D：國務院。", "concept": "兩岸關係／辜汪會談", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T062", "sourceId": "H32", "batch": "筆記八頁", "type": "單選-沒圖", "question": "民國71年11月派遣軍事援助顧問團駐臺，當時我國的經濟政策為何？", "options": [{"key": "A", "text": "發展國內農工業"}, {"key": "B", "text": "發展重工業"}, {"key": "C", "text": "發展高科技產業"}, {"key": "D", "text": "全球化、自由化"}], "answer": "A", "explanation": "筆記標示答案為 A。", "concept": "美援／戰後經濟政策", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T063", "sourceId": "H33", "batch": "筆記八頁", "type": "單選-沒圖", "question": "美援從哪年開始提供臺灣？", "options": [{"key": "A", "text": "民國34年"}, {"key": "B", "text": "民國39年"}, {"key": "C", "text": "民國40年"}, {"key": "D", "text": "民國43年"}], "answer": "C", "explanation": "筆記標示答案為 C：民國40年。", "concept": "美援／臺灣經濟史", "difficulty": "中", "hasImage": "否", "images": [], "note": ""}, {"id": "T064", "sourceId": "H34", "batch": "筆記八頁", "type": "單選-沒圖", "question": "聯合國承認「反攻大陸」是那個事件後的？", "options": [{"key": "A", "text": "中華民國政府遷臺"}, {"key": "B", "text": "首次政黨輪替"}, {"key": "C", "text": "退聯"}], "answer": "A", "explanation": "筆記標示答案為 A；題幹疑似為手寫簡略，建議後續複核文字。", "concept": "戰後外交／兩岸史", "difficulty": "中", "hasImage": "否", "images": [], "note": "原題文字較難辨識，先依筆記內容建檔。"}, {"id": "T065", "sourceId": "T0621-02", "batch": "0621題庫", "type": "單選-沒圖", "question": "承上題，日治時期為解決中南部竹原缺水，影響糖廠產量穩定性的問題，因此興建嘉南大圳，請問造成中南部竹原缺水的原因，與下列何者關係較密切？", "options": [{"key": "A", "text": "夏季炎熱蒸發量大於降水量"}, {"key": "B", "text": "冬季背風坡降水較少"}, {"key": "C", "text": "南部人口稠密用水過多"}, {"key": "D", "text": "工業發達用水過多"}], "answer": "B", "explanation": "嘉南平原位於中央山脈西側，冬季東北季風受山脈阻擋，西南部屬背風側，降水較少，影響農業灌溉與糖業生產。", "concept": "臺灣氣候／背風坡／嘉南大圳", "difficulty": "中", "hasImage": "否", "images": [], "note": "來源：0621題庫.txt"}, {"id": "T066", "sourceId": "T0621-09", "batch": "0621題庫", "type": "單選-沒圖", "question": "臺灣在經濟發展上，對於國際貿易依賴度極高，此種商業現象與臺灣何種環境特徵最為相關？", "options": [{"key": "A", "text": "勞動力不足"}, {"key": "B", "text": "土地狹小"}, {"key": "C", "text": "人口密度高"}, {"key": "D", "text": "缺自然資源"}], "answer": "D", "explanation": "臺灣天然資源相對不足，工業原料與能源多需進口，產品也常依賴出口市場，因此國際貿易依賴度高。", "concept": "臺灣經濟／國際貿易／自然資源", "difficulty": "易", "hasImage": "否", "images": [], "note": "來源：0621題庫.txt"}, {"id": "T067", "sourceId": "T0621-23", "batch": "0621題庫", "type": "單選-沒圖", "question": "(甲)台大畢業，進台積電擔任半導體工程師；(乙)在高雄加工出口區的紡織廠做女工；(丙)在鳳梨罐頭加工廠工作，將新鮮水果做成罐頭出口海外；(丁)承包煉油廠、煉鋼廠的相關工程，阿福導演打算拍一部關於「台灣工業發展史」的電影，若依照時間順序，請問阿福導演應該怎麼安排電影場景？", "options": [{"key": "A", "text": "甲丙乙丁"}, {"key": "B", "text": "乙丙丁甲"}, {"key": "C", "text": "丙乙丁甲"}, {"key": "D", "text": "丁乙丙甲"}], "answer": "C", "explanation": "臺灣工業發展大致由農產加工出口，轉向勞力密集輕工業與加工出口區，再到重化工業，最後進入高科技產業。", "concept": "臺灣工業發展史／產業升級", "difficulty": "中", "hasImage": "否", "images": [], "note": "來源：0621題庫.txt"}, {"id": "T068", "sourceId": "T0621-34", "batch": "0621題庫", "type": "單選-沒圖", "question": "有關臺灣工業區分布的敘述，下列何者錯誤？", "options": [{"key": "A", "text": "臺灣各工業區有聚集的現象，因為聯繫方便且節省運輸成本"}, {"key": "B", "text": "電子、資訊產業主要分布在北部，眼鏡製造及重工業主要分布在南部"}, {"key": "C", "text": "花蓮有石材製品製造業是因為當地原石資源豐富"}, {"key": "D", "text": "以高科技產業為主的南部科學園區，是三個高科技產業區中最早成立的"}], "answer": "D", "explanation": "臺灣最早成立的科學園區是新竹科學園區，南部科學園區並非三個高科技產業區中最早成立者。", "concept": "工業區分布／科學園區", "difficulty": "中", "hasImage": "否", "images": [], "note": "來源：0621題庫.txt"}, {"id": "T069", "sourceId": "T0621-35", "batch": "0621題庫", "type": "單選-沒圖", "question": "臺灣曾靠出口農產品賺取大量外匯，帶動經濟發展，其中，外銷表現最好的「三罐王」是鳳梨、洋菇、蘆筍三種罐頭，全盛時期，這「三罐王」高居全臺外銷總額的 12.3%，直到後來受到東南亞國家的競爭，才逐漸轉型為內需型產業。請問：屬於農產加工業的「三罐王」，是從下列哪一個時期開始發展？", "options": [{"key": "A", "text": "民國40年代"}, {"key": "B", "text": "民國50年代"}, {"key": "C", "text": "民國60年代"}, {"key": "D", "text": "民國70年代以後"}], "answer": "B", "explanation": "三罐王屬於外銷導向的農產加工業，與民國50年代臺灣出口擴張及食品加工外銷發展有關。", "concept": "農產加工業／三罐王／出口導向", "difficulty": "中", "hasImage": "否", "images": [], "note": "來源：0621題庫.txt"}, {"id": "T070", "sourceId": "T0621-36", "batch": "0621題庫", "type": "單選-沒圖", "question": "臺灣政府在面臨「美援」停止後所造成經濟發展資金短缺等困境，採取以勞力密集的輕工業來拓展出口的策略，陸續設立高雄、楠梓、臺中加工出口區，使出口產業蓬勃發展，賺取大量外匯，是奠定臺灣經濟起飛的基礎。請問：下列何者是當時加工出口區的主要產品？", "options": [{"key": "A", "text": "紡織、電子裝配"}, {"key": "B", "text": "農、林加工製品"}, {"key": "C", "text": "汽車、電鍍鋅鋼品"}, {"key": "D", "text": "半導體、液晶螢幕"}], "answer": "A", "explanation": "早期加工出口區以勞力密集的輕工業為主，典型產品包含紡織、成衣與電子裝配等。", "concept": "加工出口區／勞力密集工業", "difficulty": "易", "hasImage": "否", "images": [], "note": "來源：0621題庫.txt"}];
+    let quiz = [];
+    let current = 0;
+    let answers = {};
+    let locked = {};
+    let lastWrongIds = JSON.parse(localStorage.getItem('wrongQuestionIds') || '[]');
+    let currentConfig = {};
+
+    function byId(id) { return document.getElementById(id); }
+    function safeText(s) { return String(s ?? ''); }
+    function shuffle(arr) {
+      const a = [...arr];
+      for (let i=a.length-1; i>0; i--) {
+        const j = Math.floor(Math.random()*(i+1));
+        [a[i],a[j]]=[a[j],a[i]];
+      }
+      return a;
+    }
+    function changeFont(delta) {
+      let cur = Number(localStorage.getItem('fontScale') || '1');
+      cur = Math.max(0.85, Math.min(1.65, +(cur + delta).toFixed(2)));
+      localStorage.setItem('fontScale', String(cur));
+      document.documentElement.style.setProperty('--fontScale', cur);
+    }
+    function initFont() {
+      const cur = Number(localStorage.getItem('fontScale') || '1');
+      document.documentElement.style.setProperty('--fontScale', cur);
+    }
+    function buildQuiz(useWrongOnly=false) {
+      const mode = byId('mode').value;
+      const countValue = byId('count').value;
+      const reviewMode = byId('reviewMode').value;
+      let pool = [...QUESTION_BANK];
+      if (useWrongOnly) {
+        const idSet = new Set(lastWrongIds);
+        pool = pool.filter(q => idSet.has(q.id));
+        if (pool.length === 0) { alert('目前沒有錯題紀錄，將改用全部題庫。'); pool = [...QUESTION_BANK]; }
+      }
+      if (mode === 'random') pool = shuffle(pool);
+      const target = countValue === 'all' ? pool.length : Math.min(Number(countValue), pool.length);
+      quiz = pool.slice(0, target);
+      currentConfig = { mode, countValue, reviewMode, useWrongOnly };
+      answers = {}; locked = {}; current = 0;
+    }
+    function startQuiz(useWrongOnly=false) {
+      buildQuiz(useWrongOnly);
+      byId('setup').classList.add('hidden');
+      byId('result').classList.add('hidden');
+      byId('quiz').classList.remove('hidden');
+      byId('footerActions').classList.remove('hidden');
+      byId('progressWrap').classList.remove('hidden');
+      renderQuestion();
+    }
+    function restartSame() {
+      answers={}; locked={}; current=0;
+      byId('result').classList.add('hidden'); byId('quiz').classList.remove('hidden'); byId('footerActions').classList.remove('hidden'); byId('progressWrap').classList.remove('hidden');
+      renderQuestion();
+    }
+    function retryWrong() {
+      const wrongIds = Object.keys(answers).filter(id => !isCorrect(quiz.find(q=>q.id===id), answers[id]));
+      lastWrongIds = wrongIds;
+      localStorage.setItem('wrongQuestionIds', JSON.stringify(wrongIds));
+      if (wrongIds.length === 0) { alert('這次沒有錯題！'); return; }
+      quiz = quiz.filter(q => wrongIds.includes(q.id));
+      answers={}; locked={}; current=0;
+      byId('result').classList.add('hidden'); byId('quiz').classList.remove('hidden'); byId('footerActions').classList.remove('hidden'); byId('progressWrap').classList.remove('hidden');
+      renderQuestion();
+    }
+    function backToSetup() {
+      byId('setup').classList.remove('hidden');
+      byId('quiz').classList.add('hidden');
+      byId('result').classList.add('hidden');
+      byId('footerActions').classList.add('hidden');
+      byId('progressWrap').classList.add('hidden');
+      byId('topInfo').textContent = `共 ${QUESTION_BANK.length} 題｜手機版`;
+      byId('progressBar').style.width = '0%';
+    }
+    function isAnswerKnown(q) { return ['A','B','C','D'].includes(q?.answer); }
+    function isCorrect(q, selected) { return isAnswerKnown(q) && selected === q.answer; }
+    function renderQuestion() {
+      const q = quiz[current];
+      if (!q) { return showResult(); }
+      const done = Object.keys(answers).length;
+      byId('topInfo').textContent = `第 ${current+1} / ${quiz.length} 題｜已作答 ${done} 題`;
+      byId('progressBar').style.width = `${(current)/Math.max(1,quiz.length)*100}%`;
+      byId('qmeta').innerHTML = '';
+      const metas = [q.id, q.batch, q.difficulty ? '難度：'+q.difficulty : '', q.concept ? '概念：'+q.concept : ''].filter(Boolean);
+      metas.forEach(m => { const span=document.createElement('span'); span.className='pill'; span.textContent=m; byId('qmeta').appendChild(span); });
+      byId('questionText').textContent = q.question;
+      const imgBox = byId('images'); imgBox.innerHTML='';
+      (q.images||[]).forEach((img, i) => {
+        const wrap = document.createElement('div');
+        const image = document.createElement('img'); image.className='qimg'; image.src=img.url; image.alt=img.file || `題目圖片${i+1}`; image.loading='lazy';
+        image.onerror = () => { image.style.display='none'; const err=document.createElement('div'); err.className='notice'; err.textContent='圖片無法載入，請檢查 Google Drive 分享權限或網址。'; wrap.appendChild(err); };
+        wrap.appendChild(image);
+        if (img.file) { const cap=document.createElement('div'); cap.className='imgCaption'; cap.textContent=img.file; wrap.appendChild(cap); }
+        imgBox.appendChild(wrap);
+      });
+      const optBox = byId('options'); optBox.innerHTML='';
+      q.options.forEach(o => {
+        const btn = document.createElement('button'); btn.className='option'; btn.type='button'; btn.dataset.key=o.key;
+        btn.innerHTML = `<span class="key">${o.key}</span>${escapeHtml(o.text)}`;
+        btn.onclick = () => selectOption(o.key);
+        optBox.appendChild(btn);
+      });
+      byId('prevBtn').disabled = current===0;
+      byId('nextBtn').textContent = current===quiz.length-1 ? '看結果' : '下一題';
+      byId('footerNext').textContent = current===quiz.length-1 ? '看結果' : '下一題';
+      updateOptionStates();
+      renderFeedback();
+    }
+    function escapeHtml(str) {
+      return String(str).replace(/[&<>"']/g, s => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#039;'}[s]));
+    }
+    function selectOption(key) {
+      const q = quiz[current];
+      if (locked[q.id]) return;
+      answers[q.id] = key;
+      if (currentConfig.reviewMode === 'instant') locked[q.id] = true;
+      updateOptionStates();
+      renderFeedback();
+      saveProgress();
+    }
+    function updateOptionStates() {
+      const q = quiz[current];
+      const selected = answers[q.id];
+      document.querySelectorAll('.option').forEach(btn => {
+        const k = btn.dataset.key;
+        btn.classList.remove('selected','correct','wrong');
+        if (selected === k) btn.classList.add('selected');
+        if (locked[q.id] && isAnswerKnown(q)) {
+          if (k === q.answer) btn.classList.add('correct');
+          if (k === selected && k !== q.answer) btn.classList.add('wrong');
+        }
+      });
+    }
+    function renderFeedback() {
+      const q = quiz[current]; const fb = byId('feedback'); const selected = answers[q.id];
+      fb.className = 'feedback'; fb.innerHTML='';
+      if (!selected) return;
+      if (currentConfig.reviewMode === 'end' && !locked[q.id]) {
+        fb.classList.add('show');
+        fb.innerHTML = '<div class="feedbackTitle">已選擇：' + selected + '</div><div class="small">此模式會在全部答完後顯示答案。</div>';
+        return;
+      }
+      if (!isAnswerKnown(q)) {
+        fb.classList.add('show','warn');
+        fb.innerHTML = `<div class="feedbackTitle">此題正解尚待確認</div><div>你選擇：${selected}</div>${q.explanation ? '<details open><summary>解析</summary><div>'+escapeHtml(q.explanation)+'</div></details>' : ''}`;
+        return;
+      }
+      const ok = selected === q.answer;
+      fb.classList.add('show', ok ? 'ok':'bad');
+      fb.innerHTML = `<div class="feedbackTitle">${ok ? '答對了！' : '答錯了'}</div>
+        <div>你的答案：<b>${selected}</b>　正確答案：<b>${q.answer}</b></div>
+        ${q.explanation ? '<details open><summary>解析</summary><div>'+escapeHtml(q.explanation)+'</div></details>' : ''}
+        ${q.note ? '<div class="small" style="margin-top:8px">備註：'+escapeHtml(q.note)+'</div>' : ''}`;
+    }
+    function nextQuestion() {
+      const q = quiz[current];
+      if (q && answers[q.id] && currentConfig.reviewMode === 'instant') locked[q.id] = true;
+      if (current < quiz.length-1) { current++; renderQuestion(); window.scrollTo({top:0,behavior:'smooth'}); }
+      else showResult();
+    }
+    function prevQuestion() { if (current>0) { current--; renderQuestion(); window.scrollTo({top:0,behavior:'smooth'}); } }
+    function showResult() {
+      quiz.forEach(q => { if (answers[q.id]) locked[q.id]=true; });
+      const answered = quiz.filter(q => answers[q.id]);
+      const correct = answered.filter(q => isCorrect(q, answers[q.id])).length;
+      const wrong = quiz.filter(q => answers[q.id] && !isCorrect(q, answers[q.id]));
+      const unknown = quiz.filter(q => answers[q.id] && !isAnswerKnown(q));
+      const rate = answered.length ? Math.round(correct / answered.length * 100) : 0;
+      byId('quiz').classList.add('hidden'); byId('result').classList.remove('hidden'); byId('footerActions').classList.add('hidden'); byId('progressBar').style.width='100%';
+      byId('topInfo').textContent = `完成 ${answered.length} / ${quiz.length} 題`;
+      byId('scoreNum').textContent = correct;
+      byId('wrongNum').textContent = wrong.length;
+      byId('rateNum').textContent = rate + '%';
+      const wrongIds = wrong.map(q=>q.id); localStorage.setItem('wrongQuestionIds', JSON.stringify(wrongIds)); lastWrongIds = wrongIds;
+      const area = byId('wrongArea'); area.innerHTML='';
+      if (wrong.length === 0) { area.innerHTML = '<div class="notice">恭喜，這次沒有錯題！</div>'; }
+      else {
+        const title = document.createElement('h3'); title.textContent = '錯題清單'; area.appendChild(title);
+        wrong.forEach((q, i) => {
+          const div = document.createElement('div'); div.className='wrongItem';
+          div.innerHTML = `<b>${i+1}. ${escapeHtml(q.id)}｜你的答案：${escapeHtml(answers[q.id] || '未作答')}｜正解：${escapeHtml(q.answer || '待確認')}</b>
+            <div>${escapeHtml(q.question)}</div>
+            ${q.explanation ? '<details><summary>查看解析</summary><div>'+escapeHtml(q.explanation)+'</div></details>' : ''}`;
+          area.appendChild(div);
+        });
+      }
+      if (unknown.length) { const n=document.createElement('div'); n.className='notice'; n.textContent=`有 ${unknown.length} 題正解欄為「需確認」，未納入答對統計。`; area.prepend(n); }
+    }
+    function saveProgress() {
+      try { localStorage.setItem('lastQuizProgress', JSON.stringify({ ids: quiz.map(q=>q.id), answers })); } catch(e) {}
+    }
+    initFont();
+  </script>
+</body>
+</html>
