@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>2026年7月份AI推動執行委員會：AI人才培育規劃報告</title>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&family=Inter:wght@400;600;700;900&display=swap" rel="stylesheet">
+  <style>
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: "Noto Sans TC", "Inter", sans-serif;
+      background: #F8F6F1;
+      min-height: 100vh;
+      overflow: hidden;
+      color: #2D2D2D;
+    }
+    body::before {
+      content: ''; position: fixed; inset: 0;
+      background-image:
+        linear-gradient(rgba(0,0,0,0.05) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(0,0,0,0.05) 1px, transparent 1px);
+      background-size: 40px 40px;
+      pointer-events: none; z-index: 0;
+    }
+    .slideshow { position: relative; width: 100vw; height: 100vh; display: flex; align-items: center; justify-content: center; }
+    .slide { position: absolute; inset: 0; display: none; align-items: center; justify-content: center; padding: 36px 22px 104px; z-index: 1; }
+    .slide.active { display: flex; }
+    .slide-content { max-width: 960px; width: 100%; text-align: center; }
+    .wide-content { max-width: 1120px; }
+    .cover-content { max-width: 980px; }
+    .badge { display: inline-block; background: rgba(245,166,35,0.15); color: #F5A623; border-radius: 20px; padding: 6px 20px; font-size: 14px; font-weight: 700; margin-bottom: 18px; }
+    .hero-icon { width: 88px; height: 88px; margin: 0 auto 18px; border-radius: 28px; display:flex; align-items:center; justify-content:center; font-size:46px; background: rgba(44,197,181,0.14); box-shadow: 0 4px 20px rgba(44,197,181,0.14); }
+    .title-main { font-size: clamp(36px, 5.4vw, 62px); font-weight: 900; color: #2D2D2D; line-height: 1.18; margin-bottom: 20px; letter-spacing: -0.02em; }
+    .title-main strong, .title-accent { color: #2CC5B5; }
+    .slide-title { font-size: clamp(28px, 4vw, 46px); font-weight: 900; line-height: 1.22; margin-bottom: 22px; letter-spacing: -0.01em; }
+    .slide-title strong { color: #2CC5B5; }
+    .card { background: white; border-radius: 20px; padding: 28px 32px; box-shadow: 0 4px 20px rgba(0,0,0,0.08); }
+    .body-card { text-align: left; font-size: 21px; line-height: 1.72; max-height: calc(100vh - 265px); overflow: auto; }
+    .cover-content .body-card { font-size: 23px; text-align: left; max-height: calc(100vh - 330px); }
+    .accent-left { border-left: 8px solid #2CC5B5; }
+    .framework-card { background: linear-gradient(135deg, white 0%, rgba(44,197,181,0.06) 100%); }
+    .body-card h1, .body-card h2, .body-card h3 { margin: 0.4em 0 0.45em; line-height: 1.25; }
+    .body-card h2 { font-size: 30px; }
+    .body-card h3 { font-size: 25px; color:#2CC5B5; }
+    .body-card p { margin: 0.55em 0; }
+    .body-card ul, .body-card ol { padding-left: 1.4em; margin: 0.4em 0; }
+    .body-card li { margin: 0.28em 0; }
+    .body-card li::marker { color: #2CC5B5; font-weight: 700; }
+    strong { font-weight: 900; } em { color:#2CC5B5; font-style: normal; font-weight: 800; }
+    a { color: #0E8F86; text-decoration: none; font-weight: 800; border-bottom: 2px solid rgba(44,197,181,0.26); }
+    a:hover { color:#F5A623; border-bottom-color: rgba(245,166,35,0.5); }
+    .table-card { padding: 18px; max-height: calc(100vh - 240px); overflow: auto; }
+    .table-wrap { width: 100%; overflow: auto; }
+    table { border-collapse: separate; border-spacing: 0; width: 100%; min-width: 760px; font-size: 16px; line-height: 1.55; text-align: left; }
+    th { background: rgba(44,197,181,0.14); color: #23524E; font-weight: 900; position: sticky; top: 0; z-index: 1; }
+    th, td { padding: 13px 14px; border-bottom: 1px solid rgba(0,0,0,0.07); vertical-align: top; }
+    tr:nth-child(even) td { background: rgba(0,0,0,0.018); }
+    td:first-child, th:first-child { border-left: 0; }
+    code { font-family: "Inter", monospace; background: rgba(44,197,181,0.12); padding: 0.12em 0.35em; border-radius: 6px; }
+    pre, .prompt-box { position: relative; background: #282c34; color: #f6f7f9; border-radius: 16px; padding: 44px 18px 18px; overflow:auto; margin: 18px 0; font-size: 15px; line-height: 1.55; }
+    pre code { background: transparent; color: inherit; padding: 0; }
+    .copy-btn { position: absolute; top: 10px; right: 10px; border: 0; border-radius: 999px; background: #2CC5B5; color: white; font-weight: 800; padding: 7px 12px; cursor: pointer; box-shadow: 0 3px 10px rgba(0,0,0,0.16); }
+    .copy-btn:hover { filter: brightness(1.05); }
+    .nav-bar { position: fixed; bottom: 30px; left: 50%; transform: translateX(-50%); display: flex; align-items: center; gap: 18px; background: white; border-radius: 50px; padding: 10px 28px; box-shadow: 0 4px 20px rgba(0,0,0,0.12); z-index: 100; }
+    .nav-btn { background: none; border: none; font-size: 26px; color: #2D2D2D; cursor: pointer; width: 36px; height: 36px; border-radius: 50%; display:flex; align-items:center; justify-content:center; transition: background 0.2s; }
+    .nav-btn:hover { background: rgba(44,197,181,0.15); color: #2CC5B5; }
+    .nav-btn:disabled { color: #ccc; cursor: default; }
+    .nav-btn:disabled:hover { background: none; }
+    .page-indicator { font-size: 15px; color:#666; min-width: 28px; text-align:center; cursor:pointer; border-radius:8px; padding:2px 6px; transition: background .15s; user-select:none; font-weight:700; }
+    .page-indicator:hover { background: rgba(44,197,181,0.12); color:#2CC5B5; }
+    .page-jump-input { width: 48px; border: 2px solid #2CC5B5; border-radius: 8px; font-size: 15px; font-weight: 700; text-align:center; color:#2D2D2D; background:white; outline:none; padding:2px 4px; }
+    .slide-footer { position: fixed; bottom: 20px; right: 28px; font-size: 15px; font-weight: 700; color: #aaa; letter-spacing: .02em; z-index: 99; white-space: nowrap; user-select:none; }
+    @keyframes fadeIn { from { opacity:0; transform: translateY(16px); } to { opacity:1; transform: translateY(0); } }
+    .slide.active .slide-content { animation: fadeIn .35s ease; }
+    @media (max-width: 760px) {
+      .slide { padding: 28px 12px 100px; }
+      .card { padding: 20px; }
+      .body-card { font-size: 18px; max-height: calc(100vh - 245px); }
+      table { font-size: 14px; min-width: 680px; }
+      th, td { padding: 10px; }
+      .slide-footer { right: 14px; font-size: 13px; }
+    }
+	strong{color:#c00000}
+  </style>
+</head>
+<body>
+  <div class="slideshow">
+    <section class="slide active" data-index="0">
+        <div class="slide-content cover-content">
+          <div class="badge">AI推動執行委員會｜AI人才培育規劃報告</div>
+          <h1 class="title-main">🎯預計高階長官關注方向</h1>
+          <div class="card body-card"><ol>
+<li>是否符合中央、交通部政策及規範</li>
+<li>做了什麼？<ul>
+<li>可否化為量化、質化效益</li>
+</ul>
+</li>
+<li>還有什麼可做？<ul>
+<li>還有哪些能精進？最好能在部裡排上前段班</li>
+<li>所以各單位的配合事項？</li>
+</ul>
+</li>
+<li>化為長官也能表達的 <strong>「兼具上位戰略、行動方案重點的完整說明」</strong></li>
+</ol>
+</div>
+        </div></section>
+<section class="slide " data-index="1">
+        <div class="slide-content cover-content">
+          <div class="badge">AI推動執行委員會｜AI人才培育規劃報告</div>
+          <h1 class="title-main">壹、依原報告思考</h1>
+          <div class="card body-card"><ul>
+<li><a href="https://gemini.google.com/app/5448cae3c143e358?hl=zh-TW">個人參考對話</a></li>
+</ul>
+<h2>一、遵循上位政策指引</h2>
+<ul>
+<li>ref <a href="https://moda.gov.tw/ADI/services/publications/19692">數發部5/18發佈 - AI產業人才認定指引</a></li>
+<li>分類：開發／規劃／應用<ul>
+<li>從高階到承辦的涵蓋方式</li>
+</ul>
+</li>
+<li><strong>缺TIPC的目標設定</strong></li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="2">
+        <div class="slide-content wide-content">
+          <div class="badge">📊 表格整理</div>
+          <h2 class="slide-title">二、配合課程講座＋具體行動</h2>
+          <div class="card table-card"><div class="table-wrap"><table>
+<thead>
+<tr>
+  <th>問題</th>
+  <th>量化目標</th>
+  <th>質化目標</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>問題1. 各單位參與度低</td>
+  <td><em>目標：推廣參與人數</em><br>(1)單一入口長期宣傳<br>(2)依分公司／單位統計參與度</td>
+  <td><em>目標：參與後皆有實質成果</em><br>(1)加入課後測驗、作業<br>(2)每堂表揚優秀學員(作品、具體表現)</td>
+</tr>
+<tr>
+  <td>問題2. 缺乏融入業務實例</td>
+  <td><em>目標：累積業務應用實例</em><br>(1)AI種子每人2個公開MVP方案<br>(2)獎勵徵稿教學影片</td>
+  <td><em>目標：累積業務應用人才</em><br>(1)季、年評鑑表揚優秀同仁<br>(2)拔擢優秀同仁擔任講師<br>(3)單位競賽獎勵免費AI</td>
+</tr>
+<tr>
+  <td>問題3. 缺乏AI治理素養</td>
+  <td><em>目標：推廣素養人數</em><br>持續融入各課程與宣傳</td>
+  <td><em>目標：建立主權規章</em><br>配合本公司法遵事項建立可行規章</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+        </div></section>
+<section class="slide " data-index="3">
+        <div class="slide-content">
+          <div class="badge">🧩 行動方案</div>
+          <h2 class="slide-title">執行重點與討論</h2>
+          <div class="card body-card accent-left"><ul>
+<li>問題1：各單位參與度低（<strong>缺現況數字</strong>）<ul>
+<li>(1)加強量化：<ul>
+<li><em>建置專屬網站、Youtube進行長期宣導</em></li>
+<li><em>依分公司／單位盤點參與比例統計並發佈</em></li>
+</ul>
+</li>
+<li>(2)加強質化：<ul>
+<li><em>加入課後測驗、作業</em></li>
+<li><em>於專屬網站公開表揚各課程優秀學員（作品、具體表現）</em></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="4">
+        <div class="slide-content">
+          <div class="badge">🚀 行動方案</div>
+          <h2 class="slide-title">執行重點與討論</h2>
+          <div class="card body-card accent-left"><ul>
+<li>問題2：缺乏融入業務實例<ul>
+<li>(1)加強量化：<ul>
+<li><em>規範AI種子每位需發佈2個MVP應用實踐方案</em>（<strong>是否需律定形式、限期 or 可公開呈現的方式？</strong>）</li>
+<li><em>獎勵徵稿AI應用教學影片</em></li>
+</ul>
+</li>
+<li>(2)加強質化：<ul>
+<li><em>公開表揚獎勵表現優秀同仁</em>（<strong>是否需書審、集體評鑑方式？</strong>）<ul>
+<li>第二、三、四季：小規模、涉公開公文及獎狀等</li>
+<li>全年：大規模、涉記功公假等</li>
+<li>by參與、實現、分享等三個維度</li>
+</ul>
+</li>
+<li><em>拔擢業務類別優秀同仁擔任下年度講師</em><ul>
+<li>分享至YT頻道</li>
+<li>未來有鐘點費、能見度等誘因</li>
+</ul>
+</li>
+<li><em>單位競賽獎勵</em>：<ul>
+<li><em>單位應用競賽取前三名</em>(<strong>需討論公平、公開的細節制度</strong>)<ul>
+<li>獲得第二波共100個免費企業版軟體／公開獎勵（同步解決有單位反應沒有人人有工具的問題）</li>
+<li><strong>總分公司如何分群評鑑？</strong><ul>
+<li>(A)以<em>業務群跨分公司為單位</em>競賽，取前三名由總公司分配：50、30、20
+- 工程群、業務群、行政群...
+- AI推動五組群</li>
+<li>(B)以<em>處為單位競賽</em>，取前三名由總公司分配：</li>
+</ul>
+</li>
+<li><strong>討論是否提供資源，也同步有KPI責任</strong></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="5">
+        <div class="slide-content">
+          <div class="badge">🛡️ 行動方案</div>
+          <h2 class="slide-title">執行重點與討論</h2>
+          <div class="card body-card accent-left"><ul>
+<li>問題3：缺乏AI治理素養<ul>
+<li>(1)加強量化：持續融入各課程與宣傳</li>
+<li>(2)加強質化：配合本公司法遵事項建立可行規章</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="6">
+        <div class="slide-content cover-content">
+          <div class="badge">AI推動執行委員會｜AI人才培育規劃報告</div>
+          <h1 class="title-main">貳、敘事邏輯</h1>
+          <div class="card body-card"><h2>一、AI人才類別</h2>
+<ul>
+<li>依國家指引，將其「在地化、實務化」以符合TIPC特性具備可執行性<ul>
+<li>指引中原有「AI開發人才」的資訊處角色，轉變為<strong>AI賦能者的顧問角色</strong></li>
+<li>指引中原有的「AI應用人才」的主管、同仁角色，再細為規劃、應用兩層次</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="7">
+        <div class="slide-content wide-content">
+          <div class="badge">🧠 表格整理</div>
+          <h2 class="slide-title">重點對照表</h2>
+          <div class="card table-card"><div class="table-wrap"><table>
+<thead>
+<tr>
+  <th>指引：人才分類P5</th>
+  <th>指引：擔任角色P5</th>
+  <th>TIPC角色層級</th>
+  <th>說明</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>AI研究人才</td>
+  <td>負責提供AI技術的基礎研究與創新動力</td>
+  <td>-</td>
+  <td>不適用</td>
+</tr>
+<tr>
+  <td>AI開發人才</td>
+  <td>負責將AI技術轉化為可執行的應用與系統</td>
+  <td><em>(3)顧問層級、賦能層級</em><br>(資訊單位)</td>
+  <td><strong>不是AI代工者<br>而是AI賦能者(Enabler)</strong></td>
+</tr>
+<tr>
+  <td>AI應用人才</td>
+  <td>負責將AI應用於各行各業，創造實際價值</td>
+  <td><em>(1, 2)規劃層級</em>(副幕僚長以上、各業務單位一級主管)</td>
+  <td>擔任部門教練與流程重塑者，識別痛點、分配資源，帶領團隊進行 AI 轉型與 SOP 拆解。</td>
+</tr>
+<tr>
+  <td>同上</td>
+  <td>同上</td>
+  <td><em>(4, 5)應用層級</em>(各業務單位AI種子、一般同仁)</td>
+  <td>專注於將 AI 應用於基本工具操作，安全且勇於使用工具以提升日常業務效率。</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li>註1：本公司不適用AI研究人才</li>
+<li><strong>討論</strong>：本公司原寫法「規劃層級 = 主管人員」，所以只能用中高階課程講座來呈現難有實質成果。<ul>
+<li>如果把AI種子往上拉到規劃層級<ul>
+<li>優點：後續可將AI種子的成果一魚多吃分佈在「規劃層級、應用層級」中</li>
+<li>缺點：應用層級的上課人次可能會下降，要看是否影響KPI</li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="8">
+        <div class="slide-content">
+          <div class="badge">📚 架構設計</div>
+          <h2 class="slide-title">二、人才類別與能力項目</h2>
+          <div class="card body-card framework-card"><h3>TIPC依特性規劃六大課程模組</h3>
+<ul>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>(A)AI素養知識</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>(B)AI工具使用</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>(C)AI數據資料疏理</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>(D)開發實作與管理</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>(E)業務運用</li>
+<li class="task-list-item"><input class="task-list-item-checkbox" type="checkbox" disabled/>(F)借鏡成功案例</li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="9">
+        <div class="slide-content wide-content">
+          <div class="badge">✅ 表格整理</div>
+          <h2 class="slide-title">重點對照表</h2>
+          <div class="card table-card"><div class="table-wrap"><table>
+<thead>
+<tr>
+  <th>指引：人才分類P5</th>
+  <th>TIPC角色層級</th>
+  <th>TIPC課程內容</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>AI開發人才</td>
+  <td><em>(3)顧問層級、賦能層級</em><br>(資訊單位)</td>
+  <td>(A)AI素養知識<br>(B)AI工具使用<br>(C)AI資料疏理<br>(D)開發實作與管理</td>
+</tr>
+<tr>
+  <td>AI應用人才</td>
+  <td><em>(1)規劃層級</em> - 副幕僚長以上</td>
+  <td>(A)AI素養知識<br>(F)借鏡成功案例</td>
+</tr>
+<tr>
+  <td>AI應用人才</td>
+  <td><em>(2)規劃層級</em> - 各業務單位<strong>管理層</strong></td>
+  <td>(A)AI素養知識<br>(E)業務運用<br>(F)借鏡成功案例</td>
+</tr>
+<tr>
+  <td>同上</td>
+  <td><em>(4)應用層級</em> - 各業務單位AI種子</td>
+  <td>(A)AI素養知識<br>(B)AI工具使用<br>(C)AI資料疏理<br>(E)業務運用</td>
+</tr>
+<tr>
+  <td>同上</td>
+  <td><em>(5)應用層級</em> - 各業務單位一般同仁</td>
+  <td>(A)AI素養知識<br>(B)AI工具使用</td>
+</tr>
+</tbody>
+</table></div>
+<ul>
+<li><strong>討論</strong>：<ul>
+<li>(2)是否要包含二級主管？現況二級可能被定位為應用，但大多又不佔種子名額</li>
+</ul>
+</li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="10">
+        <div class="slide-content cover-content">
+          <div class="badge">AI推動執行委員會｜AI人才培育規劃報告</div>
+          <div class="hero-icon">⚙️</div>
+          <h1 class="title-main">參、附件：數發部指引內容重點</h1>
+          <div class="card body-card"><h2>一、判斷會用到的</h2>
+<h3>⭐P4-P6. AI人才類別、(擔任角色)、能力項目</h3>
+<div class="table-wrap"><table>
+<thead>
+<tr>
+  <th>人才類型</th>
+  <th>擔任角色</th>
+  <th>能力項目</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+  <td>AI研究人才</td>
+  <td>負責提供AI技術的基礎研究與創新動力</td>
+  <td></td>
+</tr>
+<tr>
+  <td>AI開發人才</td>
+  <td>負責將AI技術轉化為可執行的應用與系統</td>
+  <td>三、AI程式語言應用<br>四、AI模型訓練<br>五、AI服務開發</td>
+</tr>
+<tr>
+  <td>AI應用人才</td>
+  <td>負責將AI應用於各行各業，創造實際價值</td>
+  <td>一、AI應用素養<br>二、AI工具應用<br>三、AI程式語言應用</td>
+</tr>
+</tbody>
+</table></div>
+</div>
+        </div></section>
+<section class="slide " data-index="11">
+        <div class="slide-content">
+          <div class="badge">📌 重點說明</div>
+          <h2 class="slide-title">⭐P15-P17產業人才的角色與職務</h2>
+          <div class="card body-card"><ul>
+<li><ol>
+<li>AI應用人才：AI加值型、AI導入型(<strong>AI種子、資訊處</strong>)➡️但判斷這兩個用詞皆容易誤解</li>
+</ol>
+<ul>
+<li>P16.AI應用人才常見職稱：可能用到包括<strong>AI應用規劃師、AI導入顧問、流程優化專員</strong>➡️AI產品經理、資料分析師(介於AI應用與開發間)</li>
+</ul>
+</li>
+<li><ol start="2">
+<li>AI開發人才(本公司特性缺資料科學家)</li>
+</ol>
+</li>
+</ul>
+</div>
+        </div></section>
+<section class="slide " data-index="12">
+        <div class="slide-content">
+          <div class="badge">🎯 重點說明</div>
+          <h2 class="slide-title">P23.AI產業人才的負責任意識(素養)</h2>
+          <div class="card body-card"><ol>
+<li>隱私保護：個資安全與他人的資訊主體權利</li>
+<li>風險辨識：不同情境的 AI 應用，風險程度不一樣<ul>
+<li>(1) 盤點 AI 應用情境</li>
+<li>(2) 風險的識別、評估、應對</li>
+</ul>
+</li>
+<li>資訊判斷：AI 說的不等於真的</li>
+<li>責任歸屬：人類才是決策之主體，非 AI</li>
+</ol>
+</div>
+        </div></section>
+<section class="slide " data-index="13">
+        <div class="slide-content">
+          <div class="badge">🧭 重點說明</div>
+          <h2 class="slide-title">僅供參考的指引內容</h2>
+          <div class="card body-card"><h3>P8能力認證分類➡️對應P10、P14各項證照</h3>
+<ul>
+<li>素養類(建立 AI 基本認知與倫理觀念)：應用素養</li>
+<li>工具類(熟悉並應用 AI 工具完成任務)：工具應用、程式語言應用</li>
+<li>專案類(具備完成 AI 專案的實戰能力)：模型訓練、服務開發</li>
+</ul>
+<h3>P11關鍵人力內涵與說明</h3>
+<ul>
+<li>一、AI應用素養：AI素養、AI治理素養</li>
+<li>二、AI工具應用：文書、圖文、影像、音源、自動化應用</li>
+<li>三、AI程式語言應用：AI協作與開發、程式應用</li>
+<li>四、AI模型訓練：AI模型訓練</li>
+<li>五、AI服務開發：NLP／LLM／CV工程</li>
+</ul>
+</div>
+        </div></section>
+    <footer class="slide-footer">🐻 林熊熊分享</footer>
+    <nav class="nav-bar">
+      <button class="nav-btn" id="prevBtn" aria-label="上一頁">‹</button>
+      <span class="page-indicator" id="pageIndicator" title="點擊跳頁">1</span>
+      <span style="color:#ccc">/</span>
+      <span id="totalPages" style="font-size:15px;color:#999;font-weight:700"></span>
+      <button class="nav-btn" id="nextBtn" aria-label="下一頁">›</button>
+    </nav>
+  </div>
+  <script>
+    const slides = document.querySelectorAll('.slide');
+    const pageIndicator = document.getElementById('pageIndicator');
+    const totalPagesEl  = document.getElementById('totalPages');
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let current = 0;
+    totalPagesEl.textContent = slides.length;
+    function goTo(n) {
+      slides[current].classList.remove('active');
+      current = Math.max(0, Math.min(n, slides.length - 1));
+      slides[current].classList.add('active');
+      updateIndicator();
+      prevBtn.disabled = current === 0;
+      nextBtn.disabled = current === slides.length - 1;
+    }
+    function updateIndicator() { pageIndicator.textContent = current + 1; }
+    pageIndicator.addEventListener('click', () => {
+      const input = document.createElement('input');
+      input.type = 'number'; input.min = 1; input.max = slides.length; input.value = current + 1; input.className = 'page-jump-input';
+      pageIndicator.replaceWith(input); input.select();
+      function commit() {
+        const n = parseInt(input.value, 10);
+        input.replaceWith(pageIndicator);
+        if (!isNaN(n)) goTo(n - 1); else updateIndicator();
+      }
+      input.addEventListener('keydown', e => {
+        if (e.key === 'Enter') { e.preventDefault(); commit(); }
+        if (e.key === 'Escape') { input.replaceWith(pageIndicator); updateIndicator(); }
+        if (e.key === 'ArrowLeft' || e.key === 'ArrowRight') e.stopPropagation();
+      });
+      input.addEventListener('blur', commit);
+      input.addEventListener('input', () => {
+        if (input.value < 1) input.value = 1;
+        if (input.value > slides.length) input.value = slides.length;
+      });
+    });
+    prevBtn.addEventListener('click', () => goTo(current - 1));
+    nextBtn.addEventListener('click', () => goTo(current + 1));
+    document.addEventListener('keydown', e => {
+      if (document.activeElement && ['INPUT','TEXTAREA'].includes(document.activeElement.tagName)) return;
+      if (e.key === 'ArrowRight' || e.key === 'ArrowDown') goTo(current + 1);
+      if (e.key === 'ArrowLeft' || e.key === 'ArrowUp') goTo(current - 1);
+    });
+    document.querySelectorAll('a[href]').forEach(a => {
+      if (!a.getAttribute('href').startsWith('#')) { a.target = '_blank'; a.rel = 'noopener noreferrer'; }
+    });
+    document.querySelectorAll('pre, .prompt-box').forEach(block => {
+      if (block.querySelector('.copy-btn')) return;
+      const btn = document.createElement('button');
+      btn.className = 'copy-btn'; btn.type = 'button'; btn.textContent = '一鍵複製';
+      btn.addEventListener('click', async () => {
+        const clone = block.cloneNode(true);
+        clone.querySelectorAll('.copy-btn').forEach(b => b.remove());
+        const text = clone.innerText.trim();
+        try { await navigator.clipboard.writeText(text); btn.textContent = '已複製 ✓'; }
+        catch (err) {
+          const ta = document.createElement('textarea'); ta.value = text; document.body.appendChild(ta); ta.select(); document.execCommand('copy'); ta.remove(); btn.textContent = '已複製 ✓';
+        }
+        setTimeout(() => btn.textContent = '一鍵複製', 1400);
+      });
+      block.prepend(btn);
+    });
+    goTo(0);
+  </script>
+</body>
+</html>
