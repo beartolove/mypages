@@ -1,0 +1,784 @@
+<!DOCTYPE html>
+<html lang="zh-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>115年新進人員試用考核說明會</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+  background: #F8F6F1;
+  overflow: hidden;
+  height: 100vh; width: 100vw;
+  user-select: none;
+}
+#toolbar {
+  position: fixed; top: 0; left: 0; right: 0; height: 52px;
+  background: rgba(248,246,241,0.96);
+  backdrop-filter: blur(8px);
+  border-bottom: 1px solid rgba(0,0,0,0.1);
+  display: flex; align-items: center;
+  padding: 0 16px; gap: 5px;
+  z-index: 100;
+}
+.tb-btn {
+  padding: 5px 9px; border: 1px solid rgba(0,0,0,0.15);
+  border-radius: 8px; background: white; cursor: pointer;
+  font-size: 12px; font-family: inherit; color: #333;
+  white-space: nowrap; transition: all 0.15s;
+}
+.tb-btn:hover { background: #f0ede8; }
+.tb-btn.active { background: #2CC5B5; color: white; border-color: #2CC5B5; }
+.tb-sep { width: 1px; height: 24px; background: rgba(0,0,0,0.12); margin: 0 2px; flex-shrink: 0; }
+.tb-brand { margin-left: auto; font-size: 13px; color: #888; flex-shrink: 0; }
+
+#cc {
+  position: fixed; top: 52px; left: 0; right: 0; bottom: 0;
+  overflow: hidden; cursor: grab;
+}
+#cc:active { cursor: grabbing; }
+#cc:fullscreen, #cc:-webkit-full-screen, #cc:-moz-full-screen { top: 0; }
+
+#svg {
+  width: 100%; height: 100%;
+  background: #F8F6F1;
+  background-image:
+    linear-gradient(rgba(0,0,0,0.04) 1px, transparent 1px),
+    linear-gradient(90deg, rgba(0,0,0,0.04) 1px, transparent 1px);
+  background-size: 40px 40px;
+}
+
+.nd {
+  width: 100%; height: 100%;
+  display: flex; align-items: center; justify-content: center;
+  padding: 5px 9px;
+  line-height: 1.4; word-break: break-all;
+  overflow: hidden; cursor: default;
+}
+.nd-root {
+  background: #2D2D2D; color: white;
+  border-radius: 16px; font-size: 14px; font-weight: 700;
+  text-align: center; flex-direction: column;
+}
+.nd-l1 {
+  background: #2CC5B5; color: white;
+  border-radius: 12px; font-size: 13px; font-weight: 600;
+  text-align: center; flex-direction: column; gap: 3px;
+  cursor: pointer;
+}
+.nd-l1:hover { background: #20a89a; }
+.time-badge {
+  font-size: 10px; background: rgba(255,255,255,0.22);
+  border-radius: 8px; padding: 1px 7px; font-weight: 400;
+}
+.nd-l2r {
+  background: white; color: #333;
+  border-left: 3px solid #F5A623;
+  border-radius: 0 10px 10px 0;
+  font-size: 12px; font-weight: 600;
+  justify-content: flex-start; cursor: pointer;
+}
+.nd-l2r:hover { background: #fef9f0; }
+.nd-l2l {
+  background: white; color: #333;
+  border-right: 3px solid #F5A623;
+  border-radius: 10px 0 0 10px;
+  font-size: 12px; font-weight: 600;
+  justify-content: flex-end; text-align: right; cursor: pointer;
+}
+.nd-l2l:hover { background: #fef9f0; }
+.nd-l3r, .nd-l3l {
+  background: #F5F5F5; color: #444;
+  border-radius: 8px; font-size: 11.5px;
+  text-align: center;
+}
+
+#blur {
+  position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+  background: rgba(0,0,0,0.28);
+  backdrop-filter: blur(4px) brightness(0.72);
+  pointer-events: none; z-index: 50;
+  opacity: 0; transition: opacity 0.3s;
+}
+#blur.on { opacity: 1; }
+
+#hud {
+  position: absolute; bottom: 24px; left: 50%; transform: translateX(-50%);
+  background: rgba(20,20,20,0.9); backdrop-filter: blur(8px);
+  border-radius: 32px; padding: 9px 18px;
+  align-items: center; gap: 10px;
+  z-index: 200; color: white; display: none;
+}
+#hud.on { display: flex; }
+.hb {
+  background: rgba(255,255,255,0.15); border: none;
+  border-radius: 50%; width: 32px; height: 32px;
+  cursor: pointer; color: white; font-size: 15px;
+  display: flex; align-items: center; justify-content: center;
+  font-family: inherit; flex-shrink: 0;
+}
+.hb:disabled { opacity: 0.3; cursor: default; }
+.hb.exit { background: rgba(220,50,50,0.4); }
+#hud-dots { display: flex; gap: 5px; align-items: center; }
+.hdot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: rgba(255,255,255,0.3); cursor: pointer;
+  transition: all 0.2s; flex-shrink: 0;
+}
+.hdot.active { background: #2CC5B5; transform: scale(1.4); }
+#hlabel { font-size: 11.5px; max-width: 140px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+
+#mdp {
+  position: fixed; top: 52px; right: 0; bottom: 0; width: 330px;
+  background: white; border-left: 1px solid rgba(0,0,0,0.1);
+  transform: translateX(100%); transition: transform 0.3s;
+  z-index: 90; display: flex; flex-direction: column;
+}
+#mdp.open { transform: translateX(0); }
+#mdp-hdr {
+  padding: 10px 14px; border-bottom: 1px solid rgba(0,0,0,0.1);
+  display: flex; justify-content: space-between; align-items: center;
+  font-weight: 600; font-size: 13px; flex-shrink: 0;
+}
+#md-copy {
+  padding: 4px 10px; background: #2CC5B5; color: white;
+  border: none; border-radius: 6px; cursor: pointer;
+  font-size: 12px; font-family: inherit;
+}
+#md-copy:hover { background: #20a89a; }
+#md-txt {
+  flex: 1; overflow-y: auto; padding: 14px;
+  font-size: 11px; line-height: 1.85; color: #555;
+  white-space: pre; font-family: "Courier New", monospace;
+}
+</style>
+</head>
+<body>
+
+<div id="toolbar">
+  <button class="tb-btn" id="btn-reset">⟳ 重置</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn active" id="btn-bal">⇄ Balance</button>
+  <button class="tb-btn" id="btn-hor">→ 橫向</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" id="btn-exp">◂▸ 展開</button>
+  <button class="tb-btn" id="btn-col">▸◂ 折疊</button>
+  <div class="tb-sep"></div>
+  <button class="tb-btn" id="btn-md">📋 Markdown</button>
+  <button class="tb-btn" id="btn-focus">🎯 聚焦閱讀</button>
+  <span class="tb-brand">🐻 林熊熊分享</span>
+</div>
+
+<div id="cc">
+  <svg id="svg" xmlns="http://www.w3.org/2000/svg">
+    <g id="tg"></g>
+  </svg>
+  <div id="blur"></div>
+  <div id="hud">
+    <button class="hb" id="hprev">←</button>
+    <div id="hud-dots"></div>
+    <span id="hlabel"></span>
+    <button class="hb" id="hnext">→</button>
+    <button class="hb exit" id="hexit">✕</button>
+  </div>
+</div>
+
+<div id="mdp">
+  <div id="mdp-hdr">
+    <span>📋 Markdown 心智圖</span>
+    <button id="md-copy">複製</button>
+  </div>
+  <pre id="md-txt"></pre>
+</div>
+
+<script>
+// ──────────────────────────────────────────────────────────────
+// MARKDOWN CONTENT
+// ──────────────────────────────────────────────────────────────
+const MD_CONTENT = `- 115年新進人員試用考核說明會
+  - [00:30] 慎選資深夥伴
+    - 選人標準
+      - 積分穩定、正向、熱心
+      - 年資三年以下為原則
+      - 以非主管為原則
+    - 資深夥伴角色
+      - 協助職場適應（非工作指導）
+      - 提供資訊支持（系統申請、請假等）
+      - 陪伴與關懷新人
+  - [03:11] 黃金72小時
+    - 新人前幾天是定型關鍵
+    - 兩三天內關心聊聊天
+    - 把握前期建立信任關係
+  - [03:40] 工作指導原則
+    - 好好說話，指導非指責
+    - 先給予關懷與協助
+    - 提供情感支持與鼓勵
+    - 關懷→協助→未改善→才進管理
+  - [04:32] 試用期要求
+    - 試用期做得到＝以後也做得到
+    - 表現不好要面談並做記錄
+    - 不面談讓同仁誤以為現況OK
+    - 70分以下務必面談留記錄
+  - [07:14] 問題同仁處理
+    - 長痛不如短痛
+    - 縱容影響其他同仁士氣
+    - 問題同仁有空申訴，記錄保護主管
+    - 近三年已處理約十位同仁
+  - [08:58] 尋求人資協助
+    - 新人有狀況提早找人資
+    - 人資提供管理諮詢服務
+    - 確保處理過程合法合規
+    - 無需擔心後續申訴問題
+  - [09:45] 考核描述原則
+    - 回歸職位、職務、職掌、職責（不說態度）
+    - 優劣事蹟要具體，勿用模糊形容詞
+    - 87分以上或70分以下寫具體事蹟
+    - 試用考核建議不超過90分
+  - [15:28] 試用考核流程
+    - 報到兩天內確認工作內容並面談
+    - 三個月分兩次評分
+    - 70↑正式錄用 / 60-69延長 / 59↓止遣
+    - 全程隨時留下相關記錄
+  - [19:44] 績效管理表
+    - 任務執掌：全年度工作項目全部列出
+    - 加入臨時交辦事項（含支援同部門）
+    - 工作需求：完成工作需具備的能力
+    - 工作規範：email、加班申請、請假等
+    - 試用期工作目標：三個月內具體達標`;
+
+document.getElementById('md-txt').textContent = MD_CONTENT;
+
+// ──────────────────────────────────────────────────────────────
+// DATA
+// ──────────────────────────────────────────────────────────────
+function N(id, label, level, children, extra) {
+  return Object.assign({ id, label, level, children: children || [], collapsed: false }, extra || {});
+}
+
+const tree = N('root', '115年新進人員\n試用考核說明會', 0, [
+  N('n1','慎選資深夥伴', 1, [
+    N('n1a','選人標準', 2, [
+      N('n1a1','積分穩定、正向、熱心', 3),
+      N('n1a2','年資三年以下為原則', 3),
+      N('n1a3','以非主管為原則', 3),
+    ]),
+    N('n1b','資深夥伴角色', 2, [
+      N('n1b1','協助職場適應\n（非工作指導）', 3, [], {h:52}),
+      N('n1b2','提供資訊支持', 3),
+      N('n1b3','陪伴與關懷新人', 3),
+    ]),
+  ], {time:'00:30'}),
+
+  N('n2','黃金72小時', 1, [
+    N('n2a','新人前幾天是定型關鍵', 3),
+    N('n2b','兩三天內關心聊聊天', 3),
+    N('n2c','把握前期建立信任關係', 3),
+  ], {time:'03:11'}),
+
+  N('n3','工作指導原則', 1, [
+    N('n3a','好好說話，指導非指責', 3),
+    N('n3b','先給予關懷與協助', 3),
+    N('n3c','提供情感支持與鼓勵', 3),
+    N('n3d','關懷→協助→未改善\n→才進管理', 3, [], {h:52}),
+  ], {time:'03:40'}),
+
+  N('n4','試用期要求', 1, [
+    N('n4a','試用期做得到\n＝以後也做得到', 3, [], {h:52}),
+    N('n4b','表現不好要面談並做記錄', 3),
+    N('n4c','不面談讓同仁誤以為現況OK', 3),
+    N('n4d','70分以下務必面談留記錄', 3),
+  ], {time:'04:32'}),
+
+  N('n5','問題同仁處理', 1, [
+    N('n5a','長痛不如短痛', 3),
+    N('n5b','縱容影響其他同仁士氣', 3),
+    N('n5c','問題同仁有空申訴\n記錄保護主管', 3, [], {h:52}),
+    N('n5d','近三年已處理約十位同仁', 3),
+  ], {time:'07:14'}),
+
+  N('n6','尋求人資協助', 1, [
+    N('n6a','新人有狀況提早找人資', 3),
+    N('n6b','人資提供管理諮詢服務', 3),
+    N('n6c','確保處理過程合法合規', 3),
+    N('n6d','無需擔心後續申訴問題', 3),
+  ], {time:'08:58'}),
+
+  N('n7','考核描述原則', 1, [
+    N('n7a','回歸職位、職務\n職掌、職責', 3, [], {h:52}),
+    N('n7b','優劣事蹟要具體', 3),
+    N('n7c','87↑或70↓要寫具體事蹟', 3),
+    N('n7d','試用考核建議不超過90分', 3),
+  ], {time:'09:45'}),
+
+  N('n8','試用考核流程', 1, [
+    N('n8a','報到兩天內確認工作並面談', 3),
+    N('n8b','三個月分兩次評分', 3),
+    N('n8c','70↑正式錄用\n60-69延長 / 59↓止遣', 3, [], {h:52}),
+    N('n8d','全程隨時留下相關記錄', 3),
+  ], {time:'15:28'}),
+
+  N('n9','績效管理表', 1, [
+    N('n9a','任務執掌：全年度工作項目', 3),
+    N('n9b','加入臨時交辦事項', 3),
+    N('n9c','工作需求：完成工作\n需具備的能力', 3, [], {h:52}),
+    N('n9d','工作規範：email、加班、請假', 3),
+    N('n9e','試用期工作目標\n三個月內具體達標', 3, [], {h:52}),
+  ], {time:'19:44'}),
+]);
+
+// ──────────────────────────────────────────────────────────────
+// SIZING & LAYOUT
+// ──────────────────────────────────────────────────────────────
+const BASE_SIZE = {
+  0: { w: 210, h: 72 },
+  1: { w: 180, h: 52 },
+  2: { w: 158, h: 44 },
+  3: { w: 186, h: 36 },
+};
+const HGAP = 42, VGAP = 14;
+
+function sz(node) {
+  const b = BASE_SIZE[Math.min(node.level, 3)];
+  return { w: node.w || b.w, h: node.h || b.h };
+}
+
+function treeH(node) {
+  if (node.collapsed || !node.children || !node.children.length) return sz(node).h;
+  const ch = node.children.reduce((s, c) => s + treeH(c), 0) + (node.children.length - 1) * VGAP;
+  return Math.max(sz(node).h, ch);
+}
+
+let layoutMode = 'balance';
+let positions = {}; // id -> {x, y, w, h, side}
+
+function layout() {
+  positions = {};
+  if (layoutMode === 'balance') doBalance();
+  else doHorizontal();
+}
+
+function place(node, x, y, side) {
+  const { w, h } = sz(node);
+  positions[node.id] = { x, y, w, h, side: side || 'right' };
+}
+
+function placeSubtree(parent, side) {
+  if (parent.collapsed || !parent.children || !parent.children.length) return;
+  const pp = positions[parent.id];
+  const totalH = parent.children.reduce((s, c) => s + treeH(c), 0) + (parent.children.length - 1) * VGAP;
+  let y = pp.y + pp.h / 2 - totalH / 2;
+  parent.children.forEach(child => {
+    const ch = treeH(child);
+    const { w, h } = sz(child);
+    const x = side === 'right' ? pp.x + pp.w + HGAP : pp.x - HGAP - w;
+    place(child, x, y + (ch - h) / 2, side);
+    placeSubtree(child, side);
+    y += ch + VGAP;
+  });
+}
+
+function placeSide(nodes, side) {
+  const rw = sz(tree).w;
+  const totalH = nodes.reduce((s, n) => s + treeH(n), 0) + (nodes.length - 1) * VGAP;
+  let y = -totalH / 2;
+  nodes.forEach(node => {
+    const nh = treeH(node);
+    const { w, h } = sz(node);
+    const x = side === 'right' ? rw / 2 + HGAP : -(rw / 2 + HGAP + w);
+    place(node, x, y + (nh - h) / 2, side);
+    placeSubtree(node, side);
+    y += nh + VGAP;
+  });
+}
+
+function doBalance() {
+  const { w, h } = sz(tree);
+  place(tree, -w / 2, -h / 2, 'root');
+  const n = tree.children.length;
+  const rc = Math.ceil(n / 2);
+  placeSide(tree.children.slice(0, rc), 'right');
+  placeSide(tree.children.slice(rc), 'left');
+}
+
+function doHorizontal() {
+  const { w, h } = sz(tree);
+  place(tree, -w / 2, -h / 2, 'right');
+  const totalH = tree.children.reduce((s, c) => s + treeH(c), 0) + (tree.children.length - 1) * VGAP;
+  let y = -totalH / 2;
+  tree.children.forEach(node => {
+    const nh = treeH(node);
+    const { nw, nh: nnh } = { nw: sz(node).w, nh: sz(node).h };
+    place(node, w / 2 + HGAP, y + (nh - sz(node).h) / 2, 'right');
+    placeSubtree(node, 'right');
+    y += nh + VGAP;
+  });
+}
+
+// ──────────────────────────────────────────────────────────────
+// TRANSFORM
+// ──────────────────────────────────────────────────────────────
+let tf = { x: 0, y: 0, scale: 1 };
+const tg = document.getElementById('tg');
+const cc = document.getElementById('cc');
+
+function applyTF() {
+  tg.setAttribute('transform', `translate(${tf.x},${tf.y}) scale(${tf.scale})`);
+  if (focusActive) {
+    const bbox = getFocusBBox();
+    if (bbox) updateBlurHole(bbox);
+  }
+}
+
+function getCC() { return cc; }
+
+function fitAll() {
+  const cw = cc.clientWidth, ch = cc.clientHeight;
+  let minX = Infinity, minY = Infinity, maxX = -Infinity, maxY = -Infinity;
+  for (const { x, y, w, h } of Object.values(positions)) {
+    minX = Math.min(minX, x); minY = Math.min(minY, y);
+    maxX = Math.max(maxX, x + w); maxY = Math.max(maxY, y + h);
+  }
+  if (!isFinite(minX)) return;
+  const tw = maxX - minX, th = maxY - minY, pad = 60;
+  const sc = Math.min((cw - pad * 2) / Math.max(tw, 1), (ch - pad * 2) / Math.max(th, 1), 1.4);
+  tf.scale = sc;
+  tf.x = (cw - tw * sc) / 2 - minX * sc;
+  tf.y = (ch - th * sc) / 2 - minY * sc;
+  applyTF();
+}
+
+// ──────────────────────────────────────────────────────────────
+// RENDER
+// ──────────────────────────────────────────────────────────────
+const SVG_NS = 'http://www.w3.org/2000/svg';
+const XHTML_NS = 'http://www.w3.org/1999/xhtml';
+
+function render() {
+  layout();
+  tg.innerHTML = '';
+  const lG = document.createElementNS(SVG_NS, 'g');
+  const nG = document.createElementNS(SVG_NS, 'g');
+  tg.appendChild(lG);
+  tg.appendChild(nG);
+  drawTree(tree, null, lG, nG);
+}
+
+function drawTree(node, parent, lG, nG) {
+  const p = positions[node.id];
+  if (!p) return;
+
+  // Connection
+  if (parent) {
+    const pp = positions[parent.id];
+    const path = document.createElementNS(SVG_NS, 'path');
+    const isRoot = parent.level === 0;
+    const isL1 = parent.level === 1;
+    path.setAttribute('fill', 'none');
+    path.setAttribute('stroke', isRoot ? '#2CC5B5' : isL1 ? '#F5A623' : '#CCCCCC');
+    path.setAttribute('stroke-width', isRoot ? '2.5' : isL1 ? '1.8' : '1.2');
+    path.setAttribute('stroke-linecap', 'round');
+    let x1, y1, x2, y2;
+    if (p.side === 'left') {
+      x1 = pp.x; y1 = pp.y + pp.h / 2;
+      x2 = p.x + p.w; y2 = p.y + p.h / 2;
+    } else {
+      x1 = pp.x + pp.w; y1 = pp.y + pp.h / 2;
+      x2 = p.x; y2 = p.y + p.h / 2;
+    }
+    const cx = (x1 + x2) / 2;
+    path.setAttribute('d', `M${x1},${y1} C${cx},${y1} ${cx},${y2} ${x2},${y2}`);
+    path.dataset.nid = node.id;
+    lG.appendChild(path);
+  }
+
+  // Node
+  const fo = document.createElementNS(SVG_NS, 'foreignObject');
+  fo.setAttribute('x', p.x);
+  fo.setAttribute('y', p.y);
+  fo.setAttribute('width', p.w);
+  fo.setAttribute('height', p.h);
+
+  const div = document.createElementNS(XHTML_NS, 'div');
+  let cls = 'nd ';
+  if (node.level === 0) cls += 'nd-root';
+  else if (node.level === 1) cls += 'nd-l1';
+  else if (node.level === 2) cls += (p.side === 'left' ? 'nd-l2l' : 'nd-l2r');
+  else cls += (p.side === 'left' ? 'nd-l3l' : 'nd-l3r');
+  div.setAttribute('class', cls);
+
+  if (node.level === 1 && node.time) {
+    div.innerHTML = `<span>${node.label.replace(/\n/g,'<br>')}</span><span class="time-badge">${node.time}</span>`;
+  } else {
+    div.innerHTML = node.label.replace(/\n/g, '<br>');
+  }
+
+  if (node.children && node.children.length) {
+    div.style.cursor = 'pointer';
+    div.addEventListener('click', e => {
+      e.stopPropagation();
+      node.collapsed = !node.collapsed;
+      render();
+    });
+  }
+
+  fo.appendChild(div);
+  nG.appendChild(fo);
+
+  if (!node.collapsed && node.children) {
+    node.children.forEach(c => drawTree(c, node, lG, nG));
+  }
+}
+
+// ──────────────────────────────────────────────────────────────
+// PAN & ZOOM
+// ──────────────────────────────────────────────────────────────
+let drag = null;
+
+cc.addEventListener('mousedown', e => {
+  if (e.button !== 0) return;
+  drag = { sx: e.clientX - tf.x, sy: e.clientY - tf.y };
+});
+window.addEventListener('mousemove', e => {
+  if (!drag) return;
+  tf.x = e.clientX - drag.sx;
+  tf.y = e.clientY - drag.sy;
+  applyTF();
+});
+window.addEventListener('mouseup', () => drag = null);
+
+cc.addEventListener('wheel', e => {
+  e.preventDefault();
+  const f = e.deltaY < 0 ? 1.1 : 0.91;
+  const rect = cc.getBoundingClientRect();
+  const mx = e.clientX - rect.left;
+  const my = e.clientY - rect.top;
+  tf.x = mx - (mx - tf.x) * f;
+  tf.y = my - (my - tf.y) * f;
+  tf.scale = Math.max(0.22, Math.min(2.2, tf.scale * f));
+  applyTF();
+}, { passive: false });
+
+let pt = null;
+cc.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    drag = { sx: e.touches[0].clientX - tf.x, sy: e.touches[0].clientY - tf.y };
+    pt = null;
+  } else if (e.touches.length === 2) {
+    drag = null;
+    pt = {
+      d: Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY),
+      sc: tf.scale,
+      mx: (e.touches[0].clientX + e.touches[1].clientX) / 2,
+      my: (e.touches[0].clientY + e.touches[1].clientY) / 2,
+      tx: tf.x, ty: tf.y,
+    };
+  }
+}, { passive: true });
+cc.addEventListener('touchmove', e => {
+  e.preventDefault();
+  if (e.touches.length === 1 && drag) {
+    tf.x = e.touches[0].clientX - drag.sx;
+    tf.y = e.touches[0].clientY - drag.sy;
+  } else if (e.touches.length === 2 && pt) {
+    const d = Math.hypot(e.touches[0].clientX - e.touches[1].clientX, e.touches[0].clientY - e.touches[1].clientY);
+    const ratio = d / pt.d;
+    tf.scale = Math.max(0.22, Math.min(2.2, pt.sc * ratio));
+    const mx = (e.touches[0].clientX + e.touches[1].clientX) / 2;
+    const my = (e.touches[0].clientY + e.touches[1].clientY) / 2;
+    tf.x = mx - (pt.mx - pt.tx) * ratio;
+    tf.y = my - (pt.my - pt.ty) * ratio;
+  }
+  applyTF();
+}, { passive: false });
+cc.addEventListener('touchend', () => { drag = null; pt = null; });
+
+// ──────────────────────────────────────────────────────────────
+// TOOLBAR
+// ──────────────────────────────────────────────────────────────
+function setAll(node, val) {
+  node.collapsed = val;
+  if (node.children) node.children.forEach(c => setAll(c, val));
+}
+
+document.getElementById('btn-reset').addEventListener('click', () => {
+  setAll(tree, false); render(); fitAll();
+});
+document.getElementById('btn-bal').addEventListener('click', () => {
+  layoutMode = 'balance';
+  document.getElementById('btn-bal').classList.add('active');
+  document.getElementById('btn-hor').classList.remove('active');
+  render(); fitAll();
+});
+document.getElementById('btn-hor').addEventListener('click', () => {
+  layoutMode = 'horizontal';
+  document.getElementById('btn-hor').classList.add('active');
+  document.getElementById('btn-bal').classList.remove('active');
+  render(); fitAll();
+});
+document.getElementById('btn-exp').addEventListener('click', () => {
+  setAll(tree, false); render();
+});
+document.getElementById('btn-col').addEventListener('click', () => {
+  tree.children.forEach(c => setAll(c, true)); render();
+});
+document.getElementById('btn-md').addEventListener('click', () => {
+  document.getElementById('mdp').classList.toggle('open');
+});
+document.getElementById('md-copy').addEventListener('click', () => {
+  navigator.clipboard.writeText(MD_CONTENT).then(() => {
+    const btn = document.getElementById('md-copy');
+    btn.textContent = '✓ 已複製！';
+    setTimeout(() => btn.textContent = '複製', 2000);
+  });
+});
+
+// ──────────────────────────────────────────────────────────────
+// FOCUS MODE
+// ──────────────────────────────────────────────────────────────
+let focusActive = false;
+let focusStep = 0;
+const blurEl = document.getElementById('blur');
+const hudEl = document.getElementById('hud');
+
+function getFocusNodes() {
+  if (layoutMode === 'balance') {
+    const n = tree.children.length;
+    const rc = Math.ceil(n / 2);
+    return [tree, ...tree.children.slice(0, rc), ...tree.children.slice(rc)];
+  }
+  return [tree, ...tree.children];
+}
+
+function getNodeBBox(node) {
+  const p = positions[node.id];
+  if (!p) return null;
+  let minX = p.x, minY = p.y, maxX = p.x + p.w, maxY = p.y + p.h;
+  function expand(n) {
+    const pp = positions[n.id];
+    if (!pp) return;
+    minX = Math.min(minX, pp.x); minY = Math.min(minY, pp.y);
+    maxX = Math.max(maxX, pp.x + pp.w); maxY = Math.max(maxY, pp.y + pp.h);
+    if (!n.collapsed && n.children) n.children.forEach(expand);
+  }
+  if (!node.collapsed && node.children) node.children.forEach(expand);
+  return { minX, minY, w: maxX - minX, h: maxY - minY };
+}
+
+function getFocusBBox() {
+  const nodes = getFocusNodes();
+  if (focusStep >= nodes.length) return null;
+  return getNodeBBox(nodes[focusStep]);
+}
+
+function updateBlurHole(bbox) {
+  const pad = 22;
+  const cw = cc.clientWidth, ch = cc.clientHeight;
+  const sx = Math.round(bbox.minX * tf.scale + tf.x - pad);
+  const sy = Math.round(bbox.minY * tf.scale + tf.y - pad);
+  const ex = Math.round(sx + bbox.w * tf.scale + pad * 2);
+  const ey = Math.round(sy + bbox.h * tf.scale + pad * 2);
+  blurEl.style.clipPath = `polygon(evenodd, 0px 0px, ${cw}px 0px, ${cw}px ${ch}px, 0px ${ch}px, 0px 0px, ${sx}px ${sy}px, ${sx}px ${ey}px, ${ex}px ${ey}px, ${ex}px ${sy}px, ${sx}px ${sy}px)`;
+  blurEl.classList.add('on');
+}
+
+function clearBlurHole() {
+  blurEl.style.clipPath = '';
+  blurEl.classList.remove('on');
+}
+
+function zoomToBBox(bbox, padX, topPad, botPad, maxSc) {
+  padX = padX || 60; topPad = topPad || 24; botPad = botPad || 110; maxSc = maxSc || 1.55;
+  const cw = cc.clientWidth, ch = cc.clientHeight;
+  const availW = cw - padX * 2;
+  const availH = ch - topPad - botPad;
+  const sc = Math.min(availW / Math.max(bbox.w, 1), availH / Math.max(bbox.h, 1), maxSc);
+  tf.scale = sc;
+  tf.x = (cw - bbox.w * sc) / 2 - bbox.minX * sc;
+  tf.y = topPad + (availH - bbox.h * sc) / 2 - bbox.minY * sc;
+  applyTF();
+}
+
+function updateHUD() {
+  const nodes = getFocusNodes();
+  document.getElementById('hprev').disabled = (focusStep === 0);
+  document.getElementById('hnext').disabled = (focusStep === nodes.length - 1);
+  const dotsEl = document.getElementById('hud-dots');
+  dotsEl.innerHTML = '';
+  nodes.forEach((n, i) => {
+    const d = document.createElement('div');
+    d.className = 'hdot' + (i === focusStep ? ' active' : '');
+    d.addEventListener('click', () => goStep(i));
+    dotsEl.appendChild(d);
+  });
+  const cur = nodes[focusStep];
+  document.getElementById('hlabel').textContent =
+    cur === tree ? '主題總覽' : `[${cur.time || ''}] ${cur.label.replace(/\n/g,' ')}`;
+}
+
+function goStep(step) {
+  const nodes = getFocusNodes();
+  focusStep = Math.max(0, Math.min(nodes.length - 1, step));
+  const bbox = getFocusBBox();
+  if (!bbox) return;
+  const isRoot = (focusStep === 0);
+  zoomToBBox(bbox, 60, 24, isRoot ? 24 : 110, isRoot ? 2.4 : 1.55);
+  updateBlurHole(bbox);
+  updateHUD();
+}
+
+document.getElementById('hprev').addEventListener('click', () => goStep(focusStep - 1));
+document.getElementById('hnext').addEventListener('click', () => goStep(focusStep + 1));
+
+window.addEventListener('keydown', e => {
+  if (!focusActive) return;
+  if (e.key === 'ArrowRight') goStep(focusStep + 1);
+  else if (e.key === 'ArrowLeft') goStep(focusStep - 1);
+  else if (e.key === 'Escape') exitFocus();
+});
+
+function enterFocus() {
+  setAll(tree, false);
+  render();
+  focusActive = true;
+  focusStep = 0;
+  hudEl.classList.add('on');
+  document.getElementById('btn-focus').textContent = '✕ 退出聚焦';
+  const req = cc.requestFullscreen || cc.webkitRequestFullscreen || cc.mozRequestFullScreen;
+  if (req) {
+    req.call(cc).then(() => setTimeout(() => goStep(0), 180)).catch(() => goStep(0));
+  } else {
+    goStep(0);
+  }
+}
+
+function exitFocus() {
+  focusActive = false;
+  clearBlurHole();
+  hudEl.classList.remove('on');
+  document.getElementById('btn-focus').textContent = '🎯 聚焦閱讀';
+  const exitFS = document.exitFullscreen || document.webkitExitFullscreen || document.mozCancelFullScreen;
+  if (document.fullscreenElement && exitFS) exitFS.call(document);
+}
+
+document.getElementById('btn-focus').addEventListener('click', () => {
+  if (focusActive) exitFocus(); else enterFocus();
+});
+document.getElementById('hexit').addEventListener('click', exitFocus);
+
+['fullscreenchange', 'webkitfullscreenchange', 'mozfullscreenchange'].forEach(ev => {
+  document.addEventListener(ev, () => {
+    if (!document.fullscreenElement && !document.webkitFullscreenElement && focusActive) {
+      exitFocus();
+    }
+  });
+});
+
+// ──────────────────────────────────────────────────────────────
+// INIT
+// ──────────────────────────────────────────────────────────────
+render();
+fitAll();
+</script>
+</body>
+</html>
