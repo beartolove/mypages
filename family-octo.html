@@ -1,0 +1,568 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>性格八角測驗｜畫出你的個性八角形</title>
+<link href="https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@400;500;700;900&display=swap" rel="stylesheet">
+<style>
+:root{
+  --paper:#F7F1E2;
+  --card:#FFFFFF;
+  --ink:#33302A;
+  --ink-soft:#7A7263;
+  --green:#5FA845;
+  --green-deep:#3F7F2C;
+  --green-soft:#DDEFD1;
+  --orange:#F0942D;
+  --orange-deep:#D9771A;
+  --orange-soft:#FBE3C2;
+  --line:#E7DEC8;
+  --radius:26px;
+}
+*{margin:0;padding:0;box-sizing:border-box}
+body{
+  font-family:'Noto Sans TC',"PingFang TC","Microsoft JhengHei",sans-serif;
+  background:var(--paper);
+  background-image:radial-gradient(#E9E0CB 1.2px, transparent 1.2px);
+  background-size:26px 26px;
+  color:var(--ink);
+  line-height:1.6;
+  padding-bottom:80px;
+}
+.wrap{max-width:680px;margin:0 auto;padding:0 16px}
+
+/* ---------- header ---------- */
+header{padding:34px 0 6px;text-align:center}
+.bubble{
+  position:relative;display:inline-block;
+  background:var(--green);color:#fff;
+  padding:20px 34px 16px;border-radius:32px;
+  box-shadow:0 6px 0 rgba(63,127,44,.35);
+}
+.bubble h1{font-size:clamp(26px,6vw,34px);font-weight:900;letter-spacing:.06em}
+.bubble p{font-size:14px;opacity:.92;margin-top:2px}
+.bubble::after{
+  content:"";position:absolute;left:44px;bottom:-14px;
+  width:22px;height:22px;background:var(--green);
+  border-radius:0 0 40px 0;transform:rotate(35deg);
+}
+.dot-tail{width:12px;height:12px;border-radius:50%;background:var(--green);margin:22px 0 0 40px}
+
+/* ---------- tabs ---------- */
+.tabs{display:flex;gap:10px;margin:22px 0 18px}
+.tab-btn{
+  flex:1;border:none;cursor:pointer;font-family:inherit;
+  font-size:17px;font-weight:700;padding:14px 8px;
+  border-radius:20px;background:#fff;color:var(--ink-soft);
+  border:2px dashed var(--line);transition:.15s;
+}
+.tab-btn.active{background:var(--ink);color:#fff;border-color:var(--ink);box-shadow:0 5px 0 rgba(51,48,42,.25)}
+.panel{display:none}
+.panel.show{display:block;animation:pop .25s ease}
+@keyframes pop{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+
+/* ---------- cards ---------- */
+.card{
+  background:var(--card);border-radius:var(--radius);
+  padding:24px 22px;margin-bottom:18px;
+  border:2px solid var(--line);
+  box-shadow:0 6px 0 rgba(122,114,99,.10);
+}
+.card h2{font-size:20px;font-weight:900;margin-bottom:6px}
+.hint{font-size:13.5px;color:var(--ink-soft)}
+
+/* ---------- quiz ---------- */
+.progress{display:flex;gap:7px;justify-content:center;margin-bottom:18px}
+.progress span{width:26px;height:8px;border-radius:6px;background:var(--line);transition:.2s}
+.progress span.done{background:var(--green)}
+.progress span.now{background:var(--orange);width:38px}
+.q-title{
+  text-align:center;background:var(--green);color:#fff;
+  border-radius:22px;padding:14px 12px;font-size:22px;font-weight:900;
+  letter-spacing:.08em;margin-bottom:18px;
+}
+.q-title small{display:block;font-size:12.5px;font-weight:500;opacity:.9;letter-spacing:.05em}
+.poles{display:flex;gap:12px;margin-bottom:20px}
+.pole{
+  flex:1;border-radius:22px;padding:16px 8px 14px;text-align:center;
+  border:2px solid transparent;
+}
+.pole.g{background:var(--green-soft)}
+.pole.o{background:var(--orange-soft)}
+.pole .emo{font-size:42px;line-height:1.15;display:block}
+.pole .nm{font-size:19px;font-weight:900;margin-top:6px;letter-spacing:.12em}
+.pole .tg{font-size:13px;color:var(--ink-soft);letter-spacing:.28em}
+.scale-caption{
+  text-align:center;font-size:15px;font-weight:700;margin:4px 0 12px;
+  border-top:2px dotted var(--line);border-bottom:2px dotted var(--line);
+  padding:10px 0;color:var(--ink);
+}
+.scale-heads{display:flex;justify-content:space-between;font-weight:900;font-size:16px;margin-bottom:8px}
+.scale-heads .g{color:var(--green-deep)}
+.scale-heads .o{color:var(--orange-deep)}
+.scale{display:flex;justify-content:space-between;gap:4px}
+.scale button{
+  flex:1;aspect-ratio:1;max-width:56px;border-radius:50%;border:none;cursor:pointer;
+  font-family:inherit;font-size:18px;font-weight:900;color:#fff;
+  transition:transform .12s, box-shadow .12s;position:relative;
+}
+.scale button:hover{transform:translateY(-3px)}
+.scale button.sel{box-shadow:0 0 0 4px #fff,0 0 0 7px var(--ink);transform:scale(1.08)}
+.scale-labels{display:flex;justify-content:space-between;font-size:12.5px;color:var(--ink-soft);margin-top:8px}
+.nav-row{display:flex;gap:12px;margin-top:22px}
+.btn{
+  border:none;cursor:pointer;font-family:inherit;font-weight:900;
+  font-size:18px;letter-spacing:.12em;padding:15px 22px;border-radius:999px;
+  transition:.15s;
+}
+.btn.primary{background:var(--orange);color:#fff;flex:1;box-shadow:0 5px 0 var(--orange-deep)}
+.btn.primary:disabled{opacity:.45;box-shadow:none;cursor:not-allowed}
+.btn.primary:not(:disabled):hover{transform:translateY(-2px)}
+.btn.ghost{background:#fff;border:2px solid var(--line);color:var(--ink-soft)}
+.btn.small{font-size:14.5px;padding:10px 16px;letter-spacing:.06em}
+.btn.green{background:var(--green);color:#fff;box-shadow:0 4px 0 var(--green-deep)}
+
+/* ---------- result ---------- */
+.chart-box{display:flex;justify-content:center;margin:6px 0 4px}
+.chart-box svg{width:100%;max-width:560px;height:auto}
+.legend-note{
+  display:flex;justify-content:center;gap:18px;font-size:13px;color:var(--ink-soft);
+  margin-bottom:8px;flex-wrap:wrap;
+}
+.legend-note b.g{color:var(--green-deep)} .legend-note b.o{color:var(--orange-deep)}
+.spectrum{margin-top:14px}
+.spec-row{display:grid;grid-template-columns:1fr 2.2fr 1fr;align-items:center;gap:8px;padding:9px 0;border-bottom:1.5px dotted var(--line)}
+.spec-row:last-child{border-bottom:none}
+.spec-row .l,.spec-row .r{font-size:13.5px;font-weight:700}
+.spec-row .l{color:var(--green-deep);text-align:right}
+.spec-row .r{color:var(--orange-deep)}
+.track{position:relative;height:12px;border-radius:8px;background:linear-gradient(90deg,var(--green-soft),var(--orange-soft))}
+.track i{
+  position:absolute;top:50%;transform:translate(-50%,-50%);
+  width:20px;height:20px;border-radius:50%;border:3px solid #fff;
+  box-shadow:0 1px 4px rgba(0,0,0,.25);
+}
+.result-tags{display:flex;flex-wrap:wrap;gap:8px;margin-top:14px}
+.rtag{font-size:13.5px;font-weight:700;padding:6px 12px;border-radius:999px}
+.rtag.g{background:var(--green-soft);color:var(--green-deep)}
+.rtag.o{background:var(--orange-soft);color:var(--orange-deep)}
+.rtag.m{background:#EEE9DB;color:var(--ink-soft)}
+
+/* ---------- family ---------- */
+.member{
+  border:2px solid var(--line);border-radius:22px;padding:14px 14px 6px;margin-bottom:12px;background:#FFFDF8;
+}
+.member-head{display:flex;align-items:center;gap:10px}
+.cdot{width:18px;height:18px;border-radius:50%;flex:none;border:3px solid #fff;box-shadow:0 0 0 2px rgba(0,0,0,.12)}
+.member-head input{
+  flex:1;min-width:0;font-family:inherit;font-size:16px;font-weight:700;
+  border:none;border-bottom:2px dashed var(--line);background:transparent;
+  padding:6px 2px;color:var(--ink);outline:none;
+}
+.member-head input:focus{border-bottom-color:var(--orange)}
+.icon-btn{border:none;background:#F1EBDC;color:var(--ink-soft);cursor:pointer;border-radius:12px;padding:7px 11px;font-family:inherit;font-size:13.5px;font-weight:700}
+.icon-btn.danger:hover{background:#F8D8CE;color:#B4432A}
+.member-body{padding:10px 2px 8px;display:none}
+.member.open .member-body{display:block}
+.slider-row{display:grid;grid-template-columns:64px 1fr 64px 34px;gap:8px;align-items:center;margin-bottom:9px}
+.slider-row .lg,.slider-row .lo{font-size:12px;font-weight:700;line-height:1.3}
+.slider-row .lg{color:var(--green-deep);text-align:right}
+.slider-row .lo{color:var(--orange-deep)}
+.slider-row .val{
+  font-size:14px;font-weight:900;text-align:center;background:#fff;
+  border:2px solid var(--line);border-radius:10px;padding:2px 0;
+}
+input[type=range]{width:100%;accent-color:var(--orange);height:26px;cursor:pointer}
+.legend-chips{display:flex;flex-wrap:wrap;gap:8px;margin:12px 0 4px}
+.chip{
+  display:flex;align-items:center;gap:7px;cursor:pointer;border:2px solid var(--line);
+  background:#fff;border-radius:999px;padding:7px 14px;font-family:inherit;
+  font-size:14.5px;font-weight:700;color:var(--ink);transition:.15s;
+}
+.chip .cdot{width:13px;height:13px;box-shadow:0 0 0 1.5px rgba(0,0,0,.12)}
+.chip.off{opacity:.38;filter:grayscale(.6)}
+.quick-row{display:flex;gap:8px;flex-wrap:wrap;margin-top:2px}
+.diff-note{
+  margin-top:12px;background:#FFF7E8;border:2px dashed var(--orange);
+  border-radius:16px;padding:12px 14px;font-size:14px;
+}
+.diff-note b{color:var(--orange-deep)}
+.empty{
+  text-align:center;color:var(--ink-soft);padding:28px 10px;font-size:15px;
+  border:2px dashed var(--line);border-radius:20px;
+}
+footer{text-align:center;font-size:12.5px;color:var(--ink-soft);margin-top:26px}
+.save-tip{font-size:12px;color:var(--ink-soft);text-align:right;margin-top:4px;min-height:16px}
+@media (max-width:480px){
+  .pole .nm{font-size:16px}
+  .slider-row{grid-template-columns:56px 1fr 56px 30px}
+  .scale button{font-size:16px}
+}
+@media (prefers-reduced-motion: reduce){
+  *{animation:none!important;transition:none!important}
+}
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header>
+    <div class="bubble">
+      <h1>性格八角測驗</h1>
+      <p>八個向度・畫出你與家人的個性八角形</p>
+    </div>
+    <div class="dot-tail"></div>
+  </header>
+
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="quiz" onclick="switchTab('quiz')">📝 我的測驗</button>
+    <button class="tab-btn" data-tab="family" onclick="switchTab('family')">👨‍👩‍👧‍👦 家人八角對照</button>
+  </div>
+
+  <!-- ================= 我的測驗 ================= -->
+  <section id="panel-quiz" class="panel show">
+    <div class="card" id="quizCard"></div>
+    <div class="card" id="myResultCard" style="display:none"></div>
+  </section>
+
+  <!-- ================= 家人對照 ================= -->
+  <section id="panel-family" class="panel">
+    <div class="card">
+      <h2>👥 成員資料（2～6 人）</h2>
+      <p class="hint">輸入名字並拖動 8 條光譜（1＝完全偏綠色特質、8＝完全偏橘色特質）。點名字列可收合／展開。</p>
+      <div id="memberList" style="margin-top:12px"></div>
+      <div class="quick-row">
+        <button class="btn small green" onclick="addMember()">＋ 新增成員</button>
+        <button class="btn small ghost" id="addMeBtn" onclick="addMeAsMember()" style="display:none">把「我的測驗結果」加入對照</button>
+      </div>
+      <div class="save-tip" id="saveTip"></div>
+    </div>
+
+    <div class="card">
+      <h2>🔍 八角對照圖</h2>
+      <p class="hint">點下方名字標籤可顯示／隱藏該成員 —— 想「兩兩比較」就只留兩個人亮著；全部亮著即為全家總覽。</p>
+      <div class="legend-chips" id="legendChips"></div>
+      <div class="quick-row">
+        <button class="btn small ghost" onclick="setAllVisible(true)">全部顯示</button>
+        <button class="btn small ghost" onclick="setAllVisible(false)">全部隱藏</button>
+      </div>
+      <div class="chart-box" id="familyChartBox"></div>
+      <div class="legend-note">
+        <span>靠近<b class="g">中心＝綠色特質</b></span>
+        <span>靠近<b class="o">外圈＝橘色特質</b></span>
+      </div>
+      <div id="diffNote"></div>
+    </div>
+  </section>
+
+  <footer>參考「三采文化・性格八角」向度製作｜資料只儲存在你自己的裝置</footer>
+</div>
+
+<script>
+/* ================= 八大向度資料 ================= */
+const DIMS = [
+  {key:'social',  title:'你的社交能量取向', short:'社交能量',
+   g:{name:'貓型人', tag:'享受獨處', emo:'🐱', desc:'獨處是充電，安靜自在最舒服'},
+   o:{name:'狗型人', tag:'愛好熱鬧', emo:'🐶', desc:'社交是充電，越熱鬧越有活力'}},
+  {key:'motive',  title:'你的動機風格', short:'動機風格',
+   g:{name:'甲蟲型', tag:'堅持執著', emo:'🐞', desc:'鎖定目標就堅持到底'},
+   o:{name:'螢火蟲型', tag:'好奇百變', emo:'✨', desc:'興趣廣泛，喜歡嘗鮮探索'}},
+  {key:'relate',  title:'你的人際風格', short:'人際風格',
+   g:{name:'治癒者', tag:'體貼包容', emo:'🌿', desc:'重視和諧，先照顧別人的感受'},
+   o:{name:'聖騎士', tag:'正直敢言', emo:'⚔️', desc:'堅持原則，有話直說'}},
+  {key:'percept', title:'你的感知焦距', short:'感知焦距',
+   g:{name:'顯微型', tag:'觀察入微', emo:'🔬', desc:'重視細節，觀察力敏銳'},
+   o:{name:'雷達型', tag:'掌握全局', emo:'📡', desc:'先看大方向，掌握整體局勢'}},
+  {key:'cognit',  title:'你的認知風格', short:'認知風格',
+   g:{name:'建築師', tag:'按部就班', emo:'📐', desc:'喜歡計畫，一步一步來'},
+   o:{name:'饒舌歌手', tag:'即興應變', emo:'🎤', desc:'隨機應變，臨場發揮'}},
+  {key:'sense',   title:'你的情緒敏感度', short:'情緒敏感',
+   g:{name:'玻璃球型', tag:'心思細膩', emo:'🔮', desc:'感受敏銳，容易被觸動'},
+   o:{name:'匹克球型', tag:'穩定淡然', emo:'🏓', desc:'情緒穩定，不易起波瀾'}},
+  {key:'express', title:'你的情緒表達', short:'情緒表達',
+   g:{name:'冰川型', tag:'冷靜沉穩', emo:'🧊', desc:'內斂表達，冷靜以對'},
+   o:{name:'火山型', tag:'熱情坦率', emo:'🌋', desc:'情緒外放，直接表達'}},
+  {key:'risk',    title:'你的風險承受度', short:'風險承受',
+   g:{name:'築沙堡者', tag:'謹慎防守', emo:'🏖️', desc:'謹慎評估，穩中求進'},
+   o:{name:'衝浪者', tag:'大膽挑戰', emo:'🏄', desc:'勇於冒險，先衝再說'}},
+];
+const SCALE_COLORS = ['#4F9A38','#6DAE4F','#8FBF63','#B3CE77','#F3C077','#F2A855','#EF9139','#E97A1F'];
+const MEMBER_COLORS = ['#E4572E','#2E86AB','#7B4FA6','#1B9E77','#D6A400','#D63A87'];
+
+/* ================= 狀態 ================= */
+let quizStep = 0;
+let quizAnswers = new Array(8).fill(null);
+let myResult = null;          // [8] 完成測驗後的分數
+let members = [];             // {name,color,scores:[8],visible,open}
+const PRESET_MEMBERS = [
+  {name:'Bear',  scores:[3,5,2,7,1,3,6,6]},
+  {name:'Chloe', scores:[4,5,7,5,6,7,4,1]},
+  {name:'Clare', scores:[6,5,4,4,6,2,2,3]},
+  {name:'Migle', scores:[6,4,1,5,3,5,6,5]},
+];
+let saveTimer = null;
+
+/* ================= 分頁 ================= */
+function switchTab(tab){
+  document.querySelectorAll('.tab-btn').forEach(b=>b.classList.toggle('active', b.dataset.tab===tab));
+  document.getElementById('panel-quiz').classList.toggle('show', tab==='quiz');
+  document.getElementById('panel-family').classList.toggle('show', tab==='family');
+  if(tab==='family') renderFamily();
+}
+
+/* ================= 測驗 ================= */
+function renderQuiz(){
+  const d = DIMS[quizStep];
+  const v = quizAnswers[quizStep];
+  const card = document.getElementById('quizCard');
+  card.style.display='block';
+  card.innerHTML = `
+    <div class="progress">${DIMS.map((_,i)=>
+      `<span class="${i<quizStep?'done':i===quizStep?'now':''}"></span>`).join('')}</div>
+    <div class="q-title">${d.title}<small>第 ${quizStep+1} 題／共 8 題</small></div>
+    <div class="poles">
+      <div class="pole g"><span class="emo">${d.g.emo}</span><div class="nm">${d.g.name}</div><div class="tg">${d.g.tag}</div></div>
+      <div class="pole o"><span class="emo">${d.o.emo}</span><div class="nm">${d.o.name}</div><div class="tg">${d.o.tag}</div></div>
+    </div>
+    <div class="scale-caption">請點選數字 ①～⑧，選出你的分數</div>
+    <div class="scale-heads"><span class="g">← ${d.g.name}</span><span class="o">${d.o.name} →</span></div>
+    <div class="scale">${[1,2,3,4,5,6,7,8].map(n=>
+      `<button style="background:${SCALE_COLORS[n-1]}" class="${v===n?'sel':''}" onclick="pickScore(${n})" aria-label="${n}分">${n}</button>`).join('')}</div>
+    <div class="scale-labels"><span>完全是我</span><span>有點像我</span><span>完全是我</span></div>
+    <div class="nav-row">
+      ${quizStep>0?`<button class="btn ghost" onclick="prevQ()">上一題</button>`:''}
+      <button class="btn primary" id="nextBtn" ${v?'':'disabled'} onclick="nextQ()">${quizStep===7?'看我的八角 🎉':'下一題'}</button>
+    </div>`;
+}
+function pickScore(n){ quizAnswers[quizStep]=n; renderQuiz(); }
+function prevQ(){ quizStep--; renderQuiz(); }
+function nextQ(){
+  if(quizStep<7){ quizStep++; renderQuiz(); }
+  else{
+    myResult = quizAnswers.slice();
+    document.getElementById('quizCard').style.display='none';
+    renderMyResult();
+    scheduleSave();
+  }
+}
+function restartQuiz(){
+  quizStep=0; quizAnswers=new Array(8).fill(null);
+  document.getElementById('myResultCard').style.display='none';
+  renderQuiz();
+}
+
+function leanInfo(d,v){
+  if(v<=3) return {cls:'g', text:`${d.g.name}｜${d.g.desc}`};
+  if(v>=6) return {cls:'o', text:`${d.o.name}｜${d.o.desc}`};
+  return {cls:'m', text:`${d.short}：介於 ${d.g.name} 與 ${d.o.name} 之間，能彈性切換`};
+}
+function renderMyResult(){
+  const card = document.getElementById('myResultCard');
+  card.style.display='block';
+  const svg = radarSVG([{name:'我', color:'#E4572E', scores:myResult}]);
+  card.innerHTML = `
+    <h2>🎯 我的性格八角</h2>
+    <div class="chart-box">${svg}</div>
+    <div class="legend-note">
+      <span>靠近<b class="g">中心＝綠色特質</b></span>
+      <span>靠近<b class="o">外圈＝橘色特質</b></span>
+    </div>
+    <div class="spectrum">
+      ${DIMS.map((d,i)=>{
+        const v=myResult[i], pct=((v-1)/7)*100;
+        return `<div class="spec-row">
+          <div class="l">${d.g.emo} ${d.g.name}</div>
+          <div class="track"><i style="left:${pct}%;background:${SCALE_COLORS[v-1]}"></i></div>
+          <div class="r">${d.o.name} ${d.o.emo}</div>
+        </div>`;}).join('')}
+    </div>
+    <div class="result-tags">
+      ${DIMS.map((d,i)=>{const L=leanInfo(d,myResult[i]);return `<span class="rtag ${L.cls}">${L.text}</span>`;}).join('')}
+    </div>
+    <div class="nav-row">
+      <button class="btn ghost" onclick="restartQuiz()">重新測驗</button>
+      <button class="btn primary" onclick="addMeAsMember();switchTab('family')">加入家人對照 →</button>
+    </div>`;
+  document.getElementById('addMeBtn').style.display='inline-block';
+}
+
+/* ================= 八角雷達圖 (SVG) ================= */
+function radarSVG(people){
+  const S=640, C=S/2, R=205, LR=R+52, N=8;
+  const pt=(i,r)=>{const a=-Math.PI/2 + i*2*Math.PI/N; return [C+r*Math.cos(a), C+r*Math.sin(a)];};
+  let s='';
+  // 背景八角環（2,4,6,8）
+  [2,4,6,8].forEach(lv=>{
+    const pts=Array.from({length:N},(_,i)=>pt(i,R*lv/8).map(n=>n.toFixed(1)).join(',')).join(' ');
+    s+=`<polygon points="${pts}" fill="${lv===8?'#FDFBF4':'none'}" stroke="#D9CFB4" stroke-width="${lv===8?2.5:1.5}" ${lv<8?'stroke-dasharray="4 5"':''}/>`;
+  });
+  // 軸線 + 刻度數字
+  for(let i=0;i<N;i++){
+    const [x2,y2]=pt(i,R);
+    s+=`<line x1="${C}" y1="${C}" x2="${x2.toFixed(1)}" y2="${y2.toFixed(1)}" stroke="#E3D9BF" stroke-width="1.5"/>`;
+  }
+  [2,4,6,8].forEach(lv=>{
+    const [x,y]=pt(0,R*lv/8);
+    s+=`<text x="${x+9}" y="${y+4}" font-size="13" fill="#B4A98D" font-weight="700">${lv}</text>`;
+  });
+  // 各人多邊形
+  people.forEach(p=>{
+    const pts=p.scores.map((v,i)=>pt(i, R*Math.max(1,Math.min(8,v))/8));
+    const poly=pts.map(q=>q.map(n=>n.toFixed(1)).join(',')).join(' ');
+    s+=`<polygon points="${poly}" fill="${p.color}22" stroke="${p.color}" stroke-width="3.5" stroke-linejoin="round"/>`;
+    pts.forEach(([x,y])=>{
+      s+=`<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="6" fill="${p.color}" stroke="#fff" stroke-width="2.5"/>`;
+    });
+  });
+  // 頂點標籤：向度名 + 兩極
+  DIMS.forEach((d,i)=>{
+    const [x,y]=pt(i,LR);
+    let anchor='middle';
+    if(x<C-30) anchor='end'; else if(x>C+30) anchor='start';
+    s+=`<text x="${x.toFixed(1)}" y="${(y-6).toFixed(1)}" text-anchor="${anchor}" font-size="19" font-weight="900" fill="#33302A">${d.short}</text>
+        <text x="${x.toFixed(1)}" y="${(y+15).toFixed(1)}" text-anchor="${anchor}" font-size="13.5" font-weight="700">
+          <tspan fill="#3F7F2C">${d.g.name}</tspan><tspan fill="#B4A98D">↔</tspan><tspan fill="#D9771A">${d.o.name}</tspan>
+        </text>`;
+  });
+  return `<svg viewBox="0 0 ${S} ${S}" style="width:100%;max-width:560px;height:auto" role="img">${s}</svg>`;
+}
+
+/* ================= 家人對照 ================= */
+function nextColor(){
+  const used=members.map(m=>m.color);
+  return MEMBER_COLORS.find(c=>!used.includes(c)) || MEMBER_COLORS[members.length%6];
+}
+function addMember(name, scores){
+  if(members.length>=6){ alert('最多 6 位成員喔！'); return; }
+  members.push({
+    name: name || `成員 ${members.length+1}`,
+    color: nextColor(),
+    scores: scores || new Array(8).fill(4),
+    visible:true, open:!scores
+  });
+  renderFamily(); scheduleSave();
+}
+function addMeAsMember(){
+  if(!myResult){ alert('請先完成「我的測驗」再加入喔！'); return; }
+  const me = members.find(m=>m.name==='我');
+  if(me){ me.scores = myResult.slice(); }
+  else addMember('我', myResult.slice());
+  renderFamily(); scheduleSave();
+}
+function removeMember(idx){
+  if(!confirm(`確定要刪除「${members[idx].name}」嗎？`)) return;
+  members.splice(idx,1); renderFamily(); scheduleSave();
+}
+function toggleOpen(idx){ members[idx].open=!members[idx].open; renderMemberList(); }
+function toggleVisible(idx){ members[idx].visible=!members[idx].visible; renderFamily(); scheduleSave(); }
+function setAllVisible(v){ members.forEach(m=>m.visible=v); renderFamily(); scheduleSave(); }
+function updName(idx,val){ members[idx].name=val||`成員 ${idx+1}`; renderLegend(); renderChart(); scheduleSave(); }
+function updScore(idx,dim,val){
+  members[idx].scores[dim]=+val;
+  document.getElementById(`val-${idx}-${dim}`).textContent=val;
+  renderChart(); scheduleSave();
+}
+
+function renderMemberList(){
+  const box=document.getElementById('memberList');
+  if(members.length===0){
+    box.innerHTML=`<div class="empty">還沒有成員～<br>按「＋ 新增成員」開始，或先完成測驗後把自己加進來！</div>`;
+    return;
+  }
+  box.innerHTML = members.map((m,idx)=>`
+    <div class="member ${m.open?'open':''}">
+      <div class="member-head">
+        <span class="cdot" style="background:${m.color}"></span>
+        <input value="${m.name.replace(/"/g,'&quot;')}" maxlength="10" placeholder="輸入名字"
+               oninput="updName(${idx},this.value)">
+        <button class="icon-btn" onclick="toggleOpen(${idx})">${m.open?'收合 ▲':'展開 ▼'}</button>
+        <button class="icon-btn danger" onclick="removeMember(${idx})" aria-label="刪除">🗑</button>
+      </div>
+      <div class="member-body">
+        ${DIMS.map((d,i)=>`
+          <div class="slider-row">
+            <div class="lg">${d.g.name}</div>
+            <input type="range" min="1" max="8" step="1" value="${m.scores[i]}"
+                   style="accent-color:${m.color}"
+                   oninput="updScore(${idx},${i},this.value)" aria-label="${d.short}">
+            <div class="lo">${d.o.name}</div>
+            <div class="val" id="val-${idx}-${i}">${m.scores[i]}</div>
+          </div>`).join('')}
+      </div>
+    </div>`).join('');
+}
+function renderLegend(){
+  const box=document.getElementById('legendChips');
+  box.innerHTML = members.length===0 ? '<span class="hint">新增成員後，這裡會出現可切換顯示的名字標籤</span>' :
+    members.map((m,idx)=>`
+      <button class="chip ${m.visible?'':'off'}" onclick="toggleVisible(${idx})">
+        <span class="cdot" style="background:${m.color}"></span>${m.name}
+      </button>`).join('');
+}
+function renderChart(){
+  const visible=members.filter(m=>m.visible);
+  document.getElementById('familyChartBox').innerHTML = radarSVG(visible.length?visible:[]);
+  renderDiffNote(visible);
+}
+function renderDiffNote(visible){
+  const box=document.getElementById('diffNote');
+  if(visible.length<2){ box.innerHTML=''; return; }
+  let best={i:0,spread:-1};
+  DIMS.forEach((_,i)=>{
+    const vals=visible.map(m=>m.scores[i]);
+    const spread=Math.max(...vals)-Math.min(...vals);
+    if(spread>best.spread) best={i,spread};
+  });
+  const d=DIMS[best.i];
+  const vals=visible.map(m=>`${m.name} ${m.scores[best.i]}分`).join('、');
+  const same = best.spread===0;
+  box.innerHTML = `<div class="diff-note">💡 ${same
+    ? `目前顯示的成員在每個向度都完全相同，個性超有默契！`
+    : `差異最大的向度是 <b>「${d.short}」</b>（${d.g.name} ↔ ${d.o.name}）：${vals}，相差 <b>${best.spread} 分</b>。聊聊彼此在這方面的習慣，也許會更懂對方！`}</div>`;
+}
+function renderFamily(){
+  renderMemberList(); renderLegend(); renderChart();
+  document.getElementById('addMeBtn').style.display = myResult ? 'inline-block' : 'none';
+}
+
+/* ================= 儲存 / 讀取 ================= */
+function scheduleSave(){
+  clearTimeout(saveTimer);
+  saveTimer=setTimeout(saveData,500);
+}
+async function saveData(){
+  try{
+    if(window.storage){
+      await window.storage.set('octo-data', JSON.stringify({myResult, members}));
+      const t=document.getElementById('saveTip');
+      t.textContent='✓ 已自動儲存';
+      setTimeout(()=>t.textContent='',2000);
+    }
+  }catch(e){ /* 無法儲存時安靜略過 */ }
+}
+async function loadData(){
+  try{
+    if(window.storage){
+      const r=await window.storage.get('octo-data');
+      if(r&&r.value){
+        const d=JSON.parse(r.value);
+        if(Array.isArray(d.myResult)&&d.myResult.length===8) myResult=d.myResult;
+        if(Array.isArray(d.members)) members=d.members.slice(0,6).map(m=>({...m,open:false}));
+      }
+    }
+  }catch(e){ /* 沒有舊資料 */ }
+  // 補上預設成員（已存在同名者不重複加入）
+  PRESET_MEMBERS.forEach(p=>{
+    if(members.length<6 && !members.some(m=>m.name===p.name)){
+      members.push({name:p.name, color:nextColor(), scores:p.scores.slice(), visible:true, open:false});
+    }
+  });
+  if(myResult){ document.getElementById('quizCard').style.display='none'; renderMyResult(); }
+  else renderQuiz();
+  renderFamily();
+}
+loadData();
+</script>
+</body>
+</html>
