@@ -1,0 +1,177 @@
+<!doctype html>
+<html lang="zh-Hant-TW">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#0c4a6e">
+  <meta name="description" content="考察澎湖旅運場站旅客動線暨智慧化設備運用｜115年9月8日至9日行程">
+  <title>澎湖旅運場站考察｜行程表</title>
+  <style>
+    :root {
+      --navy: #0c4a6e;
+      --blue: #0284c7;
+      --sky: #e0f2fe;
+      --ink: #183247;
+      --muted: #64748b;
+      --line: #dbe7ef;
+      --bg: #f5f9fc;
+      --white: #ffffff;
+      --orange: #f97316;
+      --green: #0f766e;
+      --shadow: 0 10px 30px rgba(12, 74, 110, .09);
+    }
+    * { box-sizing: border-box; }
+    html { scroll-behavior: smooth; }
+    body {
+      margin: 0;
+      background: var(--bg);
+      color: var(--ink);
+      font-family: -apple-system, BlinkMacSystemFont, "Noto Sans TC", "PingFang TC", "Microsoft JhengHei", sans-serif;
+      line-height: 1.55;
+    }
+    a { color: inherit; }
+    .hero {
+      position: relative;
+      overflow: hidden;
+      color: white;
+      background: linear-gradient(145deg, #0c4a6e 0%, #0369a1 58%, #0ea5e9 100%);
+      padding: calc(28px + env(safe-area-inset-top)) 20px 34px;
+    }
+    .hero::after {
+      content: "";
+      position: absolute;
+      width: 240px; height: 240px;
+      right: -90px; bottom: -135px;
+      border: 30px solid rgba(255,255,255,.11);
+      border-radius: 50%;
+    }
+    .hero-inner, main { max-width: 720px; margin: 0 auto; }
+    .eyebrow { margin: 0 0 9px; font-size: 13px; letter-spacing: .12em; opacity: .82; }
+    h1 { margin: 0; font-size: clamp(25px, 7vw, 38px); line-height: 1.2; letter-spacing: -.03em; }
+    .subtitle { margin: 11px 0 0; color: #dff4ff; font-size: 15px; }
+    .hero-actions { display: flex; gap: 9px; margin-top: 22px; position: relative; z-index: 1; }
+    button, .top-link {
+      border: 0; border-radius: 999px; padding: 9px 14px;
+      font: inherit; font-size: 14px; font-weight: 700; text-decoration: none;
+      cursor: pointer;
+    }
+    .share-btn { background: white; color: var(--navy); }
+    .top-link { border: 1px solid rgba(255,255,255,.4); color: white; background: rgba(255,255,255,.08); }
+    main { padding: 16px 16px 38px; }
+    .summary {
+      display: grid; grid-template-columns: repeat(2, 1fr); gap: 10px;
+      margin-top: -3px; position: relative; z-index: 2;
+    }
+    .summary-card, .panel {
+      background: var(--white); border: 1px solid rgba(219,231,239,.85);
+      box-shadow: var(--shadow); border-radius: 17px;
+    }
+    .summary-card { padding: 14px; min-height: 91px; }
+    .summary-card .label { color: var(--muted); font-size: 12px; margin-bottom: 5px; }
+    .summary-card .value { font-size: 15px; font-weight: 800; line-height: 1.4; }
+    .summary-card .icon { float: right; font-size: 21px; }
+    section { margin-top: 23px; }
+    .section-title { display: flex; align-items: center; justify-content: space-between; margin: 0 3px 10px; }
+    h2 { margin: 0; font-size: 20px; letter-spacing: -.02em; }
+    .date-pill { background: var(--sky); color: var(--navy); border-radius: 999px; padding: 4px 9px; font-size: 12px; font-weight: 800; }
+    .panel { padding: 4px 15px 7px; }
+    .timeline { list-style: none; padding: 0; margin: 0; }
+    .item { display: grid; grid-template-columns: 74px 18px 1fr; gap: 7px; padding: 14px 0; position: relative; }
+    .item:not(:last-child)::after { content: ""; position: absolute; left: 81px; top: 35px; bottom: -2px; border-left: 2px dotted #c5d9e5; }
+    .time { color: var(--navy); font-size: 13px; font-weight: 800; padding-top: 1px; }
+    .dot { position: relative; z-index: 1; width: 12px; height: 12px; margin-top: 4px; border-radius: 50%; background: var(--blue); border: 3px solid #bae6fd; }
+    .item:last-child .dot { background: var(--orange); border-color: #fed7aa; }
+    .event { min-width: 0; }
+    .event-title { margin: 0; font-size: 15px; font-weight: 800; }
+    .note { margin: 4px 0 0; color: var(--muted); font-size: 13px; }
+    .tag { display: inline-block; margin: 5px 5px 0 0; padding: 2px 7px; border-radius: 5px; font-size: 11px; font-weight: 700; background: #f1f5f9; color: #475569; }
+    .highlight { margin-top: 11px; border-left: 4px solid var(--orange); background: #fff7ed; color: #9a3412; border-radius: 9px; padding: 10px 12px; font-size: 13px; }
+    .people { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 4px; }
+    .person { background: #f0fdfa; color: #115e59; border: 1px solid #ccfbf1; border-radius: 999px; padding: 6px 10px; font-size: 13px; }
+    .places { display: grid; gap: 8px; }
+    .place { display: flex; gap: 11px; align-items: flex-start; padding: 11px 12px; background: #f8fafc; border-radius: 11px; }
+    .place-icon { font-size: 20px; }
+    .place strong { display: block; font-size: 14px; }
+    .place span { color: var(--muted); font-size: 12px; }
+    footer { text-align: center; color: var(--muted); font-size: 12px; padding: 0 16px 30px; }
+    @media (min-width: 600px) { .summary { grid-template-columns: repeat(4, 1fr); } .summary-card { min-height: 108px; } }
+    @media print { .hero-actions { display: none; } body { background: white; } .panel, .summary-card { box-shadow: none; } }
+  </style>
+</head>
+<body>
+  <header class="hero">
+    <div class="hero-inner">
+      <p class="eyebrow">TIPC｜場站考察行程</p>
+      <h1>考察澎湖旅運場站<br>旅客動線暨智慧化設備運用</h1>
+      <p class="subtitle">115 年 9 月 8 日（二）至 9 月 9 日（三）</p>
+      <div class="hero-actions">
+        <button class="share-btn" type="button" onclick="sharePage()">↗ 分享行程</button>
+        <a class="top-link" href="#day1">查看時間軸 ↓</a>
+      </div>
+    </div>
+  </header>
+
+  <main>
+    <div class="summary" aria-label="行程摘要">
+      <div class="summary-card"><span class="icon">📅</span><div class="label">考察天數</div><div class="value">2 日</div></div>
+      <div class="summary-card"><span class="icon">👥</span><div class="label">參與人員</div><div class="value">共 6 人</div></div>
+      <div class="summary-card"><span class="icon">📍</span><div class="label">考察場站</div><div class="value">3 處</div></div>
+      <div class="summary-card"><span class="icon">✈️</span><div class="label">往返航班</div><div class="value">AE-333／AE-342</div></div>
+    </div>
+
+    <section id="day1">
+      <div class="section-title"><h2>第一天｜抵達與現勘</h2><span class="date-pill">9/8 星期二</span></div>
+      <div class="panel">
+        <ol class="timeline">
+          <li class="item"><div class="time">08:45–09:30</div><div class="dot"></div><div class="event"><p class="event-title">搭機：高雄 → 澎湖</p><p class="note">華信航空 AE-333</p><span class="tag">交通</span></div></li>
+          <li class="item"><div class="time">09:45–10:00</div><div class="dot"></div><div class="event"><p class="event-title">前往龍門港旅客中心</p><p class="note">澎湖機場 2 號出口集合</p></div></li>
+          <li class="item"><div class="time">10:00–11:30</div><div class="dot"></div><div class="event"><p class="event-title">現勘龍門港旅客中心</p><span class="tag">場站現勘</span></div></li>
+          <li class="item"><div class="time">11:30–12:00</div><div class="dot"></div><div class="event"><p class="event-title">前往馬公管理處</p></div></li>
+          <li class="item"><div class="time">12:00–13:20</div><div class="dot"></div><div class="event"><p class="event-title">午餐</p><p class="note">馬公管理處會議室便餐</p></div></li>
+          <li class="item"><div class="time">13:30–16:00</div><div class="dot"></div><div class="event"><p class="event-title">現勘馬公港旅客中心</p><p class="note">2 號碼頭｜當日有 3 艘船</p><div class="highlight">重點觀察：通關時間主要集中於 14:00–14:30。</div><span class="tag">場站現勘</span><span class="tag">旅客動線</span></div></li>
+          <li class="item"><div class="time">16:00</div><div class="dot"></div><div class="event"><p class="event-title">第一天行程結束</p></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section id="day2">
+      <div class="section-title"><h2>第二天｜郵輪中心與返程</h2><span class="date-pill">9/9 星期三</span></div>
+      <div class="panel">
+        <ol class="timeline">
+          <li class="item"><div class="time">09:30</div><div class="dot"></div><div class="event"><p class="event-title">飯店大廳集合</p></div></li>
+          <li class="item"><div class="time">09:40–12:00</div><div class="dot"></div><div class="event"><p class="event-title">現勘澎湖國際郵輪中心</p><p class="note">1 號碼頭</p><span class="tag">場站現勘</span><span class="tag">智慧設備</span></div></li>
+          <li class="item"><div class="time">12:00</div><div class="dot"></div><div class="event"><p class="event-title">行程結束</p></div></li>
+          <li class="item"><div class="time">15:00</div><div class="dot"></div><div class="event"><p class="event-title">前往機場</p></div></li>
+          <li class="item"><div class="time">16:00–16:40</div><div class="dot"></div><div class="event"><p class="event-title">搭機：澎湖 → 高雄</p><p class="note">華信航空 AE-342</p><span class="tag">返程</span></div></li>
+        </ol>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>考察場站</h2><span class="date-pill">共 3 處</span></div>
+      <div class="panel places">
+        <div class="place"><div class="place-icon">⚓</div><div><strong>馬公港旅客中心</strong><span>2 號碼頭</span></div></div>
+        <div class="place"><div class="place-icon">🛳️</div><div><strong>澎湖國際郵輪中心</strong><span>1 號碼頭</span></div></div>
+        <div class="place"><div class="place-icon">🚢</div><div><strong>龍門港旅客中心</strong><span>第一天上午現勘</span></div></div>
+      </div>
+    </section>
+
+    <section>
+      <div class="section-title"><h2>參與人員</h2><span class="date-pill">6 人</span></div>
+      <div class="panel people">
+        <span class="person">高級研究員 張乃文</span><span class="person">黃心玫 經理</span><span class="person">王昱昕 助理事務員</span><span class="person">林欣緯 資深副處長</span><span class="person">李佳紋 管理師</span><span class="person">蔡明倫 助理管理師</span>
+      </div>
+    </section>
+  </main>
+  <footer>行程資訊依「考察澎湖旅運場站旅客動線暨智慧化設備運用」行程表整理</footer>
+  <script>
+    async function sharePage() {
+      const shareData = { title: document.title, text: '澎湖旅運場站考察行程｜115年9月8日至9日', url: location.href };
+      try {
+        if (navigator.share) await navigator.share(shareData);
+        else { await navigator.clipboard.writeText(location.href); alert('行程頁面連結已複製。'); }
+      } catch (err) { if (err.name !== 'AbortError') alert('目前無法分享，請使用瀏覽器的分享功能。'); }
+    }
+  </script>
+</body>
+</html>
