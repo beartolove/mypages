@@ -1,0 +1,465 @@
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+<meta name="theme-color" content="#0B3A6E" />
+<title>2026 政府暨教育資訊長高峰會｜行動版閱讀</title>
+<style>
+  :root{
+    --base-font: 2em;
+    --navy:#0B3A6E;
+    --blue:#0E76BC;
+    --sky:#EAF5FB;
+    --ink:#18324A;
+    --muted:#62788A;
+    --line:#D9E5EE;
+    --card:#FFFFFF;
+    --warm:#FFF4D6;
+    --bg:#F5F9FC;
+    --danger:#B42318;
+    --ok:#117A65;
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0;
+    font-family:-apple-system,BlinkMacSystemFont,"Segoe UI","Noto Sans TC","PingFang TC","Microsoft JhengHei",sans-serif;
+    color:var(--ink);
+    background:var(--bg);
+    font-size:var(--base-font);
+    line-height:1.62;
+    -webkit-text-size-adjust:100%;
+  }
+  button{font:inherit}
+  .topbar{
+    position:sticky; top:0; z-index:30;
+    display:flex; align-items:center; gap:.55rem;
+    padding:.62rem .72rem;
+    background:rgba(11,58,110,.96);
+    color:#fff;
+    box-shadow:0 2px 10px rgba(0,0,0,.14);
+    backdrop-filter:blur(8px);
+  }
+  .menu-btn{
+    border:0; background:transparent; color:#fff; padding:.12rem .2rem;
+    font-size:1.05em; line-height:1; cursor:pointer;
+  }
+  .brand{min-width:0}
+  .brand-title{
+    font-size:.62em; font-weight:800; line-height:1.25;
+    white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .brand-sub{font-size:.38em; opacity:.82; margin-top:.12rem}
+  .hero{
+    padding:1.05rem .8rem .8rem;
+    background:linear-gradient(160deg,#0B3A6E 0%,#0E76BC 100%);
+    color:white;
+  }
+  .hero h1{
+    margin:0 0 .32rem;
+    font-size:.9em;
+    line-height:1.28;
+    letter-spacing:.01em;
+  }
+  .hero p{margin:.2rem 0; font-size:.5em; opacity:.96}
+  .chips{display:flex; flex-wrap:wrap; gap:.28rem; margin-top:.55rem}
+  .chip{
+    display:inline-block; padding:.18rem .38rem;
+    border-radius:999px; background:rgba(255,255,255,.16);
+    font-size:.4em; border:1px solid rgba(255,255,255,.28);
+  }
+  .tabs-wrap{
+    position:sticky; top:2.2rem; z-index:25;
+    background:var(--card);
+    border-bottom:1px solid var(--line);
+    overflow-x:auto;
+    scrollbar-width:none;
+  }
+  .tabs-wrap::-webkit-scrollbar{display:none}
+  .tabs{
+    display:flex; gap:.2rem;
+    padding:.38rem .45rem;
+    min-width:max-content;
+  }
+  .tab-btn{
+    border:1px solid var(--line);
+    border-radius:999px;
+    background:white;
+    color:var(--navy);
+    padding:.3rem .5rem;
+    font-size:.43em;
+    font-weight:700;
+    cursor:pointer;
+  }
+  .tab-btn.active{
+    background:var(--navy);
+    color:white;
+    border-color:var(--navy);
+  }
+  main{padding:.62rem .58rem 1.5rem; max-width:860px; margin:auto}
+  .panel{display:none}
+  .panel.active{display:block}
+  .section-title{
+    margin:.22rem 0 .5rem;
+    font-size:.72em;
+    line-height:1.3;
+    color:var(--navy);
+  }
+  .card{
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:.62rem;
+    padding:.58rem .62rem;
+    margin:.46rem 0;
+    box-shadow:0 2px 10px rgba(11,58,110,.04);
+  }
+  .card h3{
+    margin:0 0 .24rem;
+    font-size:.57em;
+    line-height:1.35;
+    color:var(--navy);
+  }
+  .card p,.card li{font-size:.46em}
+  .card ul{padding-left:1.1rem; margin:.25rem 0}
+  .card li{margin:.22rem 0}
+  .time{
+    display:inline-block;
+    min-width:4.3rem;
+    margin-right:.18rem;
+    font-weight:800;
+    color:var(--blue);
+  }
+  .agenda{
+    display:grid;
+    grid-template-columns:1fr;
+    gap:.38rem;
+  }
+  .agenda-item{
+    background:white;
+    border-left:.18rem solid var(--blue);
+    border-radius:.45rem;
+    padding:.48rem .55rem;
+    border-top:1px solid var(--line);
+    border-right:1px solid var(--line);
+    border-bottom:1px solid var(--line);
+  }
+  .agenda-item.break{border-left-color:#E0A800; background:#FFF9E8}
+  .agenda-item.topic{border-left-color:#4B77BE; background:#F3F8FD}
+  .agenda-item h4{
+    margin:0;
+    font-size:.49em;
+    line-height:1.42;
+  }
+  .agenda-item p{
+    margin:.18rem 0 0;
+    font-size:.42em;
+    color:var(--muted);
+  }
+  .callout{
+    border-radius:.55rem;
+    padding:.55rem .6rem;
+    background:var(--warm);
+    border:1px solid #F2D98B;
+    margin:.48rem 0;
+    font-size:.46em;
+  }
+  .callout strong{color:#7A4D00}
+  .check{
+    background:#EEF8F5;
+    border-color:#B9E0D4;
+  }
+  .check strong{color:var(--ok)}
+  .danger{
+    background:#FFF0EE;
+    border-color:#F4C7C3;
+  }
+  .danger strong{color:var(--danger)}
+  .kv{
+    display:grid;
+    grid-template-columns:4.8rem 1fr;
+    gap:.28rem .45rem;
+    align-items:start;
+    font-size:.45em;
+  }
+  .kv b{color:var(--navy)}
+  .source-note{
+    margin-top:1rem;
+    font-size:.34em;
+    color:var(--muted);
+    text-align:center;
+  }
+  .drawer-backdrop{
+    position:fixed; inset:0; background:rgba(0,0,0,.35);
+    z-index:49; display:none;
+  }
+  .drawer-backdrop.show{display:block}
+  .drawer{
+    position:fixed; top:0; left:0; bottom:0; z-index:50;
+    width:min(84vw,360px);
+    background:white;
+    transform:translateX(-105%);
+    transition:.22s ease;
+    box-shadow:8px 0 30px rgba(0,0,0,.2);
+    padding:1rem .8rem;
+  }
+  .drawer.open{transform:translateX(0)}
+  .drawer h2{font-size:.62em; margin:.1rem 0 .55rem; color:var(--navy)}
+  .drawer p{font-size:.4em; color:var(--muted); margin:.22rem 0 .5rem}
+  .font-grid{display:grid; grid-template-columns:1fr 1fr; gap:.38rem}
+  .font-btn{
+    border:1px solid var(--line);
+    border-radius:.45rem;
+    background:white;
+    color:var(--navy);
+    padding:.42rem .2rem;
+    font-size:.42em;
+    font-weight:700;
+  }
+  .font-btn.active{background:var(--navy); color:white}
+  .drawer .close{
+    float:right; border:0; background:#EEF4F8; border-radius:999px;
+    width:1.45rem; height:1.45rem; font-size:.55em;
+  }
+  .small-note{font-size:.37em;color:var(--muted);margin-top:.6rem}
+  @media (min-width:700px){
+    main{padding-left:1rem;padding-right:1rem}
+    .agenda{grid-template-columns:1fr 1fr}
+  }
+</style>
+</head>
+<body>
+
+<header class="topbar">
+  <button class="menu-btn" id="menuBtn" aria-label="開啟選單">☰</button>
+  <div class="brand">
+    <div class="brand-title">2026 政府暨教育資訊長高峰會</div>
+    <div class="brand-sub">手機版分段閱讀</div>
+  </div>
+</header>
+
+<section class="hero">
+  <h1>Agentic Government & AI Transformation</h1>
+  <p>2026/09/11（五）– 09/12（六）</p>
+  <p>嘉義福容 VOCO 酒店</p>
+  <div class="chips">
+    <span class="chip">9/11 13:00 正式開始</span>
+    <span class="chip">高鐵接駁</span>
+    <span class="chip">晚宴＋住宿</span>
+    <span class="chip">9/12 故宮南院</span>
+  </div>
+</section>
+
+<nav class="tabs-wrap" aria-label="重點分頁">
+  <div class="tabs">
+    <button class="tab-btn active" data-tab="summary">快速總覽</button>
+    <button class="tab-btn" data-tab="day1">Day 1 議程</button>
+    <button class="tab-btn" data-tab="day2">Day 2 行程</button>
+    <button class="tab-btn" data-tab="transport">交通住宿</button>
+    <button class="tab-btn" data-tab="notice">注意事項</button>
+    <button class="tab-btn" data-tab="contact">聯絡資訊</button>
+  </div>
+</nav>
+
+<main>
+  <section class="panel active" id="summary">
+    <h2 class="section-title">快速總覽</h2>
+    <div class="callout check"><strong>最重要：</strong>9/11 13:00 正式開始；若由台北搭團體高鐵，08:30 在台北車站一樓東三門全家集合。</div>
+    <div class="card">
+      <h3>9/11（五）</h3>
+      <div class="kv">
+        <b>09:01–10:28</b><span>高鐵 1307，台北 → 嘉義</span>
+        <b>11:00</b><span>展示 Booth 開放</span>
+        <b>13:00</b><span>大會正式開始</span>
+        <b>17:20</b><span>Day 1 議程結束</span>
+        <b>18:30–21:00</b><span>晚宴（3F 芙蓉廳）</span>
+      </div>
+    </div>
+    <div class="card">
+      <h3>9/12（六）</h3>
+      <div class="kv">
+        <b>06:30</b><span>早餐開始供應</span>
+        <b>09:00</b><span>退房</span>
+        <b>09:10 前</b><span>飯店大廳集合，搭車前往故宮南院</span>
+        <b>14:32–15:59</b><span>高鐵 648，嘉義太保 → 台北</span>
+      </div>
+    </div>
+  </section>
+
+  <section class="panel" id="day1">
+    <h2 class="section-title">Day 1｜9/11（五）議程</h2>
+    <div class="agenda">
+      <div class="agenda-item break"><h4><span class="time">11:30–13:00</span>午餐與交流</h4><p>AI / Copilot Demo Booth + Partner Booth</p></div>
+      <div class="agenda-item"><h4><span class="time">13:00–13:10</span>主辦單位致歡迎詞</h4></div>
+      <div class="agenda-item"><h4><span class="time">13:10–13:25</span>Microsoft 主題演講</h4><p>Agentic AI 全球趨勢與發展</p></div>
+      <div class="agenda-item"><h4><span class="time">13:25–13:45</span>貴賓演講（一）</h4><p>AI 時代的人才布局：政府政策、人才培育與 AI 賦能</p></div>
+      <div class="agenda-item"><h4><span class="time">13:45–14:05</span>貴賓演講（二）</h4><p>政府 AI 發展策略與風險分級框架</p></div>
+      <div class="agenda-item"><h4><span class="time">14:05–14:15</span>Microsoft 主題演講</h4><p>微軟全球政府與教育數位轉型案例分享</p></div>
+      <div class="agenda-item"><h4><span class="time">14:15–14:35</span>解決方案展示</h4><p>AI Agent 與 Copilot 場景</p></div>
+      <div class="agenda-item break"><h4><span class="time">14:35–15:05</span>中場休息與交流</h4><p>AI / Copilot Demo Booth + Partner Booth</p></div>
+      <div class="agenda-item topic"><h4><span class="time">15:05–15:55</span>專題分享（一）</h4><p>AI Ready Infrastructure｜從 AI 基礎建設、Azure Local DC 到政府數位韌性</p></div>
+      <div class="agenda-item topic"><h4><span class="time">15:55–16:35</span>專題分享（二）</h4><p>M365 Copilot & Agentic AI in Public Sector｜從 Copilot 到 Agent：公部門知識工作與服務轉型</p></div>
+      <div class="agenda-item topic"><h4><span class="time">16:35–17:15</span>專題論壇（三）</h4><p>Government AI Adoption & Governance｜公部門 AI 應用、與資安治理實務</p></div>
+      <div class="agenda-item"><h4><span class="time">17:15–17:20</span>Closing</h4></div>
+      <div class="agenda-item"><h4><span class="time">17:20–18:30</span>Check-in / 入住</h4></div>
+      <div class="agenda-item break"><h4><span class="time">18:30–21:00</span>晚宴</h4></div>
+    </div>
+  </section>
+
+  <section class="panel" id="day2">
+    <h2 class="section-title">Day 2｜9/12（六）行程</h2>
+    <div class="card">
+      <h3>上午</h3>
+      <ul>
+        <li><strong>06:30</strong> 早餐開始供應，4F 海棠廳、櫻花廳。</li>
+        <li><strong>09:00</strong> 辦理退房。</li>
+        <li><strong>09:10 前</strong> 團體交通貴賓於飯店大廳集合。</li>
+        <li>搭乘接駁巴士前往<strong>故宮南院</strong>參觀，由專人導覽。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>中午與回程</h3>
+      <ul>
+        <li>午餐：<strong>太保家田餐館</strong>（嘉義縣太保市麻寮里麻太路 65 號）。</li>
+        <li>預計 <strong>14:10</strong> 抵達嘉義太保高鐵站。</li>
+        <li>搭乘高鐵 <strong>648 班次，14:32–15:59</strong> 返回台北。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" id="transport">
+    <h2 class="section-title">交通與住宿</h2>
+    <div class="card">
+      <h3>台北出發－團體高鐵</h3>
+      <ul>
+        <li><strong>08:30</strong> 台北車站一樓「東三門全家便利商店」集合。</li>
+        <li>高鐵 <strong>1307</strong>：09:01–10:28 台北 → 嘉義。</li>
+        <li>抵達後接駁車約 20 分鐘前往會場。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>其他站出發</h3>
+      <ul>
+        <li><strong>10:40 前</strong> 抵達嘉義高鐵站 2 號出口集合。</li>
+        <li><strong>10:50</strong> 團體專車準時發車，僅此一班。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>自行前往</h3>
+      <ul>
+        <li>地點：嘉義福容 VOCO 酒店海棠廳。</li>
+        <li>地址：嘉義市西區世賢路一段 789 號 4 樓。</li>
+        <li><strong>12:30 前</strong> 完成報到。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>晚宴與住宿</h3>
+      <ul>
+        <li>晚宴：3F 芙蓉廳，18:30–21:00。</li>
+        <li>會議結束後於大會接待處辦理入住。</li>
+        <li>私人電話、洗衣、飲料等個人費用不含於住宿費。</li>
+      </ul>
+    </div>
+  </section>
+
+  <section class="panel" id="notice">
+    <h2 class="section-title">注意事項</h2>
+    <div class="callout danger"><strong>記得自備：</strong>牙膏、牙刷、刮鬍刀等一次性盥洗用品；客房不再提供一次性備品。</div>
+    <div class="card">
+      <h3>9/11 當日不住宿接駁</h3>
+      <ul>
+        <li>不參加晚宴：<strong>17:30</strong> 發車前往嘉義高鐵站。</li>
+        <li>參加晚宴但不住宿：<strong>20:30</strong> 發車。</li>
+      </ul>
+    </div>
+    <div class="card">
+      <h3>保險</h3>
+      <p>團體保險：500 萬履約責任險；65 歲以上及 14 歲以下最高保額 200 萬，附加意外醫療 20 萬。</p>
+    </div>
+  </section>
+
+  <section class="panel" id="contact">
+    <h2 class="section-title">聯絡資訊</h2>
+    <div class="card">
+      <h3>交通住宿</h3>
+      <p>天馬旅行社｜顏夐儀<br><strong>0932-051-194</strong></p>
+    </div>
+    <div class="card">
+      <h3>會議安排</h3>
+      <p>頤德國際公司｜林桂秀 <strong>0919-529-409</strong><br>
+      秦鴻英 <strong>0961-080-887</strong></p>
+    </div>
+    <div class="card">
+      <h3>飯店</h3>
+      <p>嘉義福容 VOCO 酒店<br><strong>05-232-3399</strong></p>
+    </div>
+  </section>
+
+  <div class="source-note">內容依主辦單位議程表與行前通知整理，請以大會最新公告為準。</div>
+</main>
+
+<div class="drawer-backdrop" id="backdrop"></div>
+<aside class="drawer" id="drawer" aria-hidden="true">
+  <button class="close" id="closeBtn" aria-label="關閉選單">×</button>
+  <h2>閱讀設定</h2>
+  <p>預設字體為 2em，可依手機螢幕與閱讀距離調整。</p>
+  <div class="font-grid">
+    <button class="font-btn" data-size="1.5em">1.5em</button>
+    <button class="font-btn" data-size="1.75em">1.75em</button>
+    <button class="font-btn active" data-size="2em">2.0em</button>
+    <button class="font-btn" data-size="2.25em">2.25em</button>
+    <button class="font-btn" data-size="2.5em">2.5em</button>
+    <button class="font-btn" data-size="2.75em">2.75em</button>
+  </div>
+  <div class="small-note">設定會保留在此裝置瀏覽器。</div>
+</aside>
+
+<script>
+  const tabBtns = document.querySelectorAll('.tab-btn');
+  const panels = document.querySelectorAll('.panel');
+
+  tabBtns.forEach(btn => {
+    btn.addEventListener('click', () => {
+      const target = btn.dataset.tab;
+      tabBtns.forEach(b => b.classList.toggle('active', b === btn));
+      panels.forEach(p => p.classList.toggle('active', p.id === target));
+      localStorage.setItem('cio-active-tab', target);
+      window.scrollTo({top: document.querySelector('.tabs-wrap').offsetTop - 60, behavior:'smooth'});
+    });
+  });
+
+  const savedTab = localStorage.getItem('cio-active-tab');
+  if(savedTab && document.getElementById(savedTab)){
+    const b = document.querySelector(`[data-tab="${savedTab}"]`);
+    if(b) b.click();
+  }
+
+  const drawer = document.getElementById('drawer');
+  const backdrop = document.getElementById('backdrop');
+  const openDrawer = () => {
+    drawer.classList.add('open');
+    backdrop.classList.add('show');
+    drawer.setAttribute('aria-hidden','false');
+  };
+  const closeDrawer = () => {
+    drawer.classList.remove('open');
+    backdrop.classList.remove('show');
+    drawer.setAttribute('aria-hidden','true');
+  };
+  document.getElementById('menuBtn').addEventListener('click', openDrawer);
+  document.getElementById('closeBtn').addEventListener('click', closeDrawer);
+  backdrop.addEventListener('click', closeDrawer);
+
+  const fontBtns = document.querySelectorAll('.font-btn');
+  function setFont(size){
+    document.documentElement.style.setProperty('--base-font', size);
+    localStorage.setItem('cio-font-size', size);
+    fontBtns.forEach(b => b.classList.toggle('active', b.dataset.size === size));
+  }
+  fontBtns.forEach(b => b.addEventListener('click', () => setFont(b.dataset.size)));
+
+  const savedSize = localStorage.getItem('cio-font-size') || '2em';
+  setFont(savedSize);
+</script>
+</body>
+</html>
