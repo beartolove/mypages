@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="zh-Hant-TW">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>AI 應用地圖｜分析儀表板（可收合導覽版）</title>
+<style>
+  :root{
+    --line:#dce9f7; --text:#10213f; --muted:#6f809b; --blue:#1478ff; --blue2:#0f63d8;
+    --blueSoft:#eaf3ff; --green:#12a883; --orange:#f39a12; --purple:#8c5cf5;
+    --shadow:0 18px 60px rgba(40,83,130,.15);
+  }
+  *{box-sizing:border-box}
+  html{scroll-behavior:smooth}
+  body{
+    margin:0; min-height:100vh;
+    font-family:"Noto Sans TC","Microsoft JhengHei",system-ui,sans-serif;
+    color:var(--text);
+    background:linear-gradient(135deg,#bfe0ff 0%,#eef7ff 46%,#cfeaff 100%);
+    padding:28px;
+  }
+  .app{
+    max-width:1500px; margin:auto; min-height:900px; background:rgba(255,255,255,.96);
+    border:1px solid rgba(255,255,255,.7); border-radius:26px; box-shadow:var(--shadow);
+    display:grid; grid-template-columns:240px 1fr; overflow:hidden;
+  }
+  .sidebar{padding:28px 18px 22px;border-right:1px solid var(--line);display:flex;flex-direction:column;gap:22px}
+  .brand{display:flex;align-items:center;gap:12px;font-weight:800;font-size:24px}
+  .logo{width:48px;height:48px;border-radius:14px;background:linear-gradient(145deg,#0b2f68,#1065cb);color:#fff;display:grid;place-items:center;font-weight:900}
+  .nav{display:grid;gap:8px}
+  .nav a{display:flex;align-items:center;gap:12px;padding:14px 14px;border-radius:13px;color:#263a59;text-decoration:none;font-weight:700}
+  .nav a.active{background:var(--blueSoft);color:var(--blue)}
+  .nav a:hover{background:#f4f8fd}
+  .side-note{margin-top:auto;padding:14px 12px;border:1px solid var(--line);border-radius:14px;color:var(--muted);font-size:13px;background:#f8fbff}
+  .main{padding:24px 28px 30px; position:relative}
+  .topline{display:flex;justify-content:space-between;align-items:flex-start;gap:18px}
+  .pill{display:inline-block;background:var(--blueSoft);color:var(--blue2);border:1px solid #cde2ff;padding:7px 12px;border-radius:999px;font-size:13px;font-weight:800}
+  h1{font-size:38px;line-height:1.2;margin:14px 0 8px;letter-spacing:-.02em}
+  .sub{color:var(--muted);font-size:16px;margin:0}
+  .top-actions{display:flex;align-items:stretch;gap:12px}
+  .month-card{min-width:230px;border:1px solid var(--line);border-radius:17px;padding:16px 18px;background:#fff;display:flex;gap:12px;align-items:center}
+  .month-icon{width:44px;height:44px;border-radius:12px;background:var(--blueSoft);display:grid;place-items:center;font-size:23px}
+  .month-card small{color:var(--muted)}
+  .month-card strong{display:block;font-size:21px;margin-top:3px}
+  .tour-btn{
+    border:0;background:linear-gradient(135deg,#1478ff,#0f63d8);color:#fff;border-radius:16px;
+    padding:14px 18px;font-weight:900;cursor:pointer;box-shadow:0 10px 24px rgba(20,120,255,.24)
+  }
+  .tour-btn small{display:block;opacity:.88;font-weight:600;font-size:12px;margin-top:2px}
+  .logic-card{margin-top:18px;padding:18px;border:1px solid var(--line);border-radius:18px;background:linear-gradient(180deg,#f8fbff,#ffffff);}
+  .logic-card h2{margin:0 0 8px;font-size:20px}
+  .logic-card p{margin:0;color:var(--muted);font-size:14px}
+  .logic-flow{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-top:14px}
+  .flow-step{padding:15px 14px;border:1px solid var(--line);border-radius:14px;background:#fff;min-height:115px;}
+  .flow-step .num{width:28px;height:28px;border-radius:50%;display:grid;place-items:center;background:var(--blueSoft);color:var(--blue);font-weight:900;margin-bottom:9px}
+  .flow-step strong{display:block;font-size:15px;margin-bottom:6px}
+  .flow-step span{font-size:13px;color:var(--muted);line-height:1.55}
+  .kpis{display:grid;grid-template-columns:repeat(4,1fr);gap:14px;margin-top:20px}
+  .kpi{border:1px solid var(--line);border-radius:18px;padding:20px;min-height:126px}
+  .kpi.blue{background:linear-gradient(135deg,#f1f7ff,#eaf3ff)}
+  .kpi.green{background:linear-gradient(135deg,#f1fcf9,#eaf9f5)}
+  .kpi.purple{background:linear-gradient(135deg,#f8f4ff,#f0ebff)}
+  .kpi.orange{background:linear-gradient(135deg,#fffaf1,#fff2dd)}
+  .kpi .label{display:flex;gap:9px;align-items:center;font-weight:800;color:#2d4162}
+  .kpi .value{font-size:46px;font-weight:900;margin:7px 0 2px;line-height:1}
+  .kpi .desc{color:var(--muted);font-size:13px}
+  .grid{display:grid;grid-template-columns:1.35fr 1fr;gap:14px;margin-top:14px}
+  .card{background:#fff;border:1px solid var(--line);border-radius:18px;padding:18px}
+  .card-title{display:flex;justify-content:space-between;align-items:flex-start;gap:10px;margin-bottom:15px}
+  .card-title h2{font-size:20px;margin:0 0 4px}
+  .card-title p{font-size:13px;color:var(--muted);margin:0}
+  .btn{background:var(--blueSoft);color:var(--blue);border:0;padding:10px 13px;border-radius:10px;font-weight:800;cursor:pointer}
+  .owner{width:56%;min-width:300px;margin:8px auto 10px;border:1px solid #b9d7ff;border-radius:14px;padding:12px 18px;display:flex;gap:13px;align-items:center;background:#f7fbff}
+  .avatar{width:52px;height:52px;border-radius:50%;background:#dcebff;display:grid;place-items:center;font-size:26px}
+  .owner strong{font-size:18px}
+  .owner span{display:block;color:var(--muted);font-size:13px;margin-top:2px}
+  .branch{height:22px;position:relative;margin:0 60px}
+  .branch:before{content:"";position:absolute;left:50%;top:0;width:1px;height:12px;background:#c6d6ea}
+  .branch:after{content:"";position:absolute;left:10%;right:10%;top:12px;height:1px;background:#c6d6ea}
+  .dept-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px}
+  .dept{border:1px solid var(--line);border-left:4px solid var(--blue);border-radius:12px;padding:13px;background:#fff}
+  .dept:nth-child(2){border-left-color:var(--green)}
+  .dept:nth-child(3){border-left-color:var(--orange)}
+  .dept:nth-child(4){border-left-color:var(--purple)}
+  .dept strong{font-size:14px}
+  .dept div{font-size:12px;color:var(--muted);margin-top:5px}
+  .bars{display:grid;gap:18px;padding-top:4px}
+  .bar-row{display:grid;grid-template-columns:145px 1fr 72px;gap:12px;align-items:center}
+  .bar-label{font-weight:800;font-size:14px}
+  .track{height:18px;background:#eaf0f8;border-radius:999px;overflow:hidden}
+  .fill{height:100%;background:linear-gradient(90deg,#1478ff,#2a9aff);border-radius:999px}
+  .hours{text-align:right;font-weight:900}
+  .hours small{font-weight:500;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;font-size:14px}
+  th{text-align:left;color:#62718a;background:#f5f8fc;padding:10px;border-bottom:1px solid var(--line)}
+  td{padding:10px;border-bottom:1px solid #edf2f8}
+  .badge{display:inline-block;padding:5px 9px;border-radius:999px;background:#dff6ec;color:#0d8f6d;font-weight:900}
+  .status{display:flex;align-items:center;gap:7px}
+  .dot{width:9px;height:9px;border-radius:50%;background:#19a783}
+  .dot.orange{background:#f4a515}.dot.blue{background:#3186ff}
+  .governance{display:grid;gap:12px}
+  .gov-box{display:flex;align-items:center;gap:15px;padding:16px;border:1px solid var(--line);border-radius:14px;background:#f8fffc}
+  .gov-box.blue{background:#f4f8ff}
+  .gov-icon{width:44px;height:44px;border-radius:12px;background:#dff7ef;display:grid;place-items:center;font-size:22px}
+  .gov-box.blue .gov-icon{background:#e2edff}
+  .gov-num{font-size:34px;font-weight:900;color:#1468dd;min-width:56px}
+  .gov-text strong{display:block;font-size:16px}
+  .gov-text span{font-size:12px;color:var(--muted)}
+
+  .tour-overlay{
+    position:fixed; inset:0; background:rgba(7,16,35,.50); display:none; z-index:9998;
+  }
+  .tour-overlay.show{display:block}
+  .tour-spotlight{
+    position:fixed; border-radius:20px;
+    box-shadow:0 0 0 9999px rgba(7,16,35,.18), 0 0 0 4px rgba(255,255,255,.95), 0 0 0 8px rgba(20,120,255,.35);
+    display:none; z-index:9999; pointer-events:none; transition:all .22s ease;
+  }
+  .tour-spotlight.show{display:block}
+  .tour-marker{
+    position:fixed; width:46px; height:46px; border-radius:50%; background:#1478ff; color:#fff;
+    display:none; place-items:center; font-weight:900; z-index:10000; border:4px solid #fff;
+    box-shadow:0 10px 28px rgba(20,120,255,.35);
+  }
+  .tour-marker.show{display:grid}
+  .tour-toolbar{
+    position:fixed; left:50%; transform:translateX(-50%); bottom:16px;
+    width:min(980px, calc(100vw - 16px)); background:#fff; border:1px solid #dce7f6;
+    border-radius:22px; box-shadow:0 22px 60px rgba(8,24,55,.26); z-index:10001; overflow:hidden;
+    display:none;
+  }
+  .tour-toolbar.show{display:block}
+  .tour-explain{
+    display:none; border-bottom:1px solid #e6eef8; background:#fbfdff;
+  }
+  .tour-explain.show{display:block}
+  .tour-explain-inner{
+    padding:16px;
+    display:grid; grid-template-columns:1.08fr .92fr; gap:14px;
+    max-height:min(44vh, 420px); overflow:auto;
+  }
+  .ex-card{
+    border:1px solid #e3edf8; border-radius:18px; background:#fff; padding:16px;
+  }
+  .step-tag{
+    display:inline-block; padding:6px 10px; border-radius:999px; background:#eef5ff; color:#145fca;
+    font-size:12px; font-weight:900; margin-bottom:10px;
+  }
+  .ex-card h3{margin:0 0 8px; font-size:18px}
+  .ex-card p{margin:0 0 12px; line-height:1.75; color:#30445f}
+  .bullet-list{display:grid; gap:10px}
+  .bullet-list div{
+    padding:12px 13px; border-radius:12px; background:#fff; border:1px solid #e7eef8;
+    font-size:14px; line-height:1.65;
+  }
+  .focus-box{
+    background:#edf6ff; border:1px solid #bfdcff; border-radius:14px; padding:13px; margin-bottom:12px;
+  }
+  .focus-box strong{display:block; font-size:15px; color:#0f4ea4; margin-bottom:5px}
+  .focus-box span{font-size:13px; color:#29548a; line-height:1.55}
+  .tip-box{
+    margin-top:12px; padding:12px 13px; border-radius:12px; background:#fff8eb;
+    border:1px solid #ffe0a6; font-size:13px; line-height:1.65; color:#765114;
+  }
+  .toolbar-main{
+    display:flex; align-items:center; justify-content:space-between; gap:12px;
+    padding:12px 14px;
+  }
+  .toolbar-left{display:flex; align-items:center; gap:12px; min-width:0}
+  .toolbar-step{
+    display:flex; align-items:center; gap:10px; min-width:0;
+  }
+  .toolbar-badge{
+    width:34px; height:34px; border-radius:50%; background:#1478ff; color:#fff;
+    display:grid; place-items:center; font-weight:900; flex:0 0 auto;
+  }
+  .toolbar-text{min-width:0}
+  .toolbar-text strong{
+    display:block; font-size:15px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;
+  }
+  .toolbar-text span{display:block; font-size:12px; color:var(--muted)}
+  .toolbar-actions{display:flex; align-items:center; gap:8px; flex-wrap:wrap; justify-content:flex-end}
+  .btn-secondary,.btn-ghost,.btn-primary{
+    min-height:42px; padding:10px 14px; border-radius:12px; font-weight:900; cursor:pointer;
+  }
+  .btn-secondary{background:#eff6ff; color:#145fca; border:1px solid #d4e6ff}
+  .btn-ghost{background:#fff; color:#233b60; border:1px solid #d7e4f4}
+  .btn-primary{background:linear-gradient(135deg,#1478ff,#0f63d8); color:#fff; border:0}
+  .tour-fab{
+    position:fixed; right:18px; bottom:18px; z-index:1001;
+    background:linear-gradient(135deg,#1478ff,#0f63d8); color:#fff; border:0; border-radius:999px;
+    padding:14px 18px; font-weight:900; box-shadow:0 16px 32px rgba(20,120,255,.30); cursor:pointer;
+  }
+  .tour-highlight-source{outline:4px solid rgba(20,120,255,.22); border-radius:18px; transition:outline .2s ease}
+  .progress-wrap{height:8px; background:#edf3fb; border-radius:999px; overflow:hidden; margin-top:4px}
+  .progress-bar{height:100%; background:linear-gradient(90deg,#1478ff,#29a2ff); width:0%}
+  .hidden-mobile{display:inline}
+  @media(max-width:1100px){
+    body{padding:14px}
+    .app{grid-template-columns:1fr}
+    .sidebar{display:none}
+    .kpis{grid-template-columns:repeat(2,1fr)}
+    .grid{grid-template-columns:1fr}
+    .topline{flex-direction:column}
+    .month-card{width:100%}
+    .logic-flow{grid-template-columns:repeat(2,1fr)}
+    .tour-explain-inner{grid-template-columns:1fr}
+  }
+  @media(max-width:700px){
+    .main{padding:18px}
+    .kpis{grid-template-columns:1fr}
+    .dept-grid{grid-template-columns:1fr 1fr}
+    .bar-row{grid-template-columns:120px 1fr 62px}
+    h1{font-size:29px}
+    .owner{width:100%;min-width:0}
+    table{font-size:12px}
+    .logic-flow{grid-template-columns:1fr}
+    .top-actions{width:100%; flex-direction:column}
+    .tour-toolbar{width:calc(100vw - 10px); bottom:6px; border-radius:18px}
+    .toolbar-main{flex-direction:column; align-items:stretch}
+    .toolbar-left{width:100%}
+    .toolbar-actions{width:100%; display:grid; grid-template-columns:repeat(4,1fr)}
+    .toolbar-actions button{width:100%; min-height:44px; padding:10px 8px; font-size:14px}
+    .tour-explain-inner{max-height:42vh; padding:12px}
+    .hidden-mobile{display:none}
+    .tour-fab{bottom:78px}
+  }
+</style>
+</head>
+<body>
+<div class="app">
+  <aside class="sidebar">
+    <div class="brand"><div class="logo">AI</div><div>AI 應用地圖</div></div>
+    <nav class="nav">
+      <a href="#">⌂ <span>總覽</span></a>
+      <a class="active" href="#">▥ <span>分析儀表板</span></a>
+      <a href="#">▤ <span>Agent 目錄</span></a>
+      <a href="#">♢ <span>治理管理</span></a>
+    </nav>
+    <div class="side-note">ⓘ 示範資料，用於保護機密</div>
+  </aside>
+
+  <main class="main">
+    <div class="topline">
+      <div>
+        <span class="pill">Agents in Org Chart · Analytics</span>
+        <h1>財務 AI Agent 覆蓋、價值與治理，一頁看懂</h1>
+        <p class="sub">以組織視角呈現 AI Agent 分布、支援流程、工時效益與治理準備度。</p>
+      </div>
+      <div class="top-actions">
+        <button class="tour-btn" id="openTourBtn">逐步說明<small>看懂 Agent → Workflow → 效益</small></button>
+        <div class="month-card">
+          <div class="month-icon">🗓️</div>
+          <div><small>示範月份</small><strong>2026 年 6 月</strong></div>
+        </div>
+      </div>
+    </div>
+
+    <section class="logic-card" id="logicFlow">
+      <h2>這張圖如何判讀？</h2>
+      <p>管理者通常會先問三件事：<strong>Agent 投入到哪些 workflow？帶來哪些效益？是否已準備好擴大？</strong> 下方用四個步驟串起這張 dashboard 的判讀邏輯。</p>
+      <div class="logic-flow">
+        <div class="flow-step"><div class="num">1</div><strong>盤點 Agent 與責任人</strong><span>先建立 Agent 清單，包含名稱、目的、負責單位、使用系統、負責人與部署狀態。</span></div>
+        <div class="flow-step"><div class="num">2</div><strong>標記對應 workflow</strong><span>將每個 Agent 對應到 1 個或多個 workflow，例如結帳、稅務、法遵、供應商查詢。</span></div>
+        <div class="flow-step"><div class="num">3</div><strong>量測實際效益</strong><span>蒐集節省工時、處理量、錯誤率改善、回應速度等資料，換算成具體績效。</span></div>
+        <div class="flow-step"><div class="num">4</div><strong>檢查治理成熟度</strong><span>確認是否通過風險、合規、人工覆核與責任分工，才能安全擴大使用。</span></div>
+      </div>
+    </section>
+
+    <section class="kpis" id="kpiSection">
+      <div class="kpi blue"><div class="label">🤖 已盤點 Agent</div><div class="value">58</div><div class="desc">已對應至財務職能</div></div>
+      <div class="kpi green"><div class="label">🧩 追蹤流程</div><div class="value">36</div><div class="desc">涵蓋結帳、稅務、稽核等</div></div>
+      <div class="kpi purple"><div class="label">↗ 每月節省工時</div><div class="value">1,840</div><div class="desc">相當於全職人力投入時數</div></div>
+      <div class="kpi orange"><div class="label">🛡️ 已完成治理審查</div><div class="value">74%</div><div class="desc">通過內部風險與合規審查</div></div>
+    </section>
+
+    <section class="grid">
+      <div class="card" id="agentMapCard">
+        <div class="card-title">
+          <div><h2>依財務負責人查看 Agent 地圖</h2><p>以組織節點呈現各 Agent 的涵蓋範圍與治理狀態。</p></div>
+          <button class="btn" onclick="alert('Demo：可連結到完整 Agent 地圖')">查看完整地圖 →</button>
+        </div>
+        <div class="owner"><div class="avatar">👤</div><div><strong>Padmaja Dasari</strong><span>財務轉型贊助人</span><span>58 個 agents in portfolio</span></div></div>
+        <div class="branch"></div>
+        <div class="dept-grid">
+          <div class="dept"><strong>📄 會計作業</strong><div>結帳、會計分錄、報表</div></div>
+          <div class="dept"><strong>🛡 法遵稽核</strong><div>內部稽核、控制檢查</div></div>
+          <div class="dept"><strong>％ 稅務與 GST</strong><div>稅務申報、GST 對帳</div></div>
+          <div class="dept"><strong>💳 應付帳款</strong><div>發票處理、供應商查詢</div></div>
+        </div>
+      </div>
+
+      <div class="card" id="hoursCard">
+        <div class="card-title">
+          <div><h2>節省工時最高的流程</h2><p>依 Agent 與工作流程顯示每月節省的工時。</p></div>
+          <button class="btn">每月工時⌄</button>
+        </div>
+        <div class="bars">
+          <div class="bar-row"><div class="bar-label">月底結帳 Agent</div><div class="track"><div class="fill" style="width:92%"></div></div><div class="hours">280 <small>小時</small></div></div>
+          <div class="bar-row"><div class="bar-label">稽核證據包 Agent</div><div class="track"><div class="fill" style="width:78%"></div></div><div class="hours">235 <small>小時</small></div></div>
+          <div class="bar-row"><div class="bar-label">GST 對帳 Agent</div><div class="track"><div class="fill" style="width:70%"></div></div><div class="hours">210 <small>小時</small></div></div>
+          <div class="bar-row"><div class="bar-label">供應商查詢 Agent</div><div class="track"><div class="fill" style="width:63%"></div></div><div class="hours">190 <small>小時</small></div></div>
+        </div>
+      </div>
+    </section>
+
+    <section class="grid">
+      <div class="card" id="coverageCard">
+        <div class="card-title">
+          <div><h2>各會計領域覆蓋率</h2><p>顯示各流程的 Agent 覆蓋情況與執行成效。</p></div>
+        </div>
+        <table>
+          <thead><tr><th>流程</th><th>覆蓋率</th><th>Agents</th><th>每月工時</th><th>狀態</th></tr></thead>
+          <tbody>
+            <tr><td><strong>財務結帳</strong></td><td><span class="badge">86%</span></td><td>14</td><td>620</td><td><span class="status"><i class="dot"></i>已就緒擴大</span></td></tr>
+            <tr><td><strong>法遵稽核支援</strong></td><td><span class="badge">72%</span></td><td>9</td><td>310</td><td><span class="status"><i class="dot"></i>模型已驗證</span></td></tr>
+            <tr><td><strong>GST 與稅務遵循</strong></td><td><span class="badge">68%</span></td><td>8</td><td>260</td><td><span class="status"><i class="dot orange"></i>試辦中</span></td></tr>
+            <tr><td><strong>供應商管理</strong></td><td><span class="badge">64%</span></td><td>7</td><td>190</td><td><span class="status"><i class="dot blue"></i>規劃中</span></td></tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div class="card" id="governanceCard">
+        <div class="card-title">
+          <div><h2>治理準備度</h2><p>每個 Agent 的治理控制與合規準備狀況。</p></div>
+        </div>
+        <div class="governance">
+          <div class="gov-box"><div class="gov-icon">📄</div><div class="gov-num">43</div><div class="gov-text"><strong>已審核</strong><span>完成人工審查並記錄審查軌跡</span></div></div>
+          <div class="gov-box blue"><div class="gov-icon">🕒</div><div class="gov-num">11</div><div class="gov-text"><strong>待補聲明</strong><span>已指派負責人，待補齊治理聲明</span></div></div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<button class="tour-fab" id="fabBtn">開始導覽</button>
+<div class="tour-overlay" id="tourOverlay"></div>
+<div class="tour-spotlight" id="tourSpotlight"></div>
+<div class="tour-marker" id="tourMarker">1</div>
+
+<div class="tour-toolbar" id="tourToolbar">
+  <div class="tour-explain" id="tourExplain">
+    <div class="tour-explain-inner">
+      <div class="ex-card">
+        <div class="step-tag" id="tourStepTag">步驟 1 / 6</div>
+        <h3 id="tourPanelTitle">主題</h3>
+        <p id="tourText"></p>
+        <div class="bullet-list" id="tourBullets"></div>
+      </div>
+      <div class="ex-card">
+        <div class="focus-box">
+          <strong id="tourFocusTitle">目前聚焦區塊</strong>
+          <span id="tourFocusText">系統會自動帶你看到目前說明的卡片。</span>
+        </div>
+        <h3>管理者應怎麼判讀？</h3>
+        <div class="bullet-list" id="tourRightBullets"></div>
+        <div class="tip-box" id="tourTip"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="toolbar-main">
+    <div class="toolbar-left">
+      <div class="toolbar-step">
+        <div class="toolbar-badge" id="toolbarStepNum">1</div>
+        <div class="toolbar-text">
+          <strong id="tourTitle">逐步導覽</strong>
+          <span id="tourSubtitle">第 1 步，共 6 步</span>
+          <div class="progress-wrap"><div class="progress-bar" id="tourProgressBar"></div></div>
+        </div>
+      </div>
+    </div>
+    <div class="toolbar-actions">
+      <button class="btn-secondary" id="toggleExplainBtn">顯示說明</button>
+      <button class="btn-ghost" id="focusBtn"><span class="hidden-mobile">定位到</span>畫面</button>
+      <button class="btn-ghost" id="prevTourBtn">上一步</button>
+      <button class="btn-primary" id="nextTourBtn">下一步</button>
+      <button class="btn-ghost" id="closeTourBtn">結束</button>
+    </div>
+  </div>
+</div>
+
+<script>
+const steps = [
+  {
+    selector:"#logicFlow",
+    title:"先看整體邏輯",
+    toolbarSubtitle:"AI 投入 → workflow → 效益 → 治理",
+    panelTitle:"先搞懂這張圖在回答什麼問題",
+    text:"這張 dashboard 不是只列出有哪些 AI，而是要回答三件事：第一，Agent 投入到哪些 workflow；第二，這些 workflow 因此產生哪些效益；第三，哪些 Agent 已經準備好安全擴大。",
+    focusTitle:"聚焦：這張圖如何判讀",
+    focusText:"先看四步邏輯：盤點 Agent → 標記 workflow → 量測效益 → 檢查治理。",
+    bullets:[
+      "Agent 是投入項：知道有哪些 AI、誰負責、部署在哪裡。",
+      "Workflow 是作用點：知道 AI 支援哪段工作流程。",
+      "效益是結果：把工時、品質、處理量等指標量化。",
+      "治理是擴大前提：確認風險與人工覆核是否到位。"
+    ],
+    rightBullets:[
+      "如果沒有 workflow 對照，Agent 只是工具名單。",
+      "如果沒有效益數字，就很難說服主管持續投資。",
+      "如果沒有治理狀態，就不能安心全面推廣。"
+    ],
+    tip:"建議建立 Agent 主檔：名稱、負責單位、workflow、使用系統、主要 KPI、治理狀態。"
+  },
+  {
+    selector:"#kpiSection",
+    title:"KPI 總覽",
+    toolbarSubtitle:"先看規模、效益與治理比例",
+    panelTitle:"從摘要數字判斷導入狀況",
+    text:"四張 KPI 卡分別代表：盤點多少 Agent、追蹤多少流程、每月節省多少工時，以及多少比例通過治理審查。這是主管第一眼要看的總覽。",
+    focusTitle:"聚焦：KPI 區塊",
+    focusText:"看總量、流程數、節省工時與治理比例，先掌握大盤。",
+    bullets:[
+      "已盤點 Agent：看 AI 資產盤點完整度。",
+      "追蹤流程：看 AI 是否真的嵌入業務。",
+      "每月節省工時：最容易換算成人力與成本效益。",
+      "已完成治理審查：看 AI 是否具備擴大條件。"
+    ],
+    rightBullets:[
+      "58 個 Agent 本身不是重點，重點是有沒有真正連到流程。",
+      "1,840 小時若能換算成本，說服力更高。",
+      "74% 代表仍有 26% 未完成治理。"
+    ],
+    tip:"建議補上 KPI 計算公式或 tooltip，讓數字更可追溯。"
+  },
+  {
+    selector:"#agentMapCard",
+    title:"Agent 投入到哪些 workflow？",
+    toolbarSubtitle:"用 Agent Map 看投入分布",
+    panelTitle:"用 Agent Map 建立對照關係",
+    text:"這裡是『負責人 → 業務領域 → Agent 所在 workflow』的管理視圖。每個 Agent 在建檔時都應標記支援的流程類型，例如結帳、法遵、稅務、應付帳款。",
+    focusTitle:"聚焦：Agent 地圖",
+    focusText:"由負責人往下看，能知道 AI 投入在哪些業務領域與流程。",
+    bullets:[
+      "每個 Agent 至少要對應 1 個 workflow 標籤。",
+      "若支援多個流程，可用多標籤或主次分類。",
+      "也可補上接觸到的系統，例如 ERP、表單、知識庫等。",
+      "責任人或流程 owner 應定期確認映射是否正確。"
+    ],
+    rightBullets:[
+      "某領域沒有 Agent，代表該 workflow 仍有空白。",
+      "某領域 Agent 很多但成效不高，可能有重複建置問題。",
+      "這塊最適合回答『AI 投入到哪裡』。"
+    ],
+    tip:"若改成港務公司版，可改成：處室 → 業務類型 → AI 應用清單。"
+  },
+  {
+    selector:"#hoursCard",
+    title:"造成哪些效益？",
+    toolbarSubtitle:"先看工時節省排行",
+    panelTitle:"把幫忙量化成可比較的數字",
+    text:"右側長條圖把各 Agent 在不同 workflow 產生的節省工時量化出來。當 Agent 能和工時、成本、處理量連在一起時，主管才容易判斷哪些值得優先投資。",
+    focusTitle:"聚焦：節省工時最高的流程",
+    focusText:"看哪些 workflow 因導入 Agent 而節省最多工時。",
+    bullets:[
+      "可用公式估算：案件量 × 每案節省時間 ÷ 60。",
+      "也可擴充指標：錯誤率下降、等待時間縮短、回應速度提升。",
+      "同一張圖可切換工時、成本、處理量等不同維度。",
+      "若數字波動太大，代表仍需驗證資料來源。"
+    ],
+    rightBullets:[
+      "高工時節省的 Agent，通常優先納入擴大清單。",
+      "高成效但未過治理者，表示值得做，但需先補控制。",
+      "低效益但大量使用的 Agent，要檢查是否仍有必要。"
+    ],
+    tip:"建議每一項效益數字都可點開查看計算邏輯與資料來源。"
+  },
+  {
+    selector:"#coverageCard",
+    title:"Workflow 覆蓋率",
+    toolbarSubtitle:"看流程被 AI 支援到什麼程度",
+    panelTitle:"從流程角度回看 AI 佈局",
+    text:"這張表不是看單一 Agent，而是從 workflow 角度回看：流程已被多少 Agent 支援、覆蓋率多高、累積多少工時效益，以及目前狀態為何。",
+    focusTitle:"聚焦：各會計領域覆蓋率",
+    focusText:"看每個 workflow 的覆蓋程度、投入密度、效益與成熟狀態。",
+    bullets:[
+      "覆蓋率可定義為：已被 AI 支援的節點 ÷ 總節點數。",
+      "Agents 數量反映投入密度，但不等於成熟度。",
+      "每月工時代表整體流程累積效益。",
+      "狀態欄可區分已驗證、試辦中、規劃中、可擴大。"
+    ],
+    rightBullets:[
+      "高覆蓋率且高效益者，通常值得列為示範案例。",
+      "低覆蓋率但高效益者，可能代表關鍵節點值得擴大。",
+      "高覆蓋率但低效益者，則要檢查是否過度投入。"
+    ],
+    tip:"很適合在委員會簡報中回答：下一步優先擴大哪一段流程？"
+  },
+  {
+    selector:"#governanceCard",
+    title:"最後看治理",
+    toolbarSubtitle:"哪些 Agent 可以安心擴大？",
+    panelTitle:"治理準備度是放大的最後關卡",
+    text:"治理區塊回答的是：這些 Agent 是否已補齊人工覆核、合規文件、責任分工與風險控管。管理者不只要看成效，還要看是否具備規模化條件。",
+    focusTitle:"聚焦：治理準備度",
+    focusText:"最後確認哪些高效益 Agent 已完成審查，可安全放大。",
+    bullets:[
+      "已審核：表示有人工審查與可追溯紀錄。",
+      "待補聲明：代表有價值，但治理條件尚未完備。",
+      "可再細分資料風險、法遵、資安、人工覆核等項目。",
+      "治理通過後，才能真正列為可擴大應用。"
+    ],
+    rightBullets:[
+      "高效益 + 已審核 = 最適合擴大。",
+      "高效益 + 待補治理 = 優先補治理，不是先擴大。",
+      "低效益 + 已審核 = 可思考是否保留或整併。"
+    ],
+    tip:"若做公司版，這區可加入資料等級、敏感性、是否需人工覆核等欄位。"
+  }
+];
+
+const overlay = document.getElementById('tourOverlay');
+const spotlight = document.getElementById('tourSpotlight');
+const marker = document.getElementById('tourMarker');
+const toolbar = document.getElementById('tourToolbar');
+const explain = document.getElementById('tourExplain');
+
+const openBtn = document.getElementById('openTourBtn');
+const fabBtn = document.getElementById('fabBtn');
+const closeBtn = document.getElementById('closeTourBtn');
+const prevBtn = document.getElementById('prevTourBtn');
+const nextBtn = document.getElementById('nextTourBtn');
+const focusBtn = document.getElementById('focusBtn');
+const toggleExplainBtn = document.getElementById('toggleExplainBtn');
+
+const titleEl = document.getElementById('tourTitle');
+const subtitleEl = document.getElementById('tourSubtitle');
+const toolbarStepNum = document.getElementById('toolbarStepNum');
+const progressBar = document.getElementById('tourProgressBar');
+
+const stepTagEl = document.getElementById('tourStepTag');
+const panelTitleEl = document.getElementById('tourPanelTitle');
+const textEl = document.getElementById('tourText');
+const bulletsEl = document.getElementById('tourBullets');
+const rightBulletsEl = document.getElementById('tourRightBullets');
+const focusTitleEl = document.getElementById('tourFocusTitle');
+const focusTextEl = document.getElementById('tourFocusText');
+const tipEl = document.getElementById('tourTip');
+
+let currentStep = 0;
+let currentTarget = null;
+let explainOpen = false;
+
+function renderList(el, items){
+  el.innerHTML = items.map(item => `<div>${item}</div>`).join('');
+}
+function removeSourceHighlight(){
+  document.querySelectorAll('.tour-highlight-source').forEach(el => el.classList.remove('tour-highlight-source'));
+}
+function clearTourFocus(){
+  spotlight.classList.remove('show');
+  marker.classList.remove('show');
+  removeSourceHighlight();
+  currentTarget = null;
+}
+function moveFocus(target, stepNum){
+  if(!target) return;
+  const rect = target.getBoundingClientRect();
+  const pad = 10;
+  spotlight.style.top = `${Math.max(8, rect.top - pad)}px`;
+  spotlight.style.left = `${Math.max(8, rect.left - pad)}px`;
+  spotlight.style.width = `${Math.min(window.innerWidth - 16, rect.width + pad * 2)}px`;
+  spotlight.style.height = `${Math.min(window.innerHeight - 16, rect.height + pad * 2)}px`;
+  spotlight.classList.add('show');
+
+  marker.textContent = stepNum;
+  marker.style.left = `${Math.max(8, rect.left - 14)}px`;
+  marker.style.top = `${Math.max(8, rect.top - 14)}px`;
+  marker.classList.add('show');
+  target.classList.add('tour-highlight-source');
+}
+function scrollToTarget(target){
+  if(!target) return;
+  target.scrollIntoView({behavior:'smooth', block:'center'});
+  setTimeout(() => moveFocus(target, currentStep + 1), 360);
+}
+function setExplain(open){
+  explainOpen = open;
+  explain.classList.toggle('show', open);
+  toggleExplainBtn.textContent = open ? '隱藏說明' : '顯示說明';
+}
+function showStep(index){
+  currentStep = index;
+  clearTourFocus();
+
+  const step = steps[index];
+  titleEl.textContent = step.title;
+  subtitleEl.textContent = `第 ${index+1} 步，共 ${steps.length} 步｜${step.toolbarSubtitle}`;
+  toolbarStepNum.textContent = index+1;
+  progressBar.style.width = `${((index+1)/steps.length)*100}%`;
+
+  stepTagEl.textContent = `步驟 ${index+1} / ${steps.length}`;
+  panelTitleEl.textContent = step.panelTitle;
+  textEl.textContent = step.text;
+  renderList(bulletsEl, step.bullets);
+  renderList(rightBulletsEl, step.rightBullets);
+  focusTitleEl.textContent = step.focusTitle;
+  focusTextEl.textContent = step.focusText;
+  tipEl.textContent = step.tip;
+
+  currentTarget = document.querySelector(step.selector);
+  if(currentTarget) scrollToTarget(currentTarget);
+
+  prevBtn.disabled = index === 0;
+  prevBtn.style.opacity = index === 0 ? ".5" : "1";
+  nextBtn.textContent = index === steps.length - 1 ? '完成' : '下一步';
+}
+function openTour(startIndex=0){
+  overlay.classList.add('show');
+  toolbar.classList.add('show');
+  document.body.style.overflow = 'hidden';
+  setExplain(false); // 預設收合，避免擋住主畫面
+  showStep(startIndex);
+}
+function closeTour(){
+  overlay.classList.remove('show');
+  toolbar.classList.remove('show');
+  document.body.style.overflow = '';
+  clearTourFocus();
+  setExplain(false);
+}
+openBtn.addEventListener('click', () => openTour(0));
+fabBtn.addEventListener('click', () => openTour(0));
+closeBtn.addEventListener('click', closeTour);
+overlay.addEventListener('click', () => {
+  // 點背景只切換說明收合，不直接結束，可避免誤觸
+  if (explainOpen) setExplain(false);
+});
+toggleExplainBtn.addEventListener('click', () => setExplain(!explainOpen));
+focusBtn.addEventListener('click', () => {
+  if(currentTarget) scrollToTarget(currentTarget);
+});
+prevBtn.addEventListener('click', () => {
+  if(currentStep > 0) showStep(currentStep - 1);
+});
+nextBtn.addEventListener('click', () => {
+  if(currentStep < steps.length - 1) showStep(currentStep + 1);
+  else closeTour();
+});
+window.addEventListener('resize', () => {
+  if(currentTarget && toolbar.classList.contains('show')){
+    moveFocus(currentTarget, currentStep + 1);
+  }
+});
+document.addEventListener('keydown', e => {
+  if(!toolbar.classList.contains('show')) return;
+  if(e.key === 'Escape') closeTour();
+  if(e.key === 'ArrowRight' && currentStep < steps.length - 1) showStep(currentStep + 1);
+  if(e.key === 'ArrowLeft' && currentStep > 0) showStep(currentStep - 1);
+  if(e.key.toLowerCase() === 'h') setExplain(!explainOpen);
+});
+</script>
+</body>
+</html>
